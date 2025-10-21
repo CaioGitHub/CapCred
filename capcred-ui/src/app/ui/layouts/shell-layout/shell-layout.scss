@@ -1,39 +1,51 @@
+/* ======= CONTAINER PRINCIPAL ======= */
 .layout-container {
   height: 100vh;
-  background-color: #f7f8fa;
+  background-color: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-on-surface);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* ======= SIDENAV ======= */
 .sidenav {
   width: 250px;
-  background-color: #fff;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: var(--mat-sys-surface);
+  border-right: 1px solid var(--mat-sys-outline-variant);
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
   z-index: 1000;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* ======= CONTEÚDO PRINCIPAL ======= */
 .main {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  background-color: var(--mat-sys-surface-container-lowest);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* ======= ÁREA DE CONTEÚDO / SCROLL ======= */
 .page-container {
   flex: 1;
   overflow-y: auto;
   padding: 1.5rem;
-  background-color: #f7f8fa;
+  background-color: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-on-surface);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Scrollbar */
+/* ======= SCROLLBAR ======= */
 .page-container::-webkit-scrollbar {
   width: 8px;
 }
 .page-container::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.15);
   border-radius: 4px;
 }
 
+/* ======= BACKDROP (menu móvel) ======= */
 ::ng-deep .mat-drawer-backdrop.mat-drawer-shown {
   background-color: rgba(0, 0, 0, 0.3);
 }

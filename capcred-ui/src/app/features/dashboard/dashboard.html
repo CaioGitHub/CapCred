@@ -1,10 +1,123 @@
-<div class="stats-grid">
-  <mat-card *ngFor="let s of stats" class="stat-card" appearance="outlined">
-    <div class="header">
-      <mat-icon class="icon">{{ s.icon }}</mat-icon>
-      <h3>{{ s.title }}</h3>
+<!-- ======= GRID PRINCIPAL ======= -->
+<div class="dashboard-grid">
+
+  <!-- ======= COLUNA PRINCIPAL ======= -->
+  <div class="main-column">
+
+    <!-- === Cards Estatísticos === -->
+    <div class="stats-grid">
+      <mat-card *ngFor="let s of stats" class="stat-card" appearance="outlined">
+        <div class="header">
+          <mat-icon class="icon">{{ s.icon }}</mat-icon>
+          <h3>{{ s.title }}</h3>
+        </div>
+        <h2 class="value">{{ s.value }}</h2>
+        <p class="trend">{{ s.trend }}</p>
+      </mat-card>
     </div>
-    <h2 class="value">{{ s.value }}</h2>
-    <p class="trend">{{ s.trend }}</p>
-  </mat-card>
+
+    <!-- === Empréstimos Recentes === -->
+    <mat-card appearance="outlined" class="loans-card">
+      <div class="card-header">
+        <h3>Empréstimos Recentes</h3>
+        <a href="#" class="view-all">Ver todos</a>
+      </div>
+
+      <table mat-table [dataSource]="loans" class="mat-elevation-z0 loans-table">
+        <ng-container matColumnDef="client">
+          <th mat-header-cell *matHeaderCellDef>Cliente</th>
+          <td mat-cell *matCellDef="let loan">
+            <div class="client-cell">
+              <img src="https://i.pravatar.cc/32?u={{loan.email}}" alt="avatar" />
+              <div>
+                <strong>{{ loan.name }}</strong>
+                <div class="email">{{ loan.email }}</div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Valor</th>
+          <td mat-cell *matCellDef="let loan">R$ {{ loan.amount | number }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="installments">
+          <th mat-header-cell *matHeaderCellDef>Parcelas</th>
+          <td mat-cell *matCellDef="let loan">{{ loan.installments }}x</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let loan">
+            <span class="status" [ngClass]="loan.status.toLowerCase()">{{ loan.status }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let loan">
+            <button mat-icon-button color="primary"><mat-icon>visibility</mat-icon></button>
+            <button mat-icon-button color="accent"><mat-icon>edit</mat-icon></button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card>
+  </div>
+
+  <!-- ======= COLUNA LATERAL ======= -->
+  <div class="side-column">
+
+    <!-- === Ações Rápidas === -->
+    <mat-card appearance="outlined" class="side-card">
+      <h3>Ações Rápidas</h3>
+      <div class="actions">
+        <button mat-stroked-button color="primary" class="w-100">
+          <mat-icon>person_add</mat-icon> Novo Cliente
+        </button>
+        <button mat-stroked-button color="primary" class="w-100">
+          <mat-icon>calculate</mat-icon> Calcular Empréstimo
+        </button>
+        <button mat-stroked-button color="primary" class="w-100">
+          <mat-icon>bar_chart</mat-icon> Gerar Relatório
+        </button>
+      </div>
+    </mat-card>
+
+    <!-- === Status de Pagamentos === -->
+    <mat-card appearance="outlined" class="side-card">
+      <h3>Status de Pagamentos</h3>
+      <ul class="status-list">
+        <li><span class="dot green"></span> Em dia <strong>186</strong></li>
+        <li><span class="dot orange"></span> Vencendo <strong>34</strong></li>
+        <li><span class="dot red"></span> Em atraso <strong>27</strong></li>
+      </ul>
+    </mat-card>
+
+    <!-- === Calculadora Rápida === -->
+    <mat-card appearance="outlined" class="side-card">
+      <h3>Calculadora Rápida</h3>
+      <form [formGroup]="quickCalcForm" (ngSubmit)="calculate()">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Valor</mat-label>
+          <input matInput type="number" formControlName="value" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Parcelas</mat-label>
+          <mat-select formControlName="installments">
+            <mat-option value="6x">6x</mat-option>
+            <mat-option value="12x">12x</mat-option>
+            <mat-option value="24x">24x</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" type="submit" class="w-100">Calcular</button>
+      </form>
+    </mat-card>
+
+  </div>
 </div>

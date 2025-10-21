@@ -1,17 +1,21 @@
 <mat-toolbar color="transparent" class="toolbar">
-  <div class="title">
-    <h2>Dashboard</h2>
-    <span class="subtitle">Visão geral do sistema de empréstimos</span>
+  <div class="left">
+    <div class="title">
+      <h2>Dashboard</h2>
+      <span class="subtitle">Visão geral do sistema de empréstimos</span>
+    </div>
   </div>
 
-  <span class="spacer"></span>
+  <div class="spacer"></div>
 
-  <button mat-icon-button aria-label="notificações">
-    <mat-icon>notifications</mat-icon>
-  </button>
+  <div class="actions">
+    <button mat-icon-button aria-label="notificações" class="notif-btn">
+      <mat-icon>notifications</mat-icon>
+    </button>
 
-  <button mat-flat-button color="primary">
-    <mat-icon>add</mat-icon>
-    Novo Empréstimo
-  </button>
+    <button mat-flat-button color="primary" class="new-loan-btn">
+      <mat-icon>add</mat-icon>
+      Novo Empréstimo
+    </button>
+  </div>
 </mat-toolbar>

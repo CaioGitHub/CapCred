@@ -1,1 +1,10 @@
-<p>dashboard works!</p>
+<div class="stats-grid">
+  <mat-card *ngFor="let s of stats" class="stat-card" appearance="outlined">
+    <div class="header">
+      <mat-icon class="icon">{{ s.icon }}</mat-icon>
+      <h3>{{ s.title }}</h3>
+    </div>
+    <h2 class="value">{{ s.value }}</h2>
+    <p class="trend">{{ s.trend }}</p>
+  </mat-card>
+</div>

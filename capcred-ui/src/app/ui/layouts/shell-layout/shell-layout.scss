@@ -3,36 +3,21 @@
   background-color: #f7f8fa;
 }
 
-/* SIDEBAR */
 .sidenav {
   width: 250px;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
   background-color: #fff;
-  position: fixed; /* ✅ Mantém fixa */
-  top: 0;
-  left: 0;
-  bottom: 0;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
   z-index: 1000;
 }
 
-/* CONTEÚDO PRINCIPAL */
 .main {
   display: flex;
   flex-direction: column;
-  margin-left: 250px; /* espaço da sidebar */
   height: 100vh;
   overflow: hidden;
 }
 
-/* HEADER FIXO */
-app-header {
-  position: sticky;
-  top: 0;
-  z-index: 999;
-}
-
-/* ÁREA SCROLLÁVEL */
 .page-container {
   flex: 1;
   overflow-y: auto;
@@ -40,12 +25,15 @@ app-header {
   background-color: #f7f8fa;
 }
 
-/* Custom scrollbar opcional */
+/* Scrollbar */
 .page-container::-webkit-scrollbar {
   width: 8px;
 }
-
 .page-container::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
+}
+
+::ng-deep .mat-drawer-backdrop.mat-drawer-shown {
+  background-color: rgba(0, 0, 0, 0.3);
 }

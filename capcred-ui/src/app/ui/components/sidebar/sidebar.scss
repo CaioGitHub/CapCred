@@ -1,0 +1,32 @@
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.logo-icon {
+  color: var(--mat-sys-primary);
+}
+
+mat-nav-list {
+  padding: 0 0.5rem;
+}
+
+a.active {
+  background-color: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  border-radius: 8px;
+}
+
+.user {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}

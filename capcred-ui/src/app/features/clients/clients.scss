@@ -1,0 +1,14 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.full-table {
+  width: 100%;
+}
+
+th.mat-header-cell {
+  font-weight: 600;
+}

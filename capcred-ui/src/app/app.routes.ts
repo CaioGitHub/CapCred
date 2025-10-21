@@ -11,12 +11,12 @@ export const routes: Routes = [
       {
         path: 'loans',
         loadComponent: () =>
-          import('../app/core/mocks/loans.mock').then((m) => m.LoansListComponent),
+          import('./features/loans/loans').then((m) => m.Loans),
       },
       {
         path: 'clients',
         loadComponent: () =>
-          import('../app/core/mocks/clients.mock').then((m) => m.ClientsListComponent),
+          import('./features/clients/clients').then((m) => m.Clients),
       },
       {
         path: 'payments',

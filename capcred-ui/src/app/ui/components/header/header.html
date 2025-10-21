@@ -1,12 +1,21 @@
 <mat-toolbar color="transparent" class="toolbar">
   <div class="left">
+    <button
+      *ngIf="isMobile"
+      mat-icon-button
+      aria-label="menu"
+      (click)="onMenuClick()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+
     <div class="title">
       <h2>Dashboard</h2>
       <span class="subtitle">Visão geral do sistema de empréstimos</span>
     </div>
   </div>
 
-  <div class="spacer"></div>
+  <span class="spacer"></span>
 
   <div class="actions">
     <button mat-icon-button aria-label="notificações" class="notif-btn">

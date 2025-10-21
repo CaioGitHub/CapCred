@@ -4,13 +4,7 @@
   height: 64px;
   background: #ffffff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  padding: 0 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-  transition: box-shadow 0.2s ease;
-}
-
-:host-context(.scrolled) .toolbar {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 0 1rem;
 }
 
 .left {
@@ -20,7 +14,7 @@
 }
 
 .title h2 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   margin: 0;
   font-weight: 600;
   color: #222;
@@ -38,16 +32,7 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.notif-btn mat-icon {
-  color: #444;
-  transition: color 0.2s ease;
-}
-
-.notif-btn:hover mat-icon {
-  color: #1e4fb8;
+  gap: 0.5rem;
 }
 
 .new-loan-btn {
@@ -62,6 +47,21 @@
   text-transform: none;
 }
 
-.new-loan-btn mat-icon {
-  font-size: 20px;
+/* Mobile tweaks */
+@media (max-width: 960px) {
+  .title h2 {
+    font-size: 1rem;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .new-loan-btn span {
+    display: none;
+  }
+
+  .new-loan-btn mat-icon {
+    margin: 0;
+  }
 }

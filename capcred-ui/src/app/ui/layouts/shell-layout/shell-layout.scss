@@ -1,0 +1,23 @@
+.layout-container {
+  height: 100vh;
+  background: var(--mat-sys-surface);
+}
+
+.sidenav {
+  width: 260px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--mat-sys-surface-container-low);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  background-color: var(--mat-sys-surface);
+  overflow-y: auto;
+}

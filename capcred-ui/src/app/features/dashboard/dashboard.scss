@@ -1,0 +1,20 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  padding: 1rem;
+}
+
+.icon {
+  color: var(--mat-sys-primary);
+  margin-right: 0.5rem;
+}
+
+.value {
+  margin: 0.5rem 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}

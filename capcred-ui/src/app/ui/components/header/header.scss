@@ -6,6 +6,11 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   padding: 0 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
+}
+
+:host-context(.scrolled) .toolbar {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .left {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, signal } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,5 +11,10 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './header.scss'
 })
 export class Header {
+  scrolled = signal(false);
 
+  @HostListener('window:scroll', [])
+  onScroll() {
+    this.scrolled.set(window.scrollY > 10);
+  }
 }

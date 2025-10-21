@@ -1,0 +1,29 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.full-table {
+  width: 100%;
+}
+
+.status {
+  padding: 2px 8px;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.8rem;
+}
+
+.status.pago {
+  background: #4caf50;
+}
+
+.status.pendente {
+  background: #ff9800;
+}
+
+.status.em {
+  background: #f44336;
+}

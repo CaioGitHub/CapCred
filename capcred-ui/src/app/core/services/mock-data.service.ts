@@ -9,30 +9,19 @@ import { REPORTS_MOCK } from '../mocks/reports.mock';
   providedIn: 'root',
 })
 export class MockDataService {
-  constructor() {}
-
-  // Simula um delay de rede para maior realismo
-  private simulateDelay<T>(data: T, ms = 400): Observable<T> {
-    return of(data).pipe(delay(ms));
+  getClients() {
+    return of(CLIENTS_MOCK).pipe(delay(500));
   }
 
-  /** 👥 Clientes */
-  getClients(): Observable<any[]> {
-    return this.simulateDelay(CLIENTS_MOCK);
+  getLoans() {
+    return of(LOANS_MOCK).pipe(delay(500));
   }
 
-  /** 💰 Empréstimos */
-  getLoans(): Observable<any[]> {
-    return this.simulateDelay(LOANS_MOCK);
+  getPayments() {
+    return of(PAYMENTS_MOCK).pipe(delay(500));
   }
 
-  /** 💳 Pagamentos */
-  getPayments(): Observable<any[]> {
-    return this.simulateDelay(PAYMENTS_MOCK);
-  }
-
-  /** 📊 Relatórios */
-  getReports(): Observable<any[]> {
-    return this.simulateDelay(REPORTS_MOCK);
+  getReports() {
+    return of(REPORTS_MOCK).pipe(delay(500));
   }
 }

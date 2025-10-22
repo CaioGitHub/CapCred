@@ -10,6 +10,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MockDataService } from '../../core/services/mock-data.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { LoadingService } from '../../core/shared/services/loading.service';
 
 @Component({
   selector: 'app-payments',
@@ -26,11 +27,13 @@ export class Payments {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private mockData: MockDataService) {}
+  constructor(private mockData: MockDataService, private loading: LoadingService) {}
 
   ngOnInit() {
+    this.loading.show();
     this.mockData.getPayments().subscribe((data) => {
       this.dataSource.data = data;
+      setTimeout(() => this.loading.hide(), 500);
     });
   }
 

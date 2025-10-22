@@ -10,6 +10,7 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="main">
+    <app-loading [show]="loading.isLoading()"></app-loading>
     <app-header [isMobile]="isMobile" (menuClicked)="sidenav.toggle()"></app-header>
     <div class="page-container">
       <router-outlet></router-outlet>

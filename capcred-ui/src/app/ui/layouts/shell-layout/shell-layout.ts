@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,8 @@ import { RouterOutlet } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { Header } from '../../components/header/header';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { LoadingComponent } from '../../../core/shared/components/loading/loading.component';
+import { LoadingService } from '../../../core/shared/services/loading.service';
 
 @Component({
   selector: 'app-shell-layout',
@@ -19,6 +21,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     RouterOutlet,
     Sidebar,
     Header,
+    LoadingComponent
   ],
   templateUrl: './shell-layout.html',
   styleUrls: ['./shell-layout.scss'],
@@ -26,6 +29,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 export class ShellLayout {
   @ViewChild(MatSidenav) sidenav!: MatSidenav;
   isMobile = false;
+  loading = inject(LoadingService);
 
   constructor(private observer: BreakpointObserver) {}
 

@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { fadeAnimation } from '../../core/animations/route-animations';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +24,7 @@ import { AuthService } from '../../core/services/auth.service';
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
+  animations: [fadeAnimation],
 })
 export class Login {
   email = '';

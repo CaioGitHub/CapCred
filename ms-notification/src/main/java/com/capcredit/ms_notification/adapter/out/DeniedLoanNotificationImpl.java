@@ -4,38 +4,39 @@ import com.capcredit.ms_notification.application.service.EmailService;
 import com.capcredit.ms_notification.application.service.SMSService;
 import com.capcredit.ms_notification.core.domain.Email;
 import com.capcredit.ms_notification.core.domain.SMS;
-import com.capcredit.ms_notification.port.in.ApprovedLoanPortIn;
-import com.capcredit.ms_notification.port.out.dtos.ApprovedLoanDTO;
+import com.capcredit.ms_notification.port.in.DeniedLoanPortIn;
+import com.capcredit.ms_notification.port.out.dtos.DeniedLoanDTO;
 import org.springframework.stereotype.Component;
 
+
 @Component
-public class ApprovedLoanNotificationImpl implements ApprovedLoanPortIn {
-    public static final String SUBJECT_APPROVED = "Seu empréstimo foi aprovado!";
+public class DeniedLoanNotificationImpl implements DeniedLoanPortIn {
+    public static final String SUBJECT_DENIED = "Seu empréstimo foi negado!";
     private final EmailService emailService;
     private final SMSService smsService;
 
-    public ApprovedLoanNotificationImpl(EmailService emailService, SMSService smsService) {
+    public DeniedLoanNotificationImpl(EmailService emailService, SMSService smsService) {
         this.emailService = emailService;
         this.smsService = smsService;
     }
 
     @Override
-    public void receiveApprovedLoan(ApprovedLoanDTO dto) {
+    public void receiveDeniedLoan(DeniedLoanDTO dto) {
         notifyUserCreationByEmail(dto);
 //        notifyUserCreationBySMS(dto);
     }
 
 
-    public void notifyUserCreationByEmail(ApprovedLoanDTO dto){
+    public void notifyUserCreationByEmail(DeniedLoanDTO dto){
         Email email = Email.builder()
                 .to(dto.user().email())
-                .subject(SUBJECT_APPROVED)
+                .subject(SUBJECT_DENIED)
                 .body(getBody(dto))
                 .build();
         emailService.send(email);
     }
 
-    public void notifyUserCreationBySMS(ApprovedLoanDTO dto){
+    public void notifyUserCreationBySMS(DeniedLoanDTO dto){
         SMS sms = SMS.builder()
                 .toNumber(dto.user().phone())
                 .message(getBody(dto))
@@ -43,10 +44,9 @@ public class ApprovedLoanNotificationImpl implements ApprovedLoanPortIn {
         smsService.send(sms);
     }
 
-    private static String getBody(ApprovedLoanDTO dto) {
-        return "Olá, " + dto.user().name() + ", seu empréstimo no valor de " + dto.totalAmmount() + " foi aprovado. Você deverá realizar " +
-                dto.termInMonths() + " parcelas mensais de R$ " + dto.monthlyInstallmentValue() +
-                ", com a primeira parcela vencendo em " + dto.firstDueDate() + ".";
+    private static String getBody(DeniedLoanDTO dto) {
+        return "Olá, " + dto.user().name() + ", infelizmente seu empréstimo foi negado por motivo de " +
+                dto.rejectionReason() + ". Não desanime, faremos uma nova análise de crédito em breve.";
     }
 
 

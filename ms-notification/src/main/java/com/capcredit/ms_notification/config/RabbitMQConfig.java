@@ -30,6 +30,22 @@ public class RabbitMQConfig {
         return new Queue(approvedLoan, true);
     }
 
+    @Value("${broker.queue.denied.loan}")
+    private String deniedLoan;
+
+    @Bean
+    public Queue queueDeniedLoan() {
+        return new Queue(deniedLoan, true);
+    }
+
+    @Value("${broker.queue.received.payment}")
+    private String receivedPayment;
+
+    @Bean
+    public Queue queueReceivedPayment() {
+        return new Queue(receivedPayment, true);
+    }
+
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         ObjectMapper objectMapper = new ObjectMapper();

@@ -14,3 +14,15 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:admin}
+    password: ${RABBITMQ_PASSWORD:admin}
+
+broker:
+  queue:
+    loan.created: ${LOAN_CREATED_QUEUE:loan.created}
+    loan.approved: ${LOAN_APPROVED_QUEUE:loan.approved}
+    loan.rejected: ${LOAN_REJECTED_QUEUE:loan.rejected}

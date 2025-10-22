@@ -9,6 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MockDataService } from '../../core/services/mock-data.service';
+import { MatTooltip } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,6 +25,7 @@ import { MockDataService } from '../../core/services/mock-data.service';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
+    MatTooltip
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
@@ -36,10 +39,11 @@ export class Dashboard implements OnInit {
   ];
 
   loans: any[] = [];
-  displayedColumns = ['client', 'amount', 'installments', 'status', 'actions'];
+  recentLoans: any[] = [];
+  displayedColumns = ['client', 'amount', 'installments', 'status', 'date', 'actions'];
   quickCalcForm: any;
 
-  constructor(private fb: FormBuilder, private mockData: MockDataService) {
+  constructor(private fb: FormBuilder, private mockData: MockDataService, private router: Router) {
     this.quickCalcForm = this.fb.group({
       value: [10000],
       installments: ['6x'],
@@ -48,14 +52,22 @@ export class Dashboard implements OnInit {
 
   ngOnInit() {
     this.mockData.getLoans().subscribe((loans) => {
-      this.loans = loans;
+      // Ordena por data (mais recente primeiro)
+      this.loans = loans.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
 
+      // Mantém apenas os 5 mais recentes
+      this.recentLoans = this.loans.slice(0, 5);
+
+      // KPIs
       const totalLoans = loans.length;
       const totalAmount = loans
         .filter((l) => l.status.toLowerCase() === 'aprovado')
         .reduce((sum, l) => sum + l.amount, 0);
       const pendingCount = loans.filter((l) => l.status.toLowerCase() === 'pendente').length;
 
+      // Animações
       this.animateCount(0, totalLoans, 800, (val) => {
         this.stats[0].displayValue = Math.floor(val).toString();
       });
@@ -70,10 +82,8 @@ export class Dashboard implements OnInit {
     });
   }
 
-  /** Anima valores inteiros */
   private animateCount(start: number, end: number, duration: number, onUpdate: (val: number) => void) {
     const startTime = performance.now();
-
     const step = (currentTime: number) => {
       const progress = Math.min((currentTime - startTime) / duration, 1);
       const eased = this.easeOutCubic(progress);
@@ -81,14 +91,11 @@ export class Dashboard implements OnInit {
       onUpdate(current);
       if (progress < 1) requestAnimationFrame(step);
     };
-
     requestAnimationFrame(step);
   }
 
-  /** Anima valores monetários */
   private animateCurrencySmart(start: number, end: number, duration: number, onUpdate: (val: number) => void) {
     const startTime = performance.now();
-
     const step = (currentTime: number) => {
       const progress = Math.min((currentTime - startTime) / duration, 1);
       const eased = this.easeOutCubic(progress);
@@ -96,24 +103,22 @@ export class Dashboard implements OnInit {
       onUpdate(current);
       if (progress < 1) requestAnimationFrame(step);
     };
-
     requestAnimationFrame(step);
   }
 
   private smartCurrencyFormat(value: number): string {
-    if (value >= 1_000_000_000) {
-      return (value / 1_000_000_000).toFixed(1).replace('.', ',') + ' B';
-    } else if (value >= 1_000_000) {
-      return (value / 1_000_000).toFixed(1).replace('.', ',') + ' M';
-    } else if (value >= 1_000) {
-      return (value / 1_000).toFixed(1).replace('.', ',') + ' K';
-    } else {
-      return value.toLocaleString('pt-BR', { minimumFractionDigits: 0 });
-    }
+    if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1).replace('.', ',') + ' B';
+    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.', ',') + ' M';
+    if (value >= 1_000) return (value / 1_000).toFixed(1).replace('.', ',') + ' K';
+    return value.toLocaleString('pt-BR', { minimumFractionDigits: 0 });
   }
 
   private easeOutCubic(t: number): number {
     return 1 - Math.pow(1 - t, 3);
+  }
+
+  goToLoans() {
+    this.router.navigate(['/loans'], { queryParams: { from: 'dashboard' } });
   }
 
   calculate() {

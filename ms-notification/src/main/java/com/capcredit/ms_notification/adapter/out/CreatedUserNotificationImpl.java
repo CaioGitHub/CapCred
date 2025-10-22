@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CreatedUserNotificationImpl implements CreatedUserConsumerPortIn {
+    public static final String WELCOME = "Bem vindo ao CapCredit!";
     private final EmailService emailService;
     private final SMSService smsService;
 
@@ -28,8 +29,8 @@ public class CreatedUserNotificationImpl implements CreatedUserConsumerPortIn {
     public void notifyUserCreationByEmail(UserDTO dto){
         Email email = Email.builder()
                 .to(dto.email())
-                .subject("Bem vindo ao CapCredit!")
-                .body("Olá, " + dto.name() + ", bem vindo ao CapCredit. Seu cadastro foi realizado com sucesso.")
+                .subject(WELCOME)
+                .body(getBody(dto))
                 .build();
         emailService.send(email);
     }
@@ -37,9 +38,13 @@ public class CreatedUserNotificationImpl implements CreatedUserConsumerPortIn {
     public void notifyUserCreationBySMS(UserDTO dto){
         SMS sms = SMS.builder()
                         .toNumber(dto.phone())
-                        .message("Olá, " + dto.name() + ", bem vindo ao CapCredit. Seu cadastro foi realizado com sucesso.")
+                        .message(getBody(dto))
                          .build();
         smsService.send(sms);
+    }
+
+    private static String getBody(UserDTO dto) {
+        return "Olá, " + dto.name() + ", bem vindo ao CapCredit. Seu cadastro foi realizado com sucesso.";
     }
 
 

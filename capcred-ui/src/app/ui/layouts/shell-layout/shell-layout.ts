@@ -9,6 +9,7 @@ import { Header } from '../../components/header/header';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { LoadingComponent } from '../../../core/shared/components/loading/loading.component';
 import { LoadingService } from '../../../core/shared/services/loading.service';
+import { fadeAnimation } from '../../../core/animations/route-animations';
 
 @Component({
   selector: 'app-shell-layout',
@@ -25,6 +26,7 @@ import { LoadingService } from '../../../core/shared/services/loading.service';
   ],
   templateUrl: './shell-layout.html',
   styleUrls: ['./shell-layout.scss'],
+  animations: [fadeAnimation],
 })
 export class ShellLayout {
   @ViewChild(MatSidenav) sidenav!: MatSidenav;

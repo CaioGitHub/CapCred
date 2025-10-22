@@ -27,7 +27,7 @@ export class AuthService {
       {
         email: 'admin@capcred.com',
         role: 'Administrador',
-        name: 'João Silva',
+        name: 'Admin',
         avatar: 'https://i.pravatar.cc/150?img=3',
       },
       {

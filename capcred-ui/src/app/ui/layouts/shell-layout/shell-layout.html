@@ -12,7 +12,7 @@
   <mat-sidenav-content class="main">
     <app-loading [show]="loading.isLoading()"></app-loading>
     <app-header [isMobile]="isMobile" (menuClicked)="sidenav.toggle()"></app-header>
-    <div class="page-container">
+    <div class="page-container" [@routeFadeAnimation]>
       <router-outlet></router-outlet>
     </div>
   </mat-sidenav-content>

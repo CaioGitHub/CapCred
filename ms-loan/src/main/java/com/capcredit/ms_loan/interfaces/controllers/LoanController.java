@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ public class LoanController {
     private final RateService rateService;
 
     @GetMapping
+    @PreAuthorize("@loanAccessValidator.canAccessLoan(#filter, authentication)")
     @Operation(summary = "Get all loans with optional filtering and pagination")
     public ResponseEntity<Page<Loan>> findAll(LoanFilter filter, Pageable pageable) {
         log.info("Finding loans with filter: {} and pageable: {}", filter, pageable);
@@ -49,6 +51,7 @@ public class LoanController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@loanAccessValidator.canAccessLoan(#id, authentication)")
     @Operation(summary = "Get loan by ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Loan found", content = {
@@ -62,6 +65,7 @@ public class LoanController {
     }
 
     @PostMapping("/request")
+    @PreAuthorize("@loanAccessValidator.canAccessLoan(#dto, authentication)")
     @Operation(summary = "Create a new loan request")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Loan created", content = {

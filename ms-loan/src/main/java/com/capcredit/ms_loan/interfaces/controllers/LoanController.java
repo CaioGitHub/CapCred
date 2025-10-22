@@ -21,6 +21,12 @@ import com.capcredit.ms_loan.interfaces.dtos.ResponseLoanDTO;
 import com.capcredit.ms_loan.interfaces.dtos.ResponseSimulatedLoanDTO;
 import com.capcredit.ms_loan.interfaces.dtos.SimulateRequestLoanDTO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -28,22 +34,39 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/loans")
 @RequiredArgsConstructor
+@Tag(name = "Loans", description = "Loan management endpoints")
 public class LoanController {
     
     private final LoanService loanService;
     private final RateService rateService;
 
     @GetMapping
+    @Operation(summary = "Get all loans with optional filtering and pagination")
     public ResponseEntity<Page<Loan>> findAll(LoanFilter filter, Pageable pageable) {
         return ResponseEntity.ok(loanService.findAll(filter, pageable));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get loan by ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Loan found", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = Loan.class))
+        }),
+        @ApiResponse(responseCode = "404", description = "Loan not found", content = @Content)
+    })
     public ResponseEntity<Loan> findById(@PathVariable UUID id) {
         return ResponseEntity.ok(loanService.findById(id));
     }
 
     @PostMapping("/request")
+    @Operation(summary = "Create a new loan request")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Loan created", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseLoanDTO.class))
+        }),
+        @ApiResponse(responseCode = "400", description = "Invalid loan request", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content)
+    })
     public ResponseEntity<ResponseLoanDTO> save(@Valid @RequestBody RequestLoanDTO dto) {
         var rate = rateService.findByTerm(dto.getTermInMonths());
         var loan = dto.toDomain(rate);
@@ -52,6 +75,14 @@ public class LoanController {
     }
 
     @PostMapping("/simulate")
+    @Operation(summary = "Simulate a loan without saving it")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Loan simulated", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseLoanDTO.class))
+        }),
+        @ApiResponse(responseCode = "400", description = "Invalid loan request", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content)
+    })
     public ResponseEntity<ResponseSimulatedLoanDTO> simulate(@Valid @RequestBody SimulateRequestLoanDTO dto) {
         var rate = rateService.findByTerm(dto.getTermInMonths());
         var loan = dto.toDomain(rate);

@@ -48,7 +48,7 @@ public class LoanServiceTest {
 
     @Test
     public void shouldSaveLoanAndPublishEvent() {
-        var loan = new Loan(UUID.randomUUID(), BigDecimal.TEN, 12, BigDecimal.valueOf(5), now(), PENDING, ACTIVE);
+        var loan = new Loan(UUID.randomUUID(), BigDecimal.TEN, 12, BigDecimal.valueOf(0.05), now(), PENDING, ACTIVE);
         
         loanService.save(loan);
 
@@ -59,7 +59,7 @@ public class LoanServiceTest {
     @Test
     public void shouldNotSaveLoanAndPublishEventWhenLoanIsNotPending() {
         RequestStatus.notPendingStatus().forEach(status -> {
-            var loan = new Loan(UUID.randomUUID(), BigDecimal.TEN, 12, BigDecimal.valueOf(5), now(), status, ACTIVE);
+            var loan = new Loan(UUID.randomUUID(), BigDecimal.TEN, 12, BigDecimal.valueOf(0.05), now(), status, ACTIVE);
             assertThrows(LoanException.class, () -> {
                 loanService.save(loan);
             });
@@ -69,7 +69,7 @@ public class LoanServiceTest {
     @Test
     public void shouldReturnLoanWhenFindById() {
         var loanId = UUID.randomUUID();
-        var loan = new Loan(loanId, BigDecimal.TEN, 12, BigDecimal.valueOf(5), now(), PENDING, ACTIVE);
+        var loan = new Loan(loanId, BigDecimal.TEN, 12, BigDecimal.valueOf(0.05), now(), PENDING, ACTIVE);
 
         when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
 
@@ -92,7 +92,7 @@ public class LoanServiceTest {
 
     @Test
     public void shouldApproveLoanWhenMonthlyInstallmentIsLessThan50PercentOfIncome() {
-        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(100), now(), PENDING, ACTIVE);
+        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(0.05), now(), PENDING, ACTIVE);
         var user = new User(UUID.randomUUID(), "Test", "000.000.000-00", "test@mail.com", BigDecimal.valueOf(10000));
 
         when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
@@ -108,7 +108,7 @@ public class LoanServiceTest {
     @Test
     public void shouldNotProcessWhenLoanIsNotPending() {
         RequestStatus.notPendingStatus().forEach(status -> {
-            var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(100), now(), status, ACTIVE);
+            var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(0.05), now(), status, ACTIVE);
 
             when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
 
@@ -129,7 +129,7 @@ public class LoanServiceTest {
 
     @Test
     public void shouldNotProcessLoanWhenUserIdIsInvalid() {
-        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(100), now(), PENDING, ACTIVE);
+        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(0.05), now(), PENDING, ACTIVE);
 
         when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
         when(userClient.findById(any(UUID.class))).thenReturn(Optional.empty());
@@ -141,8 +141,8 @@ public class LoanServiceTest {
 
     @Test
     public void shouldRejectLoanWhenMonthlyInstallmentIsMoreThan50PercentOfIncome() {
-        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(600), now(), PENDING, ACTIVE);
-        var user = new User(UUID.randomUUID(), "Test", "000.000.000-00", "test@mail.com", BigDecimal.valueOf(10000));
+        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(10000), 12, BigDecimal.valueOf(0.05), now(), PENDING, ACTIVE);
+        var user = new User(UUID.randomUUID(), "Test", "000.000.000-00", "test@mail.com", BigDecimal.valueOf(1000));
 
         when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
         when(userClient.findById(any(UUID.class))).thenReturn(Optional.of(user));
@@ -156,7 +156,7 @@ public class LoanServiceTest {
 
     @Test
     public void shouldCloaseLoan() {
-        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(600), now(), PENDING, ACTIVE);
+        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(0.05), now(), PENDING, ACTIVE);
 
         when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
 

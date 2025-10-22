@@ -1,5 +1,8 @@
+import { Router } from '@angular/router';
+import { AuthService, User } from '../../../core/services/auth.service';
 import { SharedImports } from './../../../core/shared/imports';
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,4 +20,13 @@ export class Sidebar {
     { icon: 'bar_chart', label: 'Relatórios', route: '/reports' },
     { icon: 'settings', label: 'Configurações', route: '/settings' },
   ];
+  user$: Observable<User | null>;
+
+  constructor(private auth: AuthService, private router: Router) {
+    this.user$ = this.auth.currentUser$;
+  }
+
+  logout() {
+    this.auth.logout();
+  }
 }

@@ -16,10 +16,16 @@
   </a>
 </nav>
 
-<div class="user">
-  <mat-icon>person</mat-icon>
-  <div class="info">
-    <strong>João Silva</strong>
-    <small>Administrador</small>
+<div class="sidebar-user" *ngIf="user$ | async as user">
+  <div class="user-info">
+    <img [src]="user.avatar" alt="Avatar" class="avatar" />
+    <div>
+      <div class="name">{{ user.name }}</div>
+      <div class="role">{{ user.role }}</div>
+    </div>
   </div>
+
+  <button mat-icon-button class="logout-btn" (click)="logout()" title="Sair">
+    <mat-icon>logout</mat-icon>
+  </button>
 </div>

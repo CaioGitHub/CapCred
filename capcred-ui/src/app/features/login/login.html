@@ -1,0 +1,30 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <div class="logo">
+      <img src="assets/logo.svg" alt="CapCred" class="logo-icon" />
+      <h2>CapCred</h2>
+    </div>
+
+    <h3>Entrar no sistema</h3>
+
+    <form (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="email" name="email" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" [(ngModel)]="password" name="password" required />
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" class="full-width" [disabled]="loading">
+        <mat-icon *ngIf="!loading">login</mat-icon>
+        <mat-icon *ngIf="loading" class="spin">autorenew</mat-icon>
+        {{ loading ? 'Entrando...' : 'Entrar' }}
+      </button>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+    </form>
+  </mat-card>
+</div>

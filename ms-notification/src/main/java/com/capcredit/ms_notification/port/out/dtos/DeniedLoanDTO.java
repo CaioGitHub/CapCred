@@ -7,6 +7,6 @@ public record DeniedLoanDTO(
         UUID eventId,
         LocalDateTime timestamp,
         UUID loanId,
-        UUID userId,
+        UserDTO user,
         String rejectionReason
 ){}

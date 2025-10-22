@@ -74,5 +74,11 @@ public class LoanService {
             throw new LoanException("Error processing loan", e);
         }
     }
+
+    public void closeLoan(UUID loanId) {
+        var loan = findById(loanId);
+        loan.close();
+        loanRepository.save(loan);
+    }
 }
 

@@ -1,6 +1,7 @@
 package com.capcredit.ms_loan.application.services;
 
 import static com.capcredit.ms_loan.domain.enums.LoanStatus.ACTIVE;
+import static com.capcredit.ms_loan.domain.enums.LoanStatus.COMPLETED;
 import static com.capcredit.ms_loan.domain.enums.RequestStatus.APPROVED;
 import static com.capcredit.ms_loan.domain.enums.RequestStatus.PENDING;
 import static com.capcredit.ms_loan.domain.enums.RequestStatus.REJECTED;
@@ -151,5 +152,26 @@ public class LoanServiceTest {
         assertEquals(REJECTED, loan.getRequestStatus());
         verify(loanRepository).save(loan);
         verify(eventPublisher).publishLoanRejected(any(LoanRejected.class));
+    }
+
+    @Test
+    public void shouldCloaseLoan() {
+        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(600), now(), PENDING, ACTIVE);
+
+        when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
+
+        loanService.closeLoan(loan.getId());
+
+        assertEquals(COMPLETED, loan.getLoanStatus());
+        verify(loanRepository).save(loan);
+    }
+
+    @Test
+    public void shouldNotCloaseLoanWhenLoanIdIsInvalid() {
+        when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        
+        assertThrows(LoanException.class, () -> {
+            loanService.closeLoan(UUID.randomUUID());
+        });
     }
 }

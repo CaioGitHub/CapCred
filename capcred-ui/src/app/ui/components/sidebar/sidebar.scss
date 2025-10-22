@@ -97,3 +97,57 @@ a.active mat-icon {
 .user strong {
   font-weight: 600;
 }
+
+/* ---------- USER SECTION ---------- */
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: #f9f9f9;
+  flex-shrink: 0;
+  overflow: hidden; /* 👈 evita o scroll horizontal */
+  white-space: nowrap; /* 👈 impede quebra de linha */
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0; /* 👈 essencial p/ o text-overflow funcionar */
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #222;
+  max-width: 110px; /* 👈 limite de largura */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 👈 adiciona os “...” */
+  white-space: nowrap;
+  display: block;
+}
+
+.role {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.logout-btn {
+  color: #444;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: color 0.2s ease;
+}
+
+.logout-btn:hover {
+  color: #d32f2f;
+}

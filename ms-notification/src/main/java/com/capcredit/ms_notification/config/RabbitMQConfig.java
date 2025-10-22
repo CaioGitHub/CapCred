@@ -46,6 +46,15 @@ public class RabbitMQConfig {
         return new Queue(receivedPayment, true);
     }
 
+    @Value("${broker.queue.completed.payment}")
+    private String completedPayment;
+
+    @Bean
+    public Queue queueCompletedPayment() {
+        return new Queue(completedPayment, true);
+    }
+
+
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         ObjectMapper objectMapper = new ObjectMapper();

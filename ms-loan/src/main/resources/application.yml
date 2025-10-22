@@ -30,3 +30,9 @@ broker:
 springdoc:
   api-docs.path: /documentacao
   swagger-ui.path: /documentacao.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus

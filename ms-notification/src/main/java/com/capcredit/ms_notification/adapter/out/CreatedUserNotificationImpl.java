@@ -4,7 +4,7 @@ import com.capcredit.ms_notification.application.service.EmailService;
 import com.capcredit.ms_notification.application.service.SMSService;
 import com.capcredit.ms_notification.core.domain.Email;
 import com.capcredit.ms_notification.core.domain.SMS;
-import com.capcredit.ms_notification.interfaces.dto.UserDTO;
+import com.capcredit.ms_notification.port.out.dtos.UserDTO;
 import com.capcredit.ms_notification.port.in.CreatedUserConsumerPortIn;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ public class CreatedUserNotificationImpl implements CreatedUserConsumerPortIn {
     @Override
     public void receiveCreatedUser(UserDTO dto) {
         notifyUserCreationByEmail(dto);
-        notifyUserCreationBySMS(dto);
+//        notifyUserCreationBySMS(dto);
     }
 
 

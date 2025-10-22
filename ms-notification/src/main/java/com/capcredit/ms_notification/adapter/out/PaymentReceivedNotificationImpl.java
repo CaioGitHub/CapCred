@@ -5,7 +5,6 @@ import com.capcredit.ms_notification.application.service.SMSService;
 import com.capcredit.ms_notification.core.domain.Email;
 import com.capcredit.ms_notification.core.domain.SMS;
 import com.capcredit.ms_notification.port.in.PaymentReceivedPortIn;
-import com.capcredit.ms_notification.port.out.dtos.DeniedLoanDTO;
 import com.capcredit.ms_notification.port.out.dtos.PaymentReceivedDTO;
 import org.springframework.stereotype.Component;
 

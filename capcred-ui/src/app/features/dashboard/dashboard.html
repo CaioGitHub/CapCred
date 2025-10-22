@@ -16,15 +16,18 @@
     <mat-card appearance="outlined" class="loans-card">
       <div class="card-header">
         <h3>Empréstimos Recentes</h3>
-        <a href="#" class="view-all">Ver todos</a>
+        <a class="view-all" (click)="goToLoans()" matTooltip="Ver todos os empréstimos">
+          Ver todos <mat-icon>arrow_forward</mat-icon>
+        </a>
       </div>
 
-      <table mat-table [dataSource]="loans" class="mat-elevation-z0 loans-table">
+      <table mat-table [dataSource]="recentLoans" class="mat-elevation-z0 loans-table">
+
         <ng-container matColumnDef="client">
           <th mat-header-cell *matHeaderCellDef>Cliente</th>
           <td mat-cell *matCellDef="let loan">
             <div class="client-cell">
-              <img src="https://i.pravatar.cc/32?u={{loan.email}}" alt="avatar" />
+              <img [src]="'https://i.pravatar.cc/32?u=' + loan.email" alt="avatar" loading="lazy" />
               <div>
                 <strong>{{ loan.name }}</strong>
                 <div class="email">{{ loan.email }}</div>
@@ -35,7 +38,9 @@
 
         <ng-container matColumnDef="amount">
           <th mat-header-cell *matHeaderCellDef>Valor</th>
-          <td mat-cell *matCellDef="let loan">R$ {{ loan.amount | number }}</td>
+          <td mat-cell *matCellDef="let loan" [matTooltip]="'Valor total: R$ ' + (loan.amount | number: '1.2-2')">
+            <span>R$ {{ loan.amount | number: '1.0-0' }}</span>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="installments">
@@ -46,8 +51,12 @@
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Status</th>
           <td mat-cell *matCellDef="let loan">
-            <span class="status" [ngClass]="loan.status.toLowerCase()">{{ loan.status }}</span>
+            <span class="status-badge" [ngClass]="loan.status.toLowerCase()">{{ loan.status }}</span>
           </td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Data</th>
+          <td mat-cell *matCellDef="let loan">{{ loan.date | date: 'dd/MM/yyyy' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="actions">
@@ -62,6 +71,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </mat-card>
+
   </div>
 
   <div class="side-column">

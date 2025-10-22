@@ -1,4 +1,4 @@
-package com.capcredit.ms_notification.domain.model;
+package com.capcredit.ms_notification.core.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

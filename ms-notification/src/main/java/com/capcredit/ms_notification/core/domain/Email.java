@@ -1,4 +1,4 @@
-package com.capcredit.ms_notification.domain.model;
+package com.capcredit.ms_notification.core.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,5 +13,4 @@ public class Email {
     private String to;
     private String subject;
     private String body;
-//    private Map<String, byte[]> attachments;
 }

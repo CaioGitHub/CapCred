@@ -1,7 +1,7 @@
 package com.capcredit.ms_notification.adapter.in;
 
 import com.capcredit.ms_notification.adapter.out.CreatedUserNotificationImpl;
-import com.capcredit.ms_notification.interfaces.dto.UserDTO;
+import com.capcredit.ms_notification.port.out.dtos.UserDTO;
 import com.capcredit.ms_notification.port.in.CreatedUserConsumerPortIn;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;

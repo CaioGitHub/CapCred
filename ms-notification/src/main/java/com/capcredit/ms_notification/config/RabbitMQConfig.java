@@ -22,6 +22,14 @@ public class RabbitMQConfig {
         return new Queue(createdUser, true);
     }
 
+    @Value("${broker.queue.approved.loan}")
+    private String approvedLoan;
+
+    @Bean
+    public Queue queueApprovedLoan() {
+        return new Queue(approvedLoan, true);
+    }
+
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         ObjectMapper objectMapper = new ObjectMapper();

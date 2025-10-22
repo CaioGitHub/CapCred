@@ -2,7 +2,7 @@ package com.capcredit.ms_notification;
 
 
 import com.capcredit.ms_notification.application.service.EmailService;
-import com.capcredit.ms_notification.domain.model.Email;
+import com.capcredit.ms_notification.core.domain.Email;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +21,6 @@ public class EmailController {
 
     @PostMapping("/send-email")
     public void sendTestEmail(@RequestBody Email email) {
-        emailService.enviar(email);
+        emailService.send(email);
     }
 }

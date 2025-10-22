@@ -1,22 +1,18 @@
-<!-- ======= GRID PRINCIPAL ======= -->
 <div class="dashboard-grid">
 
-  <!-- ======= COLUNA PRINCIPAL ======= -->
   <div class="main-column">
 
-    <!-- === Cards Estatísticos === -->
     <div class="stats-grid">
       <mat-card *ngFor="let s of stats" class="stat-card" appearance="outlined">
         <div class="header">
           <mat-icon class="icon">{{ s.icon }}</mat-icon>
           <h3>{{ s.title }}</h3>
         </div>
-        <h2 class="value">{{ s.value }}</h2>
+        <h2 class="value">{{ s.displayValue }}</h2>
         <p class="trend">{{ s.trend }}</p>
       </mat-card>
     </div>
 
-    <!-- === Empréstimos Recentes === -->
     <mat-card appearance="outlined" class="loans-card">
       <div class="card-header">
         <h3>Empréstimos Recentes</h3>
@@ -68,10 +64,8 @@
     </mat-card>
   </div>
 
-  <!-- ======= COLUNA LATERAL ======= -->
   <div class="side-column">
 
-    <!-- === Ações Rápidas === -->
     <mat-card appearance="outlined" class="side-card">
       <h3>Ações Rápidas</h3>
       <div class="actions">
@@ -87,7 +81,6 @@
       </div>
     </mat-card>
 
-    <!-- === Status de Pagamentos === -->
     <mat-card appearance="outlined" class="side-card">
       <h3>Status de Pagamentos</h3>
       <ul class="status-list">
@@ -97,7 +90,6 @@
       </ul>
     </mat-card>
 
-    <!-- === Calculadora Rápida === -->
     <mat-card appearance="outlined" class="side-card">
       <h3>Calculadora Rápida</h3>
       <form [formGroup]="quickCalcForm" (ngSubmit)="calculate()">

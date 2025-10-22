@@ -36,3 +36,5 @@ management:
     web:
       exposure:
         include: health,info,prometheus
+
+ms.user.url: ${MS_AUTH_USER_URL:http://localhost:8080/api/users}

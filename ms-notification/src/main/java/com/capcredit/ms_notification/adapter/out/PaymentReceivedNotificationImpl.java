@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
         @Override
         public void receivePayment(PaymentReceivedDTO dto) {
             notifyUserCreationByEmail(dto);
-//        notifyUserCreationBySMS(dto);
+            notifyUserCreationBySMS(dto);
         }
 
 

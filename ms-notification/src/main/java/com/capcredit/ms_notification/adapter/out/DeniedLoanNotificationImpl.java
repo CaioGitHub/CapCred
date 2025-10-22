@@ -23,7 +23,7 @@ public class DeniedLoanNotificationImpl implements DeniedLoanPortIn {
     @Override
     public void receiveDeniedLoan(DeniedLoanDTO dto) {
         notifyUserCreationByEmail(dto);
-//        notifyUserCreationBySMS(dto);
+        notifyUserCreationBySMS(dto);
     }
 
 

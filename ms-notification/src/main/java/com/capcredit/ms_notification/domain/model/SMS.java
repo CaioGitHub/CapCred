@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Email {
-    private String to;
-    private String subject;
-    private String body;
-//    private Map<String, byte[]> attachments;
+public class SMS {
+    private String toNumber;
+    private String message;
 }

@@ -29,8 +29,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api/loans")
 @RequiredArgsConstructor
@@ -43,6 +44,7 @@ public class LoanController {
     @GetMapping
     @Operation(summary = "Get all loans with optional filtering and pagination")
     public ResponseEntity<Page<Loan>> findAll(LoanFilter filter, Pageable pageable) {
+        log.info("Finding loans with filter: {} and pageable: {}", filter, pageable);
         return ResponseEntity.ok(loanService.findAll(filter, pageable));
     }
 
@@ -55,6 +57,7 @@ public class LoanController {
         @ApiResponse(responseCode = "404", description = "Loan not found", content = @Content)
     })
     public ResponseEntity<Loan> findById(@PathVariable UUID id) {
+        log.info("Finding loan by id: {}", id);
         return ResponseEntity.ok(loanService.findById(id));
     }
 
@@ -68,6 +71,7 @@ public class LoanController {
         @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content)
     })
     public ResponseEntity<ResponseLoanDTO> save(@Valid @RequestBody RequestLoanDTO dto) {
+        log.info("Creating loan request: {}", dto);
         var rate = rateService.findByTerm(dto.getTermInMonths());
         var loan = dto.toDomain(rate);
         loanService.save(loan);
@@ -84,6 +88,7 @@ public class LoanController {
         @ApiResponse(responseCode = "404", description = "Entity not found", content = @Content)
     })
     public ResponseEntity<ResponseSimulatedLoanDTO> simulate(@Valid @RequestBody SimulateRequestLoanDTO dto) {
+        log.info("Simulating loan request: {}", dto);
         var rate = rateService.findByTerm(dto.getTermInMonths());
         var loan = dto.toDomain(rate);
         return ResponseEntity.ok(ResponseSimulatedLoanDTO.from(loan));

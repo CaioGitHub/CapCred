@@ -63,11 +63,13 @@ public class LoanService {
                 loanRepository.save(loan);
                 var event = new LoanApproved(user, loan);
                 eventPublisher.publishLoanApproved(event);
+                log.info("Loan with id {} approved", loanId);
             } else {
                 loan.reject();
                 loanRepository.save(loan);
                 var event = new LoanRejected(user, loan.getId(), "Monthly installment value exceeds 50% of monthly income");
                 eventPublisher.publishLoanRejected(event);
+                log.info("Loan with id {} rejected", loanId);
             }
         } catch (Exception e) {
             log.error("Error processing loan with id {}", loanId, e);

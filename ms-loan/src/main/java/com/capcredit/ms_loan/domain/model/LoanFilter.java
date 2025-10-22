@@ -28,4 +28,9 @@ public class LoanFilter {
     public void setRequestStatus(RequestStatus requestStatus) {
         this.requestStatus = requestStatus;
     }
+    
+    @Override
+    public String toString() {
+        return "LoanFilter [userId=" + userId + ", loanStatus=" + loanStatus + ", requestStatus=" + requestStatus + "]";
+    }
 }

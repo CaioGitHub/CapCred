@@ -1,7 +1,9 @@
 package com.capcredit.ms_loan.application.services;
 
 import static com.capcredit.ms_loan.domain.enums.LoanStatus.ACTIVE;
+import static com.capcredit.ms_loan.domain.enums.RequestStatus.APPROVED;
 import static com.capcredit.ms_loan.domain.enums.RequestStatus.PENDING;
+import static com.capcredit.ms_loan.domain.enums.RequestStatus.REJECTED;
 import static java.time.LocalDate.now;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,7 +26,9 @@ import com.capcredit.ms_loan.application.ports.out.LoanRepositoryPort;
 import com.capcredit.ms_loan.application.ports.out.UserClientPort;
 import com.capcredit.ms_loan.domain.enums.RequestStatus;
 import com.capcredit.ms_loan.domain.events.LoanCreated;
+import com.capcredit.ms_loan.domain.events.LoanRejected;
 import com.capcredit.ms_loan.domain.model.Loan;
+import com.capcredit.ms_loan.domain.model.User;
 
 public class LoanServiceTest {
 
@@ -83,5 +87,69 @@ public class LoanServiceTest {
         assertThrows(EntityNotFoundException.class, () -> {
             loanService.findById(loanId);
         });
+    }
+
+    @Test
+    public void shouldApproveLoanWhenMonthlyInstallmentIsLessThan50PercentOfIncome() {
+        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(100), now(), PENDING, ACTIVE);
+        var user = new User(UUID.randomUUID(), "Test", "000.000.000-00", "test@mail.com", BigDecimal.valueOf(10000));
+
+        when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
+        when(userClient.findById(any(UUID.class))).thenReturn(Optional.of(user));
+
+        loanService.processLoan(loan.getId());
+
+        assertEquals(APPROVED, loan.getRequestStatus());
+        verify(loanRepository).save(loan);
+        verify(eventPublisher).publishLoanApproved(any());
+    }
+
+    @Test
+    public void shouldNotProcessWhenLoanIsNotPending() {
+        RequestStatus.notPendingStatus().forEach(status -> {
+            var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(100), now(), status, ACTIVE);
+
+            when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
+
+            assertThrows(LoanException.class, () -> {
+                loanService.processLoan(loan.getId());
+            });
+        });
+    }
+
+    @Test
+    public void shouldNotProcessLoanWhenLoanIdIsInvalid() {
+        when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        assertThrows(LoanException.class, () -> {
+            loanService.processLoan(UUID.randomUUID());
+        });
+    }
+
+    @Test
+    public void shouldNotProcessLoanWhenUserIdIsInvalid() {
+        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(100), now(), PENDING, ACTIVE);
+
+        when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
+        when(userClient.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        assertThrows(LoanException.class, () -> {
+            loanService.processLoan(loan.getId());
+        });
+    }
+
+    @Test
+    public void shouldRejectLoanWhenMonthlyInstallmentIsMoreThan50PercentOfIncome() {
+        var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(600), now(), PENDING, ACTIVE);
+        var user = new User(UUID.randomUUID(), "Test", "000.000.000-00", "test@mail.com", BigDecimal.valueOf(10000));
+
+        when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
+        when(userClient.findById(any(UUID.class))).thenReturn(Optional.of(user));
+
+        loanService.processLoan(loan.getId());
+
+        assertEquals(REJECTED, loan.getRequestStatus());
+        verify(loanRepository).save(loan);
+        verify(eventPublisher).publishLoanRejected(any(LoanRejected.class));
     }
 }

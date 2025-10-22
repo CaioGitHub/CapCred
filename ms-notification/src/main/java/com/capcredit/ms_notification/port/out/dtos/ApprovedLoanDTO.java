@@ -12,5 +12,5 @@ public record ApprovedLoanDTO( UUID eventId,
                                BigDecimal monthlyInstallmentValue,
                                Integer termInMonths,
                                LocalDate firstDueDate,
-                               BigDecimal totalAmmount
+                               BigDecimal totalAmount
                               ) {}

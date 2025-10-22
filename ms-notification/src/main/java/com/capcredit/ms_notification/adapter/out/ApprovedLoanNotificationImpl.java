@@ -44,7 +44,7 @@ public class ApprovedLoanNotificationImpl implements ApprovedLoanPortIn {
     }
 
     private static String getBody(ApprovedLoanDTO dto) {
-        return "Olá, " + dto.user().name() + ", seu empréstimo no valor de " + dto.totalAmmount() + " foi aprovado. Você deverá realizar " +
+        return "Olá, " + dto.user().name() + ", seu empréstimo no valor de " + dto.totalAmount() + " foi aprovado. Você deverá realizar " +
                 dto.termInMonths() + " parcelas mensais de R$ " + dto.monthlyInstallmentValue() +
                 ", com a primeira parcela vencendo em " + dto.firstDueDate() + ".";
     }

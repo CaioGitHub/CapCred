@@ -1,15 +1,25 @@
 <div class="page-header">
   <h2>Relatórios</h2>
-  <div class="actions">
-    <button mat-flat-button color="primary">
-      <mat-icon>picture_as_pdf</mat-icon>
-      Exportar PDF
+</div>
+
+<div class="table-filter">
+  <mat-form-field appearance="outline">
+    <mat-label>Buscar</mat-label>
+    <input
+      matInput
+      (keyup)="applyFilter($event)"
+      placeholder="Pesquisar relatório..."
+    />
+    <button
+      *ngIf="filterValue"
+      matSuffix
+      mat-icon-button
+      aria-label="Clear"
+      (click)="clearFilter()"
+    >
+      <mat-icon>close</mat-icon>
     </button>
-    <button mat-flat-button color="accent">
-      <mat-icon>table_view</mat-icon>
-      Exportar CSV
-    </button>
-  </div>
+  </mat-form-field>
 </div>
 
 <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z0 full-table">
@@ -32,8 +42,4 @@
   <tr mat-row *matRowDef="let row; columns: cols;"></tr>
 </table>
 
-<mat-paginator
-  [pageSize]="5"
-  [pageSizeOptions]="[5, 10, 20]"
-  showFirstLastButtons
-></mat-paginator>
+<mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>

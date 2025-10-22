@@ -22,7 +22,7 @@ public class ApprovedLoanNotificationImpl implements ApprovedLoanPortIn {
     @Override
     public void receiveApprovedLoan(ApprovedLoanDTO dto) {
         notifyUserCreationByEmail(dto);
-//        notifyUserCreationBySMS(dto);
+        notifyUserCreationBySMS(dto);
     }
 
 

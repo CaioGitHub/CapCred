@@ -6,16 +6,19 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MockDataService } from '../../core/services/mock-data.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-clients',
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatPaginator, MatSort],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatPaginator, MatSort, MatFormFieldModule, MatInputModule],
   templateUrl: './clients.html',
   styleUrl: './clients.scss'
 })
 export class Clients {
   cols = ['name', 'email', 'phone', 'actions'];
   dataSource = new MatTableDataSource<any>([]);
+  filterValue = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -31,5 +34,16 @@ export class Clients {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  applyFilter(event: Event) {
+    const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.filterValue = value;
+    this.dataSource.filter = value;
+  }
+
+  clearFilter() {
+    this.filterValue = '';
+    this.dataSource.filter = '';
   }
 }

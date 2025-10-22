@@ -2,6 +2,7 @@ package com.capcredit.ms_notification.application.service;
 
 
 
+import com.capcredit.ms_notification.application.exception.SMSSendException;
 import com.capcredit.ms_notification.core.domain.SMS;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
@@ -40,7 +41,7 @@ public class SMSService {
         }
      catch (RuntimeException e) {
         log.error("Erro ao enviar sms", e);
-        throw new RuntimeException("Erro ao enviar sms", e);
+         throw new SMSSendException("Falha ao enviar SMS", e);
     }
     }
 }

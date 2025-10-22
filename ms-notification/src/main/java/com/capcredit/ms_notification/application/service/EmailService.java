@@ -1,7 +1,7 @@
 package com.capcredit.ms_notification.application.service;
 
+import com.capcredit.ms_notification.application.exception.EmailSendException;
 import com.capcredit.ms_notification.core.domain.Email;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,9 +28,9 @@ public class EmailService {
             helper.setText(email.getBody());
 
             mailSender.send(message);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.error("Erro ao enviar e-mail", e);
-            throw new RuntimeException("Erro ao enviar e-mail", e);
+            throw new EmailSendException("Erro ao enviar e-mail", e);
         }
     }
 

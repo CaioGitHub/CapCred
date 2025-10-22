@@ -24,7 +24,7 @@ public class PaymentCompletedNotificationImpl implements PaymentCompletedPortIn 
     @Override
     public void receiveCompletedPayment(PaymentCompletedDTO dto) {
         notifyUserCreationByEmail(dto);
-//        notifyUserCreationBySMS(dto);
+        notifyUserCreationBySMS(dto);
     }
 
 
@@ -46,8 +46,11 @@ public class PaymentCompletedNotificationImpl implements PaymentCompletedPortIn 
     }
 
     private static String getBody(PaymentCompletedDTO dto) {
-        return "Olá, temos o prazer de informar que o seu empréstimo com ID" + dto.loanId() + " foi totalmente quitado em " + dto.finalizationDate()
-                + "Agradecemos por confiar em nossos serviços e por manter suas parcelas em dia. Se tiver alguma dúvida ou precisar de suporte, nossa equipe está à disposição";
+        return "Olá, temos o prazer de informar que o seu empréstimo com ID " + dto.loanId() +
+                " foi totalmente quitado em " + dto.finalizationDate() + ". " +
+                "Agradecemos por confiar em nossos serviços e por manter suas parcelas em dia. " +
+                "Se tiver alguma dúvida ou precisar de suporte, nossa equipe está à disposição.";
     }
+
 }
 

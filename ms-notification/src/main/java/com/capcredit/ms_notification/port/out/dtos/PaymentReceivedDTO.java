@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record PaymentReceivedDTO(
-        UUID eventId,
-        LocalDateTime timestamp,
         UUID installmentId,
         UUID loanId,
-        Integer installmentNumber,
+        BigDecimal valueDue,
+        LocalDate dueDate,
+        LocalDateTime paymentDate,
         BigDecimal valuePaid,
-        LocalDate paymentDate,
-        UserDTO user
+        String paymentStatus,
+        UUID userId
 ) {}

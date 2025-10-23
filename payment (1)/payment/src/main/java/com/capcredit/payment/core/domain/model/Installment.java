@@ -1,6 +1,7 @@
 package com.capcredit.payment.core.domain.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,8 +17,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "tb_installments")
 public class Installment {
-
     @Id
     private UUID id;
     private UUID loanId;
@@ -26,7 +27,6 @@ public class Installment {
     private LocalDateTime paymentDate;
     private BigDecimal valuePaid;
     private PaymentStatus paymentStatus;
-
-
-
+    private BigDecimal monthlyInstallmentValue;
+    private UUID userId;
 }

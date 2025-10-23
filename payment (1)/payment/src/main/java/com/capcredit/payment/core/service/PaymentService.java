@@ -6,5 +6,5 @@ import org.springframework.http.ResponseEntity;
 import java.util.UUID;
 
 public interface PaymentService {
-    ResponseEntity<InstallmentDTO> processPayment(UUID installmentId);
+   InstallmentDTO processPayment(UUID installmentId);
 }

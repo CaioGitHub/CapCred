@@ -10,11 +10,12 @@ import java.util.UUID;
 
 @Builder
 public record InstallmentDTO(
-        UUID id,
+        UUID installmentId,
         UUID loanId,
         BigDecimal valueDue,
         LocalDate dueDate,
         LocalDateTime paymentDate,
         BigDecimal valuePaid,
-        String paymentStatus
+        String paymentStatus,
+        UUID userId
 ) {}

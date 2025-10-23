@@ -13,7 +13,7 @@ public class RabbitMQSenderImpl implements RabbitMqSender {
     private String paymentQueue;
 
     public RabbitMQSenderImpl(
-            @Value("${broker.queue.payment.received}") String paymentQueue,
+            @Value("${broker.queue.received.payment}") String paymentQueue,
             RabbitTemplate rabbitTemplate,
             MessageConverter jsonMessageConverter
     ) {

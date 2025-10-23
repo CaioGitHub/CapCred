@@ -1,4 +1,5 @@
 package com.capcredit.payment.core.domain.model;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -17,9 +18,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tb_installments")
+@Table(name = "tb_installment")
 public class Installment {
     @Id
+    @Column(name = "id")
     private UUID id;
     private UUID loanId;
     private BigDecimal valueDue;

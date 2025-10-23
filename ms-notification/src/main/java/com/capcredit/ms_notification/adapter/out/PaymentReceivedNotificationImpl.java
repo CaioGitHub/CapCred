@@ -62,7 +62,7 @@ public class PaymentReceivedNotificationImpl implements PaymentReceivedPortIn {
     private String getBody(PaymentReceivedDTO dto) {
         return "Olá, " + user.getName() +
                 ", recebemos o pagamento no valor de R$ " + dto.valuePaid() +
-                " referente à parcela nº " +
+                " referente à parcela nº " + dto.installmentNumber() +
                 " do empréstimo " + dto.loanId() + ". Obrigado por pagar em dia!";
     }
 

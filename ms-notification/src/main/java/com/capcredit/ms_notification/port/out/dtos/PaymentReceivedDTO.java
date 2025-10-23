@@ -8,6 +8,7 @@ import java.util.UUID;
 public record PaymentReceivedDTO(
         UUID installmentId,
         UUID loanId,
+        Integer installmentNumber,
         BigDecimal valueDue,
         LocalDate dueDate,
         LocalDateTime paymentDate,

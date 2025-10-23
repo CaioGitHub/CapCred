@@ -1,5 +1,6 @@
 package com.capcredit.ms_notification.core.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Table(name = "tb_user")
 public class User {
     @Id
+    @Column(name = "id")
     private UUID userId;
     private String name;
     private String email;

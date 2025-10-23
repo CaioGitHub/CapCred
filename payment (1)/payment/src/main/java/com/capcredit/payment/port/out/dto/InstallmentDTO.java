@@ -17,5 +17,6 @@ public record InstallmentDTO(
         LocalDateTime paymentDate,
         BigDecimal valuePaid,
         String paymentStatus,
-        UUID userId
+        UUID userId,
+        Integer installmentNumber
 ) {}

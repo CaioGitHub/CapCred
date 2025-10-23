@@ -77,6 +77,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentDate(installment.getPaymentDate())
                 .valuePaid(installment.getValuePaid())
                 .paymentStatus(installment.getPaymentStatus().name())
+                .installmentNumber(installment.getInstallmentNumber())
                 .userId(installment.getUserId())
                 .build();
     }

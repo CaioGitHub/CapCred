@@ -29,4 +29,5 @@ public class Installment {
     private PaymentStatus paymentStatus;
     private BigDecimal monthlyInstallmentValue;
     private UUID userId;
+    private Integer installmentNumber;
 }

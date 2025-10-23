@@ -38,11 +38,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
-    private void veriFyValuePaid(Installment installment, BigDecimal totalWithInterest) {
-        if (installment.getValuePaid().compareTo(totalWithInterest) < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O valor pago é insuficiente para quitar a parcela.");
-        }
-    }
 
     private void markAsPaid(Installment installment) {
         LocalDateTime now = LocalDateTime.now();
@@ -54,7 +49,6 @@ public class PaymentServiceImpl implements PaymentService {
                 now.toLocalDate()
         );
         installment.setValuePaid(totalWithInterest);
-        veriFyValuePaid(installment, totalWithInterest);
         installment.setPaymentStatus(PaymentStatus.PAID);
     }
 

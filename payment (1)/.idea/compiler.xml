@@ -9,10 +9,23 @@
         <outputRelativeToContentRoot value="true" />
         <module name="payment" />
       </profile>
+      <profile name="Annotation profile for ms-notification" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
+        </processorPath>
+        <module name="ms-notification" />
+      </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="payment" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ms-notification" options="-parameters" />
       <module name="payment" options="-parameters" />
     </option>
   </component>

@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.capcredit</groupId>
-    <artifactId>ms-notification</artifactId>
+    <artifactId>ms-payment</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ms-notification</name>
+    <name>ms-payment</name>
     <description>Demo project for Spring Boot</description>
     <url/>
     <licenses>

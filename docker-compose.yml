@@ -41,7 +41,7 @@ services:
       - "1025:1025"
       - "8025:8025"
   postgres:
-    image: postgres:17
+    image: postgres:17-alpine3.22
     container_name: postgres
     environment:
       POSTGRES_USER: postgres
@@ -52,7 +52,7 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: admin

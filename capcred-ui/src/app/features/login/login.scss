@@ -1,0 +1,52 @@
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #0056d6, #007bff);
+}
+
+.login-card {
+  width: 380px;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  text-align: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+}
+
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: #f44336;
+  margin-top: 0.5rem;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

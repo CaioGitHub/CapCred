@@ -1,9 +1,12 @@
+server:
+  port: ${SERVER_PORT:8082}
+
 spring:
   application:
     name: ms-loan
   
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:capcred_db}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:loan_capcred_db}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -26,6 +29,7 @@ broker:
     loan.created: ${LOAN_CREATED_QUEUE:loan.created}
     loan.approved: ${LOAN_APPROVED_QUEUE:loan.approved}
     loan.rejected: ${LOAN_REJECTED_QUEUE:loan.rejected}
+    loan.completed: ${LOAN_COMPLETED_QUEUE:loan.completed}
 
 springdoc:
   api-docs.path: /documentacao

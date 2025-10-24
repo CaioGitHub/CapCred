@@ -93,7 +93,7 @@ public class LoanServiceTest {
     @Test
     public void shouldApproveLoanWhenMonthlyInstallmentIsLessThan50PercentOfIncome() {
         var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(1000), 12, BigDecimal.valueOf(0.05), now(), PENDING, ACTIVE);
-        var user = new User(UUID.randomUUID(), "Test", "000.000.000-00", "test@mail.com", BigDecimal.valueOf(10000));
+        var user = new User(UUID.randomUUID(), "Test", "000.000.000-00", "test@mail.com", "(81) 9 0000-0000", BigDecimal.valueOf(10000));
 
         when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
         when(userClient.findById(any(UUID.class))).thenReturn(Optional.of(user));
@@ -142,7 +142,7 @@ public class LoanServiceTest {
     @Test
     public void shouldRejectLoanWhenMonthlyInstallmentIsMoreThan50PercentOfIncome() {
         var loan = new Loan(UUID.randomUUID(), BigDecimal.valueOf(10000), 12, BigDecimal.valueOf(0.05), now(), PENDING, ACTIVE);
-        var user = new User(UUID.randomUUID(), "Test", "000.000.000-00", "test@mail.com", BigDecimal.valueOf(1000));
+        var user = new User(UUID.randomUUID(), "Test", "000.000.000-00", "test@mail.com", "(81) 9 0000-0000", BigDecimal.valueOf(1000));
 
         when(loanRepository.findById(any(UUID.class))).thenReturn(Optional.of(loan));
         when(userClient.findById(any(UUID.class))).thenReturn(Optional.of(user));

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -59,7 +60,7 @@ public class PaymentServiceImpl implements PaymentService {
         BigDecimal fixedInterest = valueDue.multiply(BigDecimal.valueOf(0.02));
         BigDecimal dailyInterest = valueDue.multiply(BigDecimal.valueOf(0.00033)).multiply(BigDecimal.valueOf(daysOverdue));
 
-        return valueDue.add(fixedInterest).add(dailyInterest).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return valueDue.add(fixedInterest).add(dailyInterest).setScale(2, RoundingMode.HALF_UP);
     }
 
     private InstallmentDTO toDTO(Installment installment) {

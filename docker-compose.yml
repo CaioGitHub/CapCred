@@ -15,6 +15,21 @@ services:
     depends_on:
       - postgres
       - rabbitmq
+  ms-payment:
+    build:
+      context: ./ms-payment
+      dockerfile: Dockerfile
+    container_name: ms-payment
+    ports:
+      - "8083:8083"
+    environment:
+      - SERVER_PORT=8083
+      - DB_HOST=postgres
+      - DB_NAME=payment_capcred_db
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
   ms-notification:
     build:
       context: ./ms-notification

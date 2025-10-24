@@ -10,7 +10,7 @@ import com.capcredit.ms_loan.domain.model.User;
 
 public class LoanApproved {
     private UUID eventId;
-    private User user;
+    private UserDTO user;
     private UUID loanId;
     private Integer termInMonths;
     private BigDecimal totalAmount;
@@ -20,7 +20,7 @@ public class LoanApproved {
 
     public LoanApproved(User user, Loan loan) {
         this.eventId = UUID.randomUUID();
-        this.user = user;
+        this.user = new UserDTO(user);
         this.loanId = loan.getId();
         this.termInMonths = loan.getTermInMonths();
         this.totalAmount = loan.getRequestedAmount();
@@ -33,7 +33,7 @@ public class LoanApproved {
         return eventId;
     }
 
-    public User getUser() {
+    public UserDTO getUser() {
         return user;
     }
 
@@ -60,4 +60,28 @@ public class LoanApproved {
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
-}
+
+    static class UserDTO {
+        private UUID userId;
+        private String name;
+        private String email;
+
+        public UserDTO(User user) {
+            this.userId = user.getId();
+            this.name = user.getName();
+            this.email = user.getEmail();
+        }
+
+        public UUID getUserId() {
+            return userId;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+    }
+ }

@@ -44,11 +44,13 @@ public class LoanRejected {
         private UUID userId;
         private String name;
         private String email;
+        private String phone;
 
         public UserDTO(User user) {
             this.userId = user.getId();
             this.name = user.getName();
             this.email = user.getEmail();
+            this.phone = user.getPhone();
         }
 
         public UUID getUserId() {
@@ -61,6 +63,10 @@ public class LoanRejected {
 
         public String getEmail() {
             return email;
+        }
+
+        public String getPhone() {
+            return phone;
         }
     }
 }

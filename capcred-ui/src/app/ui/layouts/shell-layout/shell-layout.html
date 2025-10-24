@@ -1,1 +1,19 @@
-<p>shell-layout works!</p>
+<mat-sidenav-container class="layout-container">
+  <mat-sidenav
+    #sidenav
+    [mode]="isMobile ? 'over' : 'side'"
+    [fixedInViewport]="isMobile"
+    [opened]="!isMobile"
+    class="sidenav"
+  >
+    <app-sidebar (itemClicked)="sidenav.close()"></app-sidebar>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="main">
+    <app-loading [show]="loading.isLoading()"></app-loading>
+    <app-header [isMobile]="isMobile" (menuClicked)="sidenav.toggle()"></app-header>
+    <div class="page-container" [@routeFadeAnimation]>
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,83 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-apigateway
+
+  cloud:
+    gateway:
+      # Configurações globais de performance para o HttpClient
+      # FILTRO GLOBAL: Aplicado a todas as rotas para injetar headers ou fazer pré-processamento
+      server:
+        webflux:
+          httpclient:
+            connect-timeout: 5000
+            response-timeout: 10s
+          routes:
+            # 1. ROTA MS-AUTHUSER (PÚBLICA: LOGIN/REGISTER)
+                    - id: ms-authuser
+                      uri: http://ms-authuser:8081
+                      predicates:
+                        # Rotas de Login e Registro não requerem JWT
+                        - Path=/auth/**
+                      filters:
+                        - name: CustomNoAuthFilter # Filtro Customizado para marcar a rota como pública
+
+                    # 2. ROTA MS-LOAN (Simulação e Solicitação de Empréstimo)
+                    - id: ms-loan
+                      uri: http://ms-loan:8082
+                      predicates:
+                        - Path=/loans/**
+                        # Inclui /loans/simulate e /loans/request
+                      filters:
+                        - name: AuthGlobalFilter # Aplicar o filtro JWT para validação de token
+
+                    # 3. ROTA MS-PAYMENTS (Pagamentos e Parcelas)
+                    - id: ms-payments
+                      uri: http://ms-payments:8083
+                      predicates:
+                        - Path=/installments/**
+                      filters:
+                        - name: AuthGlobalFilter # Aplicar o filtro JWT para validação de token
+          default-filters:
+            # Adiciona um header para rastreamento interno, útil para logs
+                    - AddRequestHeader=X-Request-Source, ${spring.application.name}
+
+# --- CONFIGURAÇÕES DE SEGURANÇA E GERENCIAMENTO ---
+
+# Gerenciamento de Endpoints (Health, Metrics, etc.)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway, health, prometheus
+  endpoint:
+    health:
+      show-details: always
+
+# Configurações do SpringDoc para agregar a documentação dos microsserviços
+# O Gateway atua como agregador de documentação.
+springdoc:
+  swagger-ui:
+    urls:
+      - name: ms-authuser
+        url: /v3/api-docs/ms-authuser
+      - name: ms-loan
+        url: /v3/api-docs/ms-loan
+      - name: ms-payments
+        url: /v3/api-docs/ms-payments
+  # Mapeamento do nome do serviço para o path do OpenAPI
+  api-docs:
+    path: /v3/api-docs
+    groups:
+      enabled: true
+
+  # Configuração para que o Gateway saiba onde buscar a documentação de cada MS
+  # Esta parte será configurada com Beans no código Java (DiscoveryClientRouter)
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+    com.capcredit: INFO # Nível de log para o seu código (pacote raiz)

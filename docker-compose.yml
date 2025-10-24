@@ -22,15 +22,14 @@ services:
     container_name: ms-notification
     ports:
       - "8084:8084"
+    env_file:
+      - ./.env
     environment:
       - SERVER_PORT=8084
       - DB_HOST=postgres
       - DB_NAME=notification_capcred_db
       - RABBITMQ_HOST=rabbitmq
       - MAIL_HOST=mailhog
-      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
-      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
-      - TWILIO_FROM_NUMBER=${TWILIO_FROM_NUMBER}
     depends_on:
       - postgres
       - rabbitmq

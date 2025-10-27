@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/installment")
+@RequestMapping("/api/installments")
 public class PaymentController implements PaymentPortIn {
 
     private final PaymentService paymentService;

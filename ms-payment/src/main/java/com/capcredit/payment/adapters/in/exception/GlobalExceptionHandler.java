@@ -1,5 +1,7 @@
 package com.capcredit.payment.adapters.in.exception;
 
+import com.capcredit.payment.core.exception.InstallmentAlreadyPaidException;
+import com.capcredit.payment.core.exception.InstallmentNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,17 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(body, ex.getStatusCode());
     }
+
+    @ExceptionHandler(InstallmentNotFoundException.class)
+    public ResponseEntity<?> handleNotFound(InstallmentNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InstallmentAlreadyPaidException.class)
+    public ResponseEntity<?> handleAlreadyPaid(InstallmentAlreadyPaidException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
 
 
 }

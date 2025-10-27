@@ -15,6 +15,7 @@
   padding: 1rem;
   transition: transform 0.2s ease;
   transform: scale(1.05);
+  background: var(--mat-sys-surface-container-high);
 }
 
 .stat-card .value {
@@ -56,7 +57,11 @@
   transition: color 0.2s ease;
 }
 .view-all:hover {
-  color: #1e50b8;
+  color: color-mix(
+    in srgb,
+    var(--mat-sys-primary) 80%,
+    var(--mat-sys-on-surface)
+  );
 }
 
 
@@ -67,11 +72,19 @@
 }
 
 .loans-table tr:hover {
-  background-color: rgba(30, 79, 184, 0.05);
+  background-color: color-mix(
+    in srgb,
+    var(--mat-sys-primary) 10%,
+    transparent
+  );
 }
 
 .loans-table tr:not(.mat-header-row):hover {
-  background-color: rgba(30, 79, 184, 0.04);
+  background-color: color-mix(
+    in srgb,
+    var(--mat-sys-primary) 8%,
+    transparent
+  );
 }
 
 .loans-table th {

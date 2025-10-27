@@ -3,23 +3,23 @@ package com.capcredit.payment.core.service;
 import com.capcredit.payment.core.domain.model.Installment;
 import com.capcredit.payment.core.domain.model.Loan;
 import com.capcredit.payment.core.domain.model.PaymentStatus;
+import com.capcredit.payment.core.exception.InstallmentAlreadyPaidException;
+import com.capcredit.payment.core.exception.InstallmentNotFoundException;
+import com.capcredit.payment.core.mapper.InstallmentMapper;
 import com.capcredit.payment.port.out.InstallmentRepository;
 import com.capcredit.payment.port.out.RabbitMqSender;
 import com.capcredit.payment.port.out.dto.InstallmentDTO;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import static com.capcredit.payment.core.domain.model.PaymentStatus.PENDING;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class PaymentServiceImpl implements PaymentService {
     private final InstallmentRepository installmentRepository;
@@ -29,18 +29,26 @@ public class PaymentServiceImpl implements PaymentService {
         this.rabbitMqSender = rabbitMqSender;
     }
 
-    public InstallmentDTO processPayment(UUID installmentId){
-        Installment installment = installmentRepository.findById(installmentId).orElseThrow(()-> new RuntimeException("Installment not found"));
+    public InstallmentDTO processPayment(UUID installmentId) {
+        log.info("Processing payment for installmentId={}", installmentId);
+
+        Installment installment = installmentRepository.findById(installmentId)
+                .orElseThrow(() -> new InstallmentNotFoundException(installmentId));
 
         if (installment.getPaymentStatus() == PaymentStatus.PAID) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Parcela já está paga.");
+            log.warn("Installment {} is already paid", installmentId);
+            throw new InstallmentAlreadyPaidException(installmentId);
         }
 
         markAsPaid(installment);
         installmentRepository.save(installment);
-        rabbitMqSender.sendPaymentEvent(toDTO(installment));
-       return toDTO(installment);
 
+        log.info("Installment {} marked as PAID. Sending payment event...", installmentId);
+        rabbitMqSender.sendPaymentEvent(InstallmentMapper.toDTO(installment));
+
+        log.debug("Payment processed successfully for installment {}", installmentId);
+        rabbitMqSender.sendPaymentEvent(InstallmentMapper.toDTO(installment));
+        return InstallmentMapper.toDTO(installment);
     }
 
 
@@ -48,7 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
         LocalDateTime now = LocalDateTime.now();
         installment.setPaymentDate(now);
 
-        BigDecimal totalWithInterest = calculatePaymentWithInterest(
+        BigDecimal totalWithInterest = InterestCalculator.calculate(
                 installment.getValueDue(),
                 installment.getDueDate(),
                 now.toLocalDate()
@@ -57,29 +65,12 @@ public class PaymentServiceImpl implements PaymentService {
         installment.setPaymentStatus(PaymentStatus.PAID);
     }
 
-    private BigDecimal calculatePaymentWithInterest(BigDecimal valueDue, LocalDate dueDate, LocalDate paymentDate) {
-        long daysOverdue = ChronoUnit.DAYS.between(dueDate, paymentDate);
-        if (daysOverdue < 0) daysOverdue = 0;
 
-        BigDecimal fixedInterest = valueDue.multiply(BigDecimal.valueOf(0.02));
-        BigDecimal dailyInterest = valueDue.multiply(BigDecimal.valueOf(0.00033)).multiply(BigDecimal.valueOf(daysOverdue));
-
-        return valueDue.add(fixedInterest).add(dailyInterest).setScale(2, RoundingMode.HALF_UP);
+    public List<InstallmentDTO> getInstallmentsByLoanId(UUID loanId){
+        List<Installment> installments = installmentRepository.findByLoanId(loanId);
+        return installments.stream().map(InstallmentMapper::toDTO).toList();
     }
 
-    private InstallmentDTO toDTO(Installment installment) {
-        return InstallmentDTO.builder()
-                .installmentId(installment.getId())
-                .loanId(installment.getLoanId())
-                .valueDue(installment.getValueDue())
-                .dueDate(installment.getDueDate())
-                .paymentDate(installment.getPaymentDate())
-                .valuePaid(installment.getValuePaid())
-                .paymentStatus(installment.getPaymentStatus().name())
-                .installmentNumber(installment.getInstallmentNumber())
-                .userId(installment.getUserId())
-                .build();
-    }
 
     @Override
     public void createInstallments(Loan loan) {

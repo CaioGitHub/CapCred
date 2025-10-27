@@ -16,6 +16,18 @@ $dark-theme: mat.define-theme((
   ),
 ));
 
+/* Modo Claro */
+html:not(.dark-theme) {
+  --mat-table-row-item-outline-color: rgba(0, 0, 0, 0.08);
+  --mat-table-row-item-outline-width: 1px;
+}
+
+/* Modo Escuro */
+html.dark-theme {
+  --mat-table-row-item-outline-color: rgba(255, 255, 255, 0.068) !important;
+  --mat-table-row-item-outline-width: 1px;
+}
+
 html {
   color-scheme: light;
   @include mat.all-component-themes($light-theme);

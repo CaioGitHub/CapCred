@@ -4,6 +4,9 @@
   gap: 1.5rem;
 }
 
+/* =============================
+   📊 CARDS DE ESTATÍSTICAS
+   ============================= */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -14,8 +17,23 @@
 .stat-card {
   padding: 1rem;
   transition: transform 0.2s ease;
-  transform: scale(1.05);
   background: var(--mat-sys-surface-container-high);
+  box-shadow: none; /* remove sombra */
+  border: none !important; /* remove borda dos 4 cards */
+}
+
+.stat-card:hover {
+  transform: scale(1.02);
+}
+
+.stat-card .header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-card .icon {
+  color: var(--mat-sys-primary);
 }
 
 .stat-card .value {
@@ -25,18 +43,19 @@
   transition: color 0.3s ease, transform 0.2s ease;
 }
 
-.stat-card .value::before {
-  content: "";
-  margin-right: 4px;
-}
-
 .stat-card .value:hover {
   transform: scale(1.05);
-  color: var(--mat-primary);
+  color: var(--mat-sys-primary);
 }
 
+/* =============================
+   💰 EMPRÉSTIMOS RECENTES
+   ============================= */
 .loans-card {
   padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+  border-radius: 12px;
+  transition: border-color 0.3s ease;
 }
 
 .card-header {
@@ -56,41 +75,112 @@
   cursor: pointer;
   transition: color 0.2s ease;
 }
+
 .view-all:hover {
-  color: color-mix(
-    in srgb,
-    var(--mat-sys-primary) 80%,
-    var(--mat-sys-on-surface)
-  );
+  color: color-mix(in srgb, var(--mat-sys-primary) 80%, var(--mat-sys-on-surface));
+}
+
+/* ===========================
+   📌 BASE: estilos comuns (valem pros dois temas)
+   =========================== */
+
+/* tira qualquer borda padrão do Angular Material */
+.loans-card .mat-mdc-table .mat-mdc-row,
+.loans-card .mat-mdc-table .mat-mdc-header-row {
+  border: none !important;
+}
+
+/* mantém todas as células alinhadas legal */
+.loans-card .mat-mdc-cell,
+.loans-card .mat-mdc-header-cell {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  /* não coloca border-bottom aqui!
+     vamos colocar diferente pra claro/escuro abaixo */
+}
+
+/* remove linha extra na última linha */
+.loans-card .mat-mdc-row:last-child .mat-mdc-cell {
+  border-bottom: none !important;
+}
+
+/* ===========================
+   ☀️ MODO CLARO
+   só aplica quando NÃO tem .dark-theme no <html>
+   =========================== */
+
+html:not(.dark-theme) .loans-card {
+  background-color: #fafafd; /* seu fundo clarinho atual */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+}
+
+html:not(.dark-theme) .loans-card .mat-mdc-header-row {
+  background-color: transparent; /* header “clean” */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+html:not(.dark-theme) .loans-card .mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: transparent;
+  color: #1a1a1a;
+}
+
+/* hover leve só no claro */
+html:not(.dark-theme) .loans-card .mat-mdc-row:hover .mat-mdc-cell {
+  background-color: rgba(0, 0, 0, 0.015);
+}
+
+/* ===========================
+   🌙 MODO ESCURO
+   só aplica quando .dark-theme está no <html>
+   =========================== */
+
+html.dark-theme .loans-card {
+  background-color: #1e1e1e; /* bloco preto/cinza que você curtiu */
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  color: #e0e0e0;
+}
+
+html.dark-theme .loans-card .mat-mdc-header-row {
+  background-color: #2a2a2a; /* header mais forte como estava no print bonito */
+  color: #f5f5f5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14); /* linha clara só no header */
+}
+
+/* linhas da tabela */
+html.dark-theme .loans-card .mat-mdc-row .mat-mdc-cell {
+  background-color: transparent; /* remove zebra */
+  color: #e0e0e0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* divisória suave */
+}
+
+/* tira a borda depois da última linha, pra não ficar “caixa dentro da caixa” */
+html.dark-theme .loans-card .mat-mdc-row:last-child .mat-mdc-cell {
+  border-bottom: none !important;
+}
+
+/* hover no dark: só um leve “lift” */
+html.dark-theme .loans-card .mat-mdc-row:hover .mat-mdc-cell {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ===========================
+   🔒 Ações (olho / lápis) no dark
+   garante contraste bom
+   =========================== */
+html.dark-theme .loans-card mat-icon {
+  color: #e0e0e0;
 }
 
 
-.loans-table {
-  width: 100%;
-  border-collapse: collapse;
-  transition: background-color 0.15s ease;
-}
 
-.loans-table tr:hover {
-  background-color: color-mix(
-    in srgb,
-    var(--mat-sys-primary) 10%,
-    transparent
-  );
-}
-
-.loans-table tr:not(.mat-header-row):hover {
-  background-color: color-mix(
-    in srgb,
-    var(--mat-sys-primary) 8%,
-    transparent
-  );
-}
-
-.loans-table th {
-  font-weight: 600;
-}
-
+/* =============================
+   🧍 CLIENTES
+   ============================= */
 .client-cell {
   display: flex;
   align-items: center;
@@ -106,18 +196,34 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
-.status {
-  padding: 0.2rem 0.6rem;
+/* =============================
+   🔖 STATUS
+   ============================= */
+.status-badge {
+  padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 500;
   color: #fff;
+  text-transform: capitalize;
+  display: inline-block;
+  animation: fadeIn 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.status.aprovado { background: #4caf50; }
-.status.pendente { background: #ff9800; }
-.status.rejeitado { background: #f44336; }
+.status-badge.aprovado {
+  background-color: #4caf50;
+}
+.status-badge.pendente {
+  background-color: #ff9800;
+}
+.status-badge.rejeitado {
+  background-color: #f44336;
+}
 
+/* =============================
+   📈 LATERAL (AÇÕES / STATUS)
+   ============================= */
 .side-column {
   display: flex;
   flex-direction: column;
@@ -126,6 +232,8 @@
 
 .side-card {
   padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+  border-radius: 12px;
 }
 
 .actions button {
@@ -137,6 +245,9 @@
   width: 100%;
 }
 
+/* =============================
+   📊 STATUS DE PAGAMENTO
+   ============================= */
 .status-list {
   list-style: none;
   padding: 0;
@@ -162,35 +273,18 @@
 .orange { background: #ff9800; }
 .red { background: #f44336; }
 
+/* =============================
+   🌐 RESPONSIVIDADE
+   ============================= */
 @media (max-width: 960px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #fff;
-  text-transform: capitalize;
-  display: inline-block;
-  animation: fadeIn 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-
-.status-badge.aprovado {
-  background-color: #4caf50;
-}
-.status-badge.pendente {
-  background-color: #ff9800;
-}
-.status-badge.rejeitado {
-  background-color: #f44336;
-}
-
+/* =============================
+   ✨ ANIMAÇÃO
+   ============================= */
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }

@@ -18,6 +18,17 @@
   <span class="spacer"></span>
 
   <div class="actions">
+    <button
+      mat-icon-button
+      type="button"
+      class="theme-btn"
+      [attr.aria-label]="themeLabel()"
+      [matTooltip]="themeLabel()"
+      (click)="toggleTheme()"
+    >
+      <mat-icon>{{ themeIcon() }}</mat-icon>
+    </button>
+
     <button mat-icon-button aria-label="notificações" class="notif-btn">
       <mat-icon>notifications</mat-icon>
     </button>

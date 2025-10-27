@@ -13,21 +13,21 @@
 .status {
   padding: 2px 8px;
   border-radius: 8px;
-  color: white;
+  color: var(--mat-sys-on-primary);
   font-size: 0.8rem;
 }
 
 .status.pago {
-  background: #4caf50;
+  background: var(--status-approved);
 }
 
 .status.pendente {
-  background: #ff9800;
+  background: var(--status-pending);
 }
 
 .status[data-status='em atraso'],
 .status.em {
-  background: #f44336;
+  background: var(--status-overdue);
 }
 .table-filter {
   margin-bottom: 1rem;

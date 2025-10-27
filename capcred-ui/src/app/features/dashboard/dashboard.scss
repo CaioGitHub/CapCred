@@ -31,7 +31,7 @@
 
 .stat-card .value:hover {
   transform: scale(1.05);
-  color: var(--mat-primary);
+  color: var(--mat-sys-primary);
 }
 
 .loans-card {
@@ -56,7 +56,7 @@
   transition: color 0.2s ease;
 }
 .view-all:hover {
-  color: #1e50b8;
+  color: var(--mat-sys-primary);
 }
 
 
@@ -67,11 +67,11 @@
 }
 
 .loans-table tr:hover {
-  background-color: rgba(30, 79, 184, 0.05);
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
 }
 
 .loans-table tr:not(.mat-header-row):hover {
-  background-color: rgba(30, 79, 184, 0.04);
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
 }
 
 .loans-table th {
@@ -98,12 +98,12 @@
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 500;
-  color: #fff;
+  color: var(--mat-sys-on-primary);
 }
 
-.status.aprovado { background: #4caf50; }
-.status.pendente { background: #ff9800; }
-.status.rejeitado { background: #f44336; }
+.status.aprovado { background: var(--status-approved); }
+.status.pendente { background: var(--status-pending); }
+.status.rejeitado { background: var(--status-rejected); }
 
 .side-column {
   display: flex;
@@ -145,9 +145,9 @@
   margin-right: 8px;
 }
 
-.green { background: #4caf50; }
-.orange { background: #ff9800; }
-.red { background: #f44336; }
+.green { background: var(--status-approved); }
+.orange { background: var(--status-warning); }
+.red { background: var(--status-rejected); }
 
 @media (max-width: 960px) {
   .dashboard-grid {
@@ -160,7 +160,7 @@
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 500;
-  color: #fff;
+  color: var(--mat-sys-on-primary);
   text-transform: capitalize;
   display: inline-block;
   animation: fadeIn 0.3s ease;
@@ -169,13 +169,13 @@
 
 
 .status-badge.aprovado {
-  background-color: #4caf50;
+  background-color: var(--status-approved);
 }
 .status-badge.pendente {
-  background-color: #ff9800;
+  background-color: var(--status-pending);
 }
 .status-badge.rejeitado {
-  background-color: #f44336;
+  background-color: var(--status-rejected);
 }
 
 @keyframes fadeIn {

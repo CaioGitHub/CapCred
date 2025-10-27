@@ -28,11 +28,23 @@ $dark-theme: mat.define-theme((
 html {
   color-scheme: light;
   @include mat.all-component-themes($light-theme);
+  --status-approved: #2e7d32;
+  --status-pending: #ef6c00;
+  --status-rejected: #c62828;
+  --status-paid: #2e7d32;
+  --status-overdue: #c62828;
+  --status-warning: #ef6c00;
 }
 
 html.dark-theme {
   color-scheme: dark;
   @include mat.all-component-themes($dark-theme);
+  --status-approved: #66bb6a;
+  --status-pending: #ffb74d;
+  --status-rejected: #ef5350;
+  --status-paid: #66bb6a;
+  --status-overdue: #ef5350;
+  --status-warning: #ffb74d;
 }
 
 // ===============================

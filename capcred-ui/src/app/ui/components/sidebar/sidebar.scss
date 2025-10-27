@@ -3,14 +3,22 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  background-color: var(--mat-sys-surface);
+  background-color: var(--mat-sys-surface-container-high) !important; /* 🔹 Mais opaco e consistente */
   border-right: 1px solid var(--mat-sys-outline-variant);
   font-family: Roboto, sans-serif;
   color: var(--mat-sys-on-surface);
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-  transition: background-color 0.3s ease, color 0.3s ease,
-    border-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
+
+/* 🌙 Dark theme */
+html.dark-theme :host {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.6);
+}
+
 
 /* ---------- LOGO ---------- */
 .logo {

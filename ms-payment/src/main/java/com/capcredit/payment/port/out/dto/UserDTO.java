@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record UserDTO(
-        UUID eventId,
-        LocalDateTime timestamp,
-        UUID userId,
-        String name,
-        String email,
-        String phone
+	UUID eventId,
+	LocalDateTime timestamp,
+	UUID userId,
+	String name,
+	String email,
+	String phone
 ) {}

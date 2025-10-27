@@ -7,11 +7,13 @@ services:
     ports:
       - "8082:8080"
     environment:
+      - APP_NAME=ms-loan
       - SERVER_PORT=8080
       - DB_HOST=postgres
       - DB_NAME=loan_capcred_db
       - RABBITMQ_HOST=rabbitmq
       - MS_AUTH_USER_URL=http://ms-auth-user:8080/api/users
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
     depends_on:
       - postgres
       - rabbitmq
@@ -82,3 +84,10 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml

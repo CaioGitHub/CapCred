@@ -22,19 +22,33 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.logo {
+.login-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+
+  img.logo-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 10px;
+    filter: brightness(1);
+    transition: filter 0.3s ease;
+  }
+
+  h1 {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--mat-sys-primary);
+    margin: 0;
+  }
 }
 
-.logo-icon {
-  width: 40px;
-  height: 40px;
+/* 🌙 Dark theme - logo mais destacado */
+html.dark-theme .login-logo img.logo-img {
+  filter: brightness(1.1);
 }
-
 
 .full-width {
   width: 100%;

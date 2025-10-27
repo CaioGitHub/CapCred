@@ -1,8 +1,5 @@
 @use '@angular/material' as mat;
 
-// ===============================
-// Tema Claro
-// ===============================
 $light-theme: mat.define-theme((
   color: (
     theme-type: light,
@@ -11,9 +8,6 @@ $light-theme: mat.define-theme((
   ),
 ));
 
-// ===============================
-// Tema Escuro
-// ===============================
 $dark-theme: mat.define-theme((
   color: (
     theme-type: dark,
@@ -22,9 +16,6 @@ $dark-theme: mat.define-theme((
   ),
 ));
 
-// ===============================
-// Aplicação dinâmica
-// ===============================
 html {
   color-scheme: light;
   @include mat.all-component-themes($light-theme);
@@ -35,9 +26,6 @@ html.dark-theme {
   @include mat.all-component-themes($dark-theme);
 }
 
-// ===============================
-// Estilos globais
-// ===============================
 html,
 body {
   height: 100%;
@@ -63,14 +51,10 @@ mat-sidenav {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-// ===============================
-// 🌙 Modo Escuro refinado
-// ===============================
 html.dark-theme {
   background-color: #121212;
   color: #e0e0e0;
 
-  // 🔹 Cards e containers
   .mat-mdc-card,
   .dashboard-card,
   .card {
@@ -80,7 +64,6 @@ html.dark-theme {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
   }
 
-  // 🔹 Inputs e selects
   .mat-mdc-form-field-flex {
     background-color: #2a2a2a !important;
   }
@@ -94,7 +77,6 @@ html.dark-theme {
     color: #bdbdbd !important;
   }
 
-  // 🔹 Tabelas
   .mat-mdc-table {
     background: #1c1c1c !important;
   }
@@ -112,7 +94,6 @@ html.dark-theme {
     color: #e0e0e0 !important;
   }
 
-  // 🔹 Textos e ícones
   h1, h2, h3, h4, h5, h6 {
     color: #fafafa;
   }
@@ -121,7 +102,6 @@ html.dark-theme {
     color: #e0e0e0 !important;
   }
 
-  // 🔹 Links
   a,
   .view-all {
     color: #90caf9 !important;
@@ -132,7 +112,6 @@ html.dark-theme {
     color: #64b5f6 !important;
   }
 
-  // 🔹 Chips de status
   .status-badge.aprovado {
     background-color: #2e7d32 !important;
   }
@@ -143,20 +122,42 @@ html.dark-theme {
     background-color: #c62828 !important;
   }
 
-  // 🔹 Dots laterais
   .dot.green  { background: #43a047 !important; }
   .dot.orange { background: #fb8c00 !important; }
   .dot.red    { background: #e53935 !important; }
 
-  // 🔹 Botões principais
   .mat-mdc-raised-button.mat-primary,
   .mat-mdc-flat-button.mat-primary {
     background-color: #1e88e5 !important;
     color: #fff !important;
   }
 
-  // 🔹 Transição suave
   * {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+}
+
+html.dark-theme {
+  .mat-mdc-progress-spinner circle {
+    stroke: #90caf9 !important;
+    opacity: 0.8;
+  }
+
+  .loading-overlay {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .loading-spinner {
+    filter: brightness(0.9);
+  }
+}
+
+html:not(.dark-theme) {
+  .mat-mdc-progress-spinner circle {
+    stroke: var(--mat-sys-primary) !important;
+  }
+
+  .loading-overlay {
+    background-color: rgba(255, 255, 255, 0.6) !important;
   }
 }

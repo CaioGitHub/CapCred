@@ -1,0 +1,28 @@
+name: Build Payment Service
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'ms-payment/**'
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: ms-payment
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+    
+    - name: Run tests
+      working-directory: ./ms-payment
+      run: mvn clean test

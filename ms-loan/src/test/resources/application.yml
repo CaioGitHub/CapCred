@@ -15,5 +15,6 @@ broker:
     loan.created: ${LOAN_CREATED_QUEUE:loan.created}
     loan.approved: ${LOAN_APPROVED_QUEUE:loan.approved}
     loan.rejected: ${LOAN_REJECTED_QUEUE:loan.rejected}
+    loan.completed: ${LOAN_COMPLETED_QUEUE:loan.completed}
 
 ms.user.url: ${MS_AUTH_USER_URL:http://localhost:8080/api/users}

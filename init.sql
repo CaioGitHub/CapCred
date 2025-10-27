@@ -1,3 +1,9 @@
+CREATE DATABASE loan_capcred_db;
+CREATE DATABASE payment_capcred_db;
+CREATE DATABASE notification_capcred_db;
+
+\c loan_capcred_db;
+
 CREATE TABLE rate (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     min_term INTEGER NOT NULL,

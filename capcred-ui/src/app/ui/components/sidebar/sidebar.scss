@@ -24,16 +24,29 @@ html.dark-theme :host {
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
   padding: 1.25rem 1.25rem 0.75rem;
   font-weight: 700;
   font-size: 1.25rem;
   color: var(--mat-sys-primary);
-}
 
-.logo-icon {
-  font-size: 1.8rem;
-  color: var(--mat-sys-primary);
+  img.logo-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 6px;
+    filter: brightness(1);
+    transition: filter 0.3s ease;
+  }
+
+  /* 🌙 Ajuste sutil no dark mode */
+  html.dark-theme & img.logo-img {
+    filter: brightness(1.1);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
 }
 
 /* ---------- MENU ---------- */

@@ -36,15 +36,22 @@ export class ShellLayout {
   constructor(private observer: BreakpointObserver) {}
 
   ngAfterViewInit() {
-    this.observer.observe([Breakpoints.Handset]).subscribe((result) => {
+    this.observer.observe([
+      Breakpoints.Medium,
+      Breakpoints.Small,
+      Breakpoints.Handset
+    ]).subscribe(result => {
       this.isMobile = result.matches;
       if (this.isMobile) {
+        this.sidenav.mode = 'over';
         this.sidenav.close();
       } else {
+        this.sidenav.mode = 'side';
         this.sidenav.open();
       }
     });
   }
+
 
   toggleSidebar() {
     this.sidenav.toggle();

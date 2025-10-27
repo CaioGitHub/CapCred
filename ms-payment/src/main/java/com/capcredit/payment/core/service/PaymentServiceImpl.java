@@ -15,6 +15,7 @@ import static com.capcredit.payment.core.domain.model.PaymentStatus.PENDING;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -45,9 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         log.info("Installment {} marked as PAID. Sending payment event...", installmentId);
         rabbitMqSender.sendPaymentEvent(InstallmentMapper.toDTO(installment));
-
-        log.debug("Payment processed successfully for installment {}", installmentId);
-        rabbitMqSender.sendPaymentEvent(InstallmentMapper.toDTO(installment));
+        
         return InstallmentMapper.toDTO(installment);
     }
 

@@ -101,4 +101,11 @@ public class PaymentServiceImpl implements PaymentService {
         installmentRepository.saveAll(installments);
     }
 
+
+    @Override
+    public Installment findById(UUID installmentId) {
+        return installmentRepository.findById(installmentId)
+            .orElseThrow(() -> new InstallmentNotFoundException(installmentId));
+    }
+
 }

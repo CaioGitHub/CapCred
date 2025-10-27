@@ -1,13 +1,16 @@
 package com.capcredit.payment.adapters.in.web;
 
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.capcredit.payment.core.service.PaymentService;
-import com.capcredit.payment.core.service.PaymentServiceImpl;
 import com.capcredit.payment.port.in.PaymentPortIn;
 import com.capcredit.payment.port.out.dto.InstallmentDTO;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/installments")

@@ -17,6 +17,7 @@ services:
     depends_on:
       - postgres
       - rabbitmq
+      - loki
   ms-payment:
     build:
       context: ./ms-payment
@@ -25,14 +26,17 @@ services:
     ports:
       - "8083:8080"
     environment:
+      - APP_NAME=ms-payment
       - SERVER_PORT=8080
       - DB_HOST=postgres
       - DB_NAME=payment_capcred_db
       - RABBITMQ_HOST=rabbitmq
       - MS_AUTH_USER_URL=http://ms-auth-user:8080/api/users
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
     depends_on:
       - postgres
       - rabbitmq
+      - loki
   ms-notification:
     build:
       context: ./ms-notification

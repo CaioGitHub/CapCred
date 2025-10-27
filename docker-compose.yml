@@ -74,3 +74,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"

@@ -1,6 +1,7 @@
 package com.capcredit.payment.core.service;
 
 import com.capcredit.payment.core.domain.model.Installment;
+import com.capcredit.payment.core.domain.model.Loan;
 import com.capcredit.payment.core.domain.model.PaymentStatus;
 import com.capcredit.payment.core.exception.InstallmentAlreadyPaidException;
 import com.capcredit.payment.core.exception.InstallmentNotFoundException;
@@ -9,6 +10,8 @@ import com.capcredit.payment.port.out.InstallmentRepository;
 import com.capcredit.payment.port.out.RabbitMqSender;
 import com.capcredit.payment.port.out.dto.InstallmentDTO;
 import org.springframework.stereotype.Service;
+
+import static com.capcredit.payment.core.domain.model.PaymentStatus.PENDING;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -68,5 +71,24 @@ public class PaymentServiceImpl implements PaymentService {
         return installments.stream().map(InstallmentMapper::toDTO).toList();
     }
 
+
+    @Override
+    public void createInstallments(Loan loan) {
+        var installments = new ArrayList<Installment>();
+        for (int i = 0; i < loan.getTermInMonths(); i++) {
+            Installment installment = Installment.builder()
+                .id(UUID.randomUUID())
+                .loanId(loan.getId())
+                .valueDue(loan.getMonthlyInstallmentValue())
+                .dueDate(loan.getFirstDueDate().plusMonths(i))
+                .paymentStatus(PENDING)
+                .monthlyInstallmentValue(loan.getMonthlyInstallmentValue())
+                .userId(loan.getUserId())
+                .installmentNumber(i + 1)
+                .build();
+            installments.add(installment);
+        }
+        installmentRepository.saveAll(installments);
+    }
 
 }

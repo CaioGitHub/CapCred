@@ -1,0 +1,75 @@
+services:
+  ms-loan:
+    build:
+      context: ./ms-loan
+      dockerfile: Dockerfile
+    container_name: ms-loan
+    ports:
+      - "8082:8082"
+    environment:
+      - SERVER_PORT=8082
+      - DB_HOST=postgres
+      - DB_NAME=loan_capcred_db
+      - RABBITMQ_HOST=rabbitmq
+      - MS_AUTH_USER_URL=http://ms-auth-user:8080/api/users
+    depends_on:
+      - postgres
+      - rabbitmq
+  ms-payment:
+    build:
+      context: ./ms-payment
+      dockerfile: Dockerfile
+    container_name: ms-payment
+    ports:
+      - "8083:8083"
+    environment:
+      - SERVER_PORT=8083
+      - DB_HOST=postgres
+      - DB_NAME=payment_capcred_db
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
+  ms-notification:
+    build:
+      context: ./ms-notification
+      dockerfile: Dockerfile
+    container_name: ms-notification
+    ports:
+      - "8084:8084"
+    env_file:
+      - ./.env
+    environment:
+      - SERVER_PORT=8084
+      - DB_HOST=postgres
+      - DB_NAME=notification_capcred_db
+      - RABBITMQ_HOST=rabbitmq
+      - MAIL_HOST=mailhog
+    depends_on:
+      - postgres
+      - rabbitmq
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+  postgres:
+    image: postgres:17-alpine3.22
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"

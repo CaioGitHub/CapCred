@@ -8,13 +8,15 @@ public class User {
     private String name;
     private String cpf;
     private String email;
+    private String phone;
     private BigDecimal monthlyIncome;
 
-    public User(UUID id, String name, String cpf, String email, BigDecimal monthlyIncome) {
+    public User(UUID id, String name, String cpf, String email, String phone, BigDecimal monthlyIncome) {
         this.id = id;
         this.name = name;
         this.cpf = cpf;
         this.email = email;
+        this.phone = phone;
         this.monthlyIncome = monthlyIncome;
     }
 
@@ -32,6 +34,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 
     public BigDecimal getMonthlyIncome() {

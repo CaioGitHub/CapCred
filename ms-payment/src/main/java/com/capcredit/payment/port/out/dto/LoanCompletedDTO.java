@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoanCompletedDTO {
-    UUID eventId;
-    LocalDateTime timestamp;
-    UUID loanId;
-    LocalDate finalizationDate;
-    UserDTO user;
+    private UUID eventId;
+    private LocalDateTime timestamp;
+    private UUID loanId;
+    private LocalDate finalizationDate;
+    private UserDTO user;
 
-public static LoanCompletedDTO fromDomain(Installment installment, UserDTO user) {
+    public static LoanCompletedDTO fromDomain(Installment installment, UserDTO user) {
         return new LoanCompletedDTO(
             UUID.randomUUID(),
             LocalDateTime.now(),

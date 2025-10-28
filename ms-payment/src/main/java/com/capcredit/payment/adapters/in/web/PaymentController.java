@@ -14,6 +14,8 @@ import com.capcredit.payment.core.service.PaymentService;
 import com.capcredit.payment.port.in.PaymentPortIn;
 import com.capcredit.payment.port.out.dto.InstallmentDTO;
 
+import java.util.List;
+import java.util.UUID;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,6 +47,10 @@ public class PaymentController implements PaymentPortIn {
         return ResponseEntity.ok(paymentService.processPayment(installmentId));
     }
 
+    @GetMapping("/loan/{loanId}")
+    public List<InstallmentDTO> getInstallmentsByLoanId(@PathVariable UUID loanId) {
+        return paymentService.getInstallmentsByLoanId(loanId);
+    }
 
 }
 

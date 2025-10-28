@@ -3,6 +3,7 @@ package com.capcredit.payment.adapters.out.message;
 import com.capcredit.payment.port.out.RabbitMqSender;
 import com.capcredit.payment.port.out.dto.InstallmentDTO;
 import com.capcredit.payment.port.out.dto.LoanCompletedDTO;
+import com.capcredit.payment.port.out.dto.PaymentReceivedDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +35,12 @@ public class RabbitMQSenderImpl implements RabbitMqSender {
     }
 
     @Override
-    public void sendPaymentEvent(InstallmentDTO installmentDTO) {
+    public void sendPaymentEvent(PaymentReceivedDTO paymentReceived) {
         log.info("Enviando evento de pagamento para a fila RabbitMQ...");
-        log.debug("Detalhes do pagamento -> {}", installmentDTO);
+        log.debug("Detalhes do pagamento -> {}", paymentReceived);
 
         try {
-            rabbitTemplate.convertAndSend(paymentQueue, installmentDTO);
+            rabbitTemplate.convertAndSend(paymentQueue, paymentReceived);
             log.info("Evento de pagamento enviado com sucesso para a fila: {}", paymentQueue);
         } catch (Exception e) {
             log.error("Falha ao enviar evento de pagamento para a fila {}. Erro: {}", paymentQueue, e.getMessage(), e);

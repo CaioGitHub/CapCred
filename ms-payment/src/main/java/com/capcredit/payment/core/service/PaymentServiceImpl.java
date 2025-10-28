@@ -11,6 +11,7 @@ import com.capcredit.payment.port.out.InstallmentRepository;
 import com.capcredit.payment.port.out.RabbitMqSender;
 import com.capcredit.payment.port.out.dto.InstallmentDTO;
 import com.capcredit.payment.port.out.dto.LoanCompletedDTO;
+import com.capcredit.payment.port.out.dto.PaymentReceivedDTO;
 import com.capcredit.payment.port.out.dto.UserDTO;
 
 import org.springframework.stereotype.Service;
@@ -48,13 +49,14 @@ public class PaymentServiceImpl implements PaymentService {
         markAsPaid(installment);
         installmentRepository.save(installment);
 
+        var user = useClient.findById(installment.getUserId())
+                .orElseThrow(() -> new UserNotFoundException("User with ID {} not found for installment {}.".formatted(installment.getUserId(), installmentId)));
+
         log.info("Installment {} marked as PAID. Sending payment event...", installmentId);
-        rabbitMqSender.sendPaymentEvent(InstallmentMapper.toDTO(installment));
+        rabbitMqSender.sendPaymentEvent(PaymentReceivedDTO.fromDomain(installment, UserDTO.fromDomain(user)));
 
         if(!installmentRepository.existsByLoanIdAndPaymentStatus(installment.getLoanId(), PENDING)) {
             log.info("Loan with id {} was completed, all installments are PAID.", installment.getLoanId());
-            var user = useClient.findById(installment.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User with ID {} not found for installment {}.".formatted(installment.getUserId(), installmentId)));
             rabbitMqSender.sendLoanCompletedEvent(LoanCompletedDTO.fromDomain(installment, UserDTO.fromDomain(user)));
         }
         

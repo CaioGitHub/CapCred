@@ -14,5 +14,5 @@ public record PaymentReceivedDTO(
         LocalDateTime paymentDate,
         BigDecimal valuePaid,
         String paymentStatus,
-        UUID userId
+        UserDTO user
 ) {}

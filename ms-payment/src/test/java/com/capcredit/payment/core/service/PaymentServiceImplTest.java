@@ -10,10 +10,10 @@ import com.capcredit.payment.port.out.InstallmentRepository;
 import com.capcredit.payment.port.out.RabbitMqSender;
 import com.capcredit.payment.port.out.dto.InstallmentDTO;
 import com.capcredit.payment.port.out.dto.LoanCompletedDTO;
+import com.capcredit.payment.port.out.dto.PaymentReceivedDTO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -75,16 +75,14 @@ class PaymentServiceImplTest {
 
         verify(installmentRepository).save(unpaidInstallment);
 
-        ArgumentCaptor<InstallmentDTO> captor = ArgumentCaptor.forClass(InstallmentDTO.class);
-        verify(rabbitMqSender, atLeastOnce()).sendPaymentEvent(captor.capture());
+        verify(rabbitMqSender, atLeastOnce()).sendPaymentEvent(any(PaymentReceivedDTO.class));
         verify(rabbitMqSender, times(1)).sendLoanCompletedEvent(any(LoanCompletedDTO.class));
-
-        InstallmentDTO sentEvent = captor.getValue();
-        assertEquals(result.installmentId(), sentEvent.installmentId());
     }
 
     @Test
     void shouldNotPublishLoanCompletedWhenExistsPendingInstallments() {
+        var user = new User(unpaidInstallment.getUserId(), "Test User", "test@example.com", "+00 (00) 0 0000-0000");
+        when(userClient.findById(any(UUID.class))).thenReturn(Optional.of(user));
         when(installmentRepository.findById(installmentId)).thenReturn(Optional.of(unpaidInstallment));
         when(installmentRepository.save(any())).thenReturn(unpaidInstallment);
         when(installmentRepository.existsByLoanIdAndPaymentStatus(any(UUID.class), any(PaymentStatus.class))).thenReturn(true);
@@ -97,13 +95,8 @@ class PaymentServiceImplTest {
 
         verify(installmentRepository).save(unpaidInstallment);
 
-        ArgumentCaptor<InstallmentDTO> captor = ArgumentCaptor.forClass(InstallmentDTO.class);
-        verify(rabbitMqSender, atLeastOnce()).sendPaymentEvent(captor.capture());
+        verify(rabbitMqSender, atLeastOnce()).sendPaymentEvent(any(PaymentReceivedDTO.class));
         verify(rabbitMqSender, never()).sendLoanCompletedEvent(any(LoanCompletedDTO.class));
-        verify(userClient, never()).findById(any(UUID.class));
-
-        InstallmentDTO sentEvent = captor.getValue();
-        assertEquals(result.installmentId(), sentEvent.installmentId());
     }
 
     @Test

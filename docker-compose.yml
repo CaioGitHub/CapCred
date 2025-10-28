@@ -14,10 +14,17 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - MS_AUTH_USER_URL=http://ms-auth-user:8080/api/users
       - LOKI_URL=http://loki:3100/loki/api/v1/push
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     depends_on:
       - postgres
       - rabbitmq
       - loki
+
   ms-payment:
     build:
       context: ./ms-payment
@@ -33,10 +40,17 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - MS_AUTH_USER_URL=http://ms-auth-user:8080/api/users
       - LOKI_URL=http://loki:3100/loki/api/v1/push
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     depends_on:
       - postgres
       - rabbitmq
       - loki
+
   ms-notification:
     build:
       context: ./ms-notification
@@ -54,17 +68,25 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - MAIL_HOST=mailhog
       - LOKI_URL=http://loki:3100/loki/api/v1/push
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     depends_on:
       - postgres
       - rabbitmq
       - mailhog
       - loki
+
   mailhog:
     image: mailhog/mailhog
     container_name: mailhog
     ports:
       - "1025:1025"
       - "8025:8025"
+
   postgres:
     image: postgres:17-alpine3.22
     container_name: postgres
@@ -75,6 +97,13 @@ services:
       - "5432:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "eventos"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
@@ -84,6 +113,12 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
   
   prometheus:
     image: prom/prometheus

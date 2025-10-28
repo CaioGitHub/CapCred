@@ -7,6 +7,7 @@ import com.capcredit.payment.port.out.dto.InstallmentDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,6 +25,10 @@ public class PaymentController implements PaymentPortIn {
         return ResponseEntity.ok(paymentService.processPayment(installmentId));
     }
 
+    @GetMapping("/loan/{loanId}")
+    public List<InstallmentDTO> getInstallmentsByLoanId(@PathVariable UUID loanId) {
+        return paymentService.getInstallmentsByLoanId(loanId);
+    }
 
 }
 

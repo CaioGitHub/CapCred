@@ -11,6 +11,7 @@ import { MatTableModule } from '@angular/material/table';
 import { LoansService } from '../loans/loans.service';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
+import { PaymentsService } from '../payments/payments.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -42,8 +43,17 @@ export class Dashboard implements OnInit {
   recentLoans: any[] = [];
   displayedColumns = ['client', 'amount', 'installments', 'status', 'date', 'actions'];
   quickCalcForm: any;
+  // Pagamentos (Status de Pagamentos)
+  emDiaCount = 0;
+  vencendoCount = 0;
+  emAtrasoCount = 0;
 
-  constructor(private fb: FormBuilder, private loansService: LoansService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private loansService: LoansService,
+    private router: Router,
+    private paymentsService: PaymentsService
+  ) {
     this.quickCalcForm = this.fb.group({
       value: [10000],
       installments: ['6x'],
@@ -79,6 +89,19 @@ export class Dashboard implements OnInit {
       this.animateCount(0, pendingCount, 800, (val) => {
         this.stats[2].displayValue = Math.floor(val).toString();
       });
+    });
+
+    // Status de Pagamentos (dados reais do service de payments)
+    this.paymentsService.getPayments().subscribe((payments) => {
+      const toLower = (s: string) => (s || '').toLowerCase();
+      const emDia = payments.filter((p) => toLower(p.status) === 'pago').length;
+      const vencendo = payments.filter((p) => toLower(p.status) === 'pendente').length;
+      const emAtraso = payments.filter((p) => toLower(p.status) === 'em atraso').length;
+
+      // Atualiza contadores
+      this.emDiaCount = emDia;
+      this.vencendoCount = vencendo;
+      this.emAtrasoCount = emAtraso;
     });
   }
 

@@ -1,7 +1,6 @@
 package com.capcredit.payment.adapters.in.web;
 
 import com.capcredit.payment.core.service.PaymentService;
-import com.capcredit.payment.core.service.PaymentServiceImpl;
 import com.capcredit.payment.port.in.PaymentPortIn;
 import com.capcredit.payment.port.out.dto.InstallmentDTO;
 import org.springframework.http.ResponseEntity;

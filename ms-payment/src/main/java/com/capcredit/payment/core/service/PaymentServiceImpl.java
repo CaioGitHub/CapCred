@@ -15,6 +15,7 @@ import static com.capcredit.payment.core.domain.model.PaymentStatus.PENDING;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;

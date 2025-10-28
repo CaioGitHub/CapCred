@@ -5,49 +5,60 @@ services:
       dockerfile: Dockerfile
     container_name: ms-loan
     ports:
-      - "8082:8082"
+      - "8082:8080"
     environment:
-      - SERVER_PORT=8082
+      - APP_NAME=ms-loan
+      - SERVER_PORT=8080
       - DB_HOST=postgres
       - DB_NAME=loan_capcred_db
       - RABBITMQ_HOST=rabbitmq
       - MS_AUTH_USER_URL=http://ms-auth-user:8080/api/users
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
     depends_on:
       - postgres
       - rabbitmq
+      - loki
   ms-payment:
     build:
       context: ./ms-payment
       dockerfile: Dockerfile
     container_name: ms-payment
     ports:
-      - "8083:8083"
+      - "8083:8080"
     environment:
-      - SERVER_PORT=8083
+      - APP_NAME=ms-payment
+      - SERVER_PORT=8080
       - DB_HOST=postgres
       - DB_NAME=payment_capcred_db
       - RABBITMQ_HOST=rabbitmq
+      - MS_AUTH_USER_URL=http://ms-auth-user:8080/api/users
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
     depends_on:
       - postgres
       - rabbitmq
+      - loki
   ms-notification:
     build:
       context: ./ms-notification
       dockerfile: Dockerfile
     container_name: ms-notification
     ports:
-      - "8084:8084"
+      - "8084:8080"
     env_file:
       - ./.env
     environment:
-      - SERVER_PORT=8084
+      - APP_NAME=ms-notification
+      - SERVER_PORT=8080
       - DB_HOST=postgres
       - DB_NAME=notification_capcred_db
       - RABBITMQ_HOST=rabbitmq
       - MAIL_HOST=mailhog
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
     depends_on:
       - postgres
       - rabbitmq
+      - mailhog
+      - loki
   mailhog:
     image: mailhog/mailhog
     container_name: mailhog
@@ -73,3 +84,32 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=gadmin
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+      - loki

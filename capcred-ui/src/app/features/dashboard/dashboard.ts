@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { MockDataService } from '../../core/services/mock-data.service';
+import { LoansService } from '../loans/loans.service';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 
@@ -43,7 +43,7 @@ export class Dashboard implements OnInit {
   displayedColumns = ['client', 'amount', 'installments', 'status', 'date', 'actions'];
   quickCalcForm: any;
 
-  constructor(private fb: FormBuilder, private mockData: MockDataService, private router: Router) {
+  constructor(private fb: FormBuilder, private loansService: LoansService, private router: Router) {
     this.quickCalcForm = this.fb.group({
       value: [10000],
       installments: ['6x'],
@@ -51,7 +51,7 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit() {
-    this.mockData.getLoans().subscribe((loans) => {
+    this.loansService.getLoans().subscribe((loans) => {
       // Ordena por data (mais recente primeiro)
       this.loans = loans.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()

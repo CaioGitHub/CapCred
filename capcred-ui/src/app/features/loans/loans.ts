@@ -3,10 +3,9 @@ import { Component, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { LOANS_MOCK } from '../../core/mocks/loans.mock';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MockDataService } from '../../core/services/mock-data.service';
+import { LoansService } from './loans.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { LoadingService } from '../../core/shared/services/loading.service';
@@ -26,11 +25,11 @@ export class Loans {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private mockData: MockDataService, private loading: LoadingService) {}
+  constructor(private loansService: LoansService, private loading: LoadingService) {}
 
   ngOnInit() {
     this.loading.show();
-    this.mockData.getLoans().subscribe((data) => {
+    this.loansService.getLoans().subscribe((data) => {
       this.dataSource.data = data;
       setTimeout(() => this.loading.hide(), 500);
     });

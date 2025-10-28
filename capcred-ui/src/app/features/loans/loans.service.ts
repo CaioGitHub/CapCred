@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
-import { LOANS_MOCK } from '../../core/mocks/loans.mock';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { MockDataService } from '../../core/services/mock-data.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class LoansService {
+  constructor(private http: HttpClient, private mocks: MockDataService) {}
+
   getLoans(): Observable<any[]> {
-    return of(LOANS_MOCK).pipe(delay(500));
+    if (environment.useMocks) {
+      return this.mocks.getLoans();
+    }
+    return this.http.get<any[]>(`${environment.apiBaseUrl}/loans`);
   }
 }
 

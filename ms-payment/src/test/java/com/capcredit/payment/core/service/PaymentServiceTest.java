@@ -27,12 +27,14 @@ public class PaymentServiceTest {
     private PaymentService paymentService;
     private RabbitMqSender rabbitMqSender;
     private InstallmentRepository installmentRepository;
+    private UserClient useClient;
 
     @BeforeEach
     public void setUp() {
         installmentRepository = mock(InstallmentRepository.class);
         rabbitMqSender = mock(RabbitMqSender.class);
-        paymentService = new PaymentServiceImpl(installmentRepository, rabbitMqSender);
+        useClient = mock(UserClient.class);
+        paymentService = new PaymentServiceImpl(installmentRepository, rabbitMqSender, useClient);
     }
 
     @Test

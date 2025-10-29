@@ -24,7 +24,7 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/webjars/**",
-            "/actuator/**" // Health Check e Actuators
+            "/actuator/**"
     };
 
     /**
@@ -37,23 +37,12 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 
         return http
-                // Desabilita CSRF pois usaremos tokens JWT (stateless)
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-
-                // Desabilita o formulário de login padrão do Spring Security
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-
-                // Desabilita a autenticação básica
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-
-                // Configuração das regras de autorização
                 .authorizeExchange(exchanges -> exchanges
-                        // 1. Permite acesso público às rotas de Auth, Swagger e Actuator
                         .pathMatchers("/auth/**").permitAll()
                         .pathMatchers(SWAGGER_RESOURCES).permitAll()
-
-                        // 2. Todas as outras requisições devem ser autenticadas.
-                        // A autenticação é delegada ao nosso filtro customizado (AuthGlobalFilter).
                         .anyExchange().authenticated()
                 )
                 .build();
@@ -66,24 +55,13 @@ public class SecurityConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
-
-        // Permite o acesso do localhost do Angular
         config.setAllowedOrigins(List.of("http://localhost:4200"));
-
-        // Métodos permitidos para a API
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-
-        // Permite todos os headers
         config.setAllowedHeaders(List.of("*"));
-
-        // Permite o envio de cookies e credenciais (necessário para JWT, embora JWT vá no header)
         config.setAllowCredentials(true);
-
-        // Cache de 1 hora para as configurações de CORS
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Aplica a configuração a todas as rotas
         source.registerCorsConfiguration("/**", config);
 
         return new CorsWebFilter(source);

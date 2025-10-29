@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { ClientsService, CreateClientInput } from '../clients.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export interface CreateClientDialogData {
   presetEmail?: string;
@@ -36,7 +37,7 @@ export class CreateClientDialog {
   form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required, Validators.minLength(8)]],
+    phone: ['', [Validators.required, Validators.pattern(/^\(\d{2}\)\d{5}-\d{4}$/)]],
   });
 
   constructor(
@@ -47,6 +48,15 @@ export class CreateClientDialog {
     if (data?.presetEmail) {
       this.form.patchValue({ email: data.presetEmail });
     }
+
+    this.form.controls.phone.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((value) => {
+        const formatted = this.formatPhone(value ?? '');
+        if (formatted !== value) {
+          this.form.controls.phone.setValue(formatted, { emitEvent: false });
+        }
+      });
   }
 
   submit(): void {
@@ -76,5 +86,26 @@ export class CreateClientDialog {
     if (!this.submitting()) {
       this.dialogRef.close();
     }
+  }
+
+  private formatPhone(value: string): string {
+    const digits = (value || '').replace(/\D/g, '').slice(0, 11);
+    if (!digits) {
+      return '';
+    }
+
+    const ddd = digits.slice(0, 2);
+    const middle = digits.slice(2, 7);
+    const last = digits.slice(7, 11);
+
+    if (digits.length <= 2) {
+      return `(${ddd}`;
+    }
+
+    if (digits.length <= 7) {
+      return `(${ddd})${middle}`;
+    }
+
+    return `(${ddd})${middle}-${last}`;
   }
 }

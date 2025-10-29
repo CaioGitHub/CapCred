@@ -1,0 +1,61 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-apigateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          httpclient:
+            connect-timeout: 5000
+            response-timeout: 10s
+          routes:
+#                    - id: ms-authuser
+#                      uri: http://ms-authuser:8081
+#                      predicates:
+#                        - Path=/auth/**
+
+                    - id: ms-loan
+                      uri: http://ms-loan:8082
+                      predicates:
+                        - Path=/loans/**
+
+                    - id: ms-payments
+                      uri: http://ms-payments:8083
+                      predicates:
+                        - Path=/installments/**
+
+          default-filters:
+                    - AddRequestHeader=X-Request-Source, ${spring.application.name}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway, health, prometheus
+  endpoint:
+    health:
+      show-details: always
+
+#springdoc:
+#  swagger-ui:
+#    urls:
+#      - name: ms-authuser
+#        url: /v3/api-docs/ms-authuser
+#      - name: ms-loan
+#        url: /v3/api-docs/ms-loan
+#      - name: ms-payments
+#        url: /v3/api-docs/ms-payments
+#  api-docs:
+#    path: /v3/api-docs
+#    groups:
+#      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+    com.capcredit: INFO

@@ -12,6 +12,9 @@ import { LoansService } from '../loans/loans.service';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { PaymentsService } from '../payments/payments.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CreateClientDialog } from '../clients/create-client-dialog/create-client-dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,7 +29,9 @@ import { PaymentsService } from '../payments/payments.service';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatTooltip
+    MatTooltip,
+    MatDialogModule,
+    MatSnackBarModule,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
@@ -52,7 +57,9 @@ export class Dashboard implements OnInit {
     private fb: FormBuilder,
     private loansService: LoansService,
     private router: Router,
-    private paymentsService: PaymentsService
+    private paymentsService: PaymentsService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     this.quickCalcForm = this.fb.group({
       value: [10000],
@@ -161,5 +168,20 @@ export class Dashboard implements OnInit {
         maximumFractionDigits: 2,
       })}`
     );
+  }
+
+  openCreateClientDialog(): void {
+    const dialogRef = this.dialog.open(CreateClientDialog, {
+      width: '440px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((client) => {
+      if (client) {
+        this.snackBar.open('Cliente criado com sucesso.', 'Fechar', {
+          duration: 3000,
+        });
+      }
+    });
   }
 }

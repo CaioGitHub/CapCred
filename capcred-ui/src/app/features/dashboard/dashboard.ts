@@ -33,10 +33,10 @@ import { PaymentsService } from '../payments/payments.service';
 })
 export class Dashboard implements OnInit {
   stats = [
-    { title: 'Total de Empréstimos', value: 0, displayValue: '0', icon: 'credit_card', trend: '+12% este mês', color: 'primary' },
-    { title: 'Valor Total', value: 0, displayValue: 'R$ 0', icon: 'attach_money', trend: '+8% este mês', color: 'success' },
-    { title: 'Pendentes', value: 0, displayValue: '0', icon: 'pending', trend: 'Aguardando aprovação', color: 'warn' },
-    { title: 'Em Atraso', value: 7, displayValue: '7', icon: 'error', trend: 'Requer atenção', color: 'danger' },
+    { title: 'Total de Empréstimos', value: 0, displayValue: '0', icon: 'credit_card', color: 'primary' },
+    { title: 'Valor Total', value: 0, displayValue: 'R$ 0', icon: 'attach_money', color: 'success' },
+    { title: 'Pendentes', value: 0, displayValue: '0', icon: 'pending', color: 'warn' },
+    { title: 'Em Atraso', value: 0, displayValue: '0', icon: 'error', color: 'danger' },
   ];
 
   loans: any[] = [];
@@ -102,6 +102,11 @@ export class Dashboard implements OnInit {
       this.emDiaCount = emDia;
       this.vencendoCount = vencendo;
       this.emAtrasoCount = emAtraso;
+
+      this.stats[3].value = emAtraso;
+      this.animateCount(0, emAtraso, 800, (val) => {
+        this.stats[3].displayValue = Math.floor(val).toString();
+      });
     });
   }
 
@@ -146,6 +151,15 @@ export class Dashboard implements OnInit {
 
   calculate() {
     const { value, installments } = this.quickCalcForm.value;
-    alert(`Simulação de ${installments} para R$ ${value?.toLocaleString('pt-BR')}`);
+    const totalAmount = Number(value) || 0;
+    const installmentsCount = Number(String(installments).replace(/\D/g, '')) || 1;
+    const installmentValue = totalAmount / installmentsCount;
+
+    alert(
+      `Simulação: ${installmentsCount}x de R$ ${installmentValue.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`
+    );
   }
 }

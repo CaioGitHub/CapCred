@@ -1,4 +1,20 @@
 services:
+  ms-apigateway:
+    build:
+      context: ./ms-apigateway
+      dockerfile: Dockerfile
+    container_name: ms-apigateway
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    environment:
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+
   ms-loan:
     build:
       context: ./ms-loan

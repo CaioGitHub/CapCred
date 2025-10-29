@@ -174,6 +174,7 @@ export class Dashboard implements OnInit {
     const dialogRef = this.dialog.open(CreateClientDialog, {
       width: '440px',
       disableClose: true,
+      panelClass: 'create-client-dialog-panel',
     });
 
     dialogRef.afterClosed().subscribe((client) => {

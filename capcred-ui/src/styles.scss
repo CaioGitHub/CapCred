@@ -147,3 +147,41 @@ html:not(.dark-theme) {
     background-color: rgba(255, 255, 255, 0.6) !important;
   }
 }
+
+/* Dashboard: stats area shares card surface look */
+html:not(.dark-theme) .page-container .stats-grid {
+  background-color: var(--mat-card-outlined-container-color) !important;
+  border: 1px solid var(--mat-sys-outline-variant) !important;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+html.dark-theme .page-container .stats-grid {
+  background-color: #1e1e1e !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 12px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8);
+}
+
+/* Create Client dialog styling */
+.create-client-dialog-panel .mat-mdc-dialog-surface {
+  background: color-mix(in srgb, var(--mat-sys-surface-container-high) 92%, transparent);
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 25%, transparent);
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.28);
+  padding: 0;
+}
+
+.create-client-dialog-panel .mat-mdc-dialog-content {
+  padding: 0 24px 16px;
+}
+
+.create-client-dialog-panel .mat-mdc-dialog-actions {
+  padding: 8px 24px 20px;
+}
+
+html.dark-theme .create-client-dialog-panel .mat-mdc-dialog-surface {
+  background: #262626;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+}

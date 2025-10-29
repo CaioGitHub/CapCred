@@ -14,7 +14,7 @@
 .stat-card {
   padding: 1rem;
   transition: transform 0.2s ease;
-  background: var(--mat-sys-surface-container-high);
+  background-color: var(--mat-card-outlined-container-color) !important;
   box-shadow: none;
   border: none !important;
 }

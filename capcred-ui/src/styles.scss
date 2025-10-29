@@ -163,7 +163,7 @@ html.dark-theme .page-container .stats-grid {
 
 /* Create Client dialog styling */
 .create-client-dialog-panel .mat-mdc-dialog-surface {
-  background: color-mix(in srgb, var(--mat-sys-surface-container-high) 92%, transparent);
+  background: var(--mat-sidenav-content-background-color);
   border-radius: 18px;
   border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 25%, transparent);
   box-shadow: 0 28px 60px rgba(15, 23, 42, 0.28);

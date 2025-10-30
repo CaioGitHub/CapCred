@@ -22,26 +22,24 @@ public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
     private final JwtService jwtService;
-    private final RefreshTokenService refreshTokenService; // <-- Adicione isso
+    private final RefreshTokenService refreshTokenService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    // métodos register e login...
-
 
     public AuthResponseDto register(RegisterRequestDto request) {
         Usuario usuario = new Usuario();
         usuario.setName(request.getName());
         usuario.setCpf(request.getCpf());
         usuario.setEmail(request.getEmail());
-        usuario.setPasswordHash(passwordEncoder.encode(request.getSenha()));
+        usuario.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         usuario.setMonthlyIncome(request.getMonthlyIncome());
-        usuario.setRole(Usuario.Role.CLIENT);
+        usuario.setRole(Role.CLIENT);
         usuarioRepository.save(usuario);
 
         String accessToken = jwtService.generateToken(usuario.getId(), usuario.getEmail(), usuario.getRole().name());
         String refreshToken = refreshTokenService.createRefreshToken(usuario.getId()).getToken();
 
-        return new AuthResponseDto(accessToken, refreshToken, usuario.getRole().name());    }
+        return new AuthResponseDto(accessToken, refreshToken, usuario.getRole().name());
+    }
 
 
     @Transactional

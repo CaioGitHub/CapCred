@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JwtConfig {
 
-    // A chave pública deve ser injetada via variável de ambiente no Docker Compose.
     @Value("${jwt.public-key}")
     private String jwtPublicKey;
 
@@ -33,12 +32,10 @@ public class JwtConfig {
             String publicKeyPEM = jwtPublicKey
                     .replace("-----BEGIN PUBLIC KEY-----", "")
                     .replace("-----END PUBLIC KEY-----", "")
-                    .replaceAll("\\s", ""); // Remove espaços e quebras de linha
+                    .replaceAll("\\s", "");
 
-            // Decodifica o Base64
             byte[] keyBytes = Base64.getDecoder().decode(publicKeyPEM);
 
-            // Especifica o algoritmo RSA
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 

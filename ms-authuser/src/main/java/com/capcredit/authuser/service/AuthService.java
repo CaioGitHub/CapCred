@@ -1,6 +1,6 @@
 package com.capcredit.authuser.service;
 
-import com.authuser.model.*;
+import com.capcredit.authuser.model.*;
 
 import com.capcredit.authuser.model.AuthResponseDto;
 import com.capcredit.authuser.model.LoginRequestDto;
@@ -42,8 +42,6 @@ public class AuthService {
         String refreshToken = refreshTokenService.createRefreshToken(usuario.getId()).getToken();
 
         return new AuthResponseDto(accessToken, refreshToken, usuario.getRole().name());    }
-
-
 
 
     @Transactional

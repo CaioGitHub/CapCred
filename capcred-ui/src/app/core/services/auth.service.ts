@@ -23,6 +23,14 @@ export interface User {
   avatar?: string;
 }
 
+export interface RegisterPayload {
+  name: string;
+  cpf: string;
+  email: string;
+  password: string;
+  monthlyIncome: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private storageKey = 'user';
@@ -55,6 +63,28 @@ export class AuthService {
           error?.status === 401 || error?.status === 403
             ? 'Credenciais invalidas.'
             : 'Nao foi possivel realizar o login. Tente novamente.';
+        return throwError(() => new Error(message));
+      })
+    );
+  }
+
+  register(payload: RegisterPayload): Observable<void> {
+    const body = {
+      name: payload.name.trim(),
+      cpf: payload.cpf.replace(/\D/g, ''),
+      email: payload.email.trim(),
+      senha: payload.password,
+      monthlyIncome: payload.monthlyIncome,
+    };
+
+    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/register`, body).pipe(
+      tap(() => this.clearSession()),
+      map(() => void 0),
+      catchError((error) => {
+        const message =
+          error?.status === 409
+            ? 'Este email ja esta cadastrado.'
+            : 'Nao foi possivel completar o cadastro. Tente novamente.';
         return throwError(() => new Error(message));
       })
     );

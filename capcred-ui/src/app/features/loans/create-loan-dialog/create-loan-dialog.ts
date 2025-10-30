@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -7,9 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { LoansService, CreateLoanInput, Loan, LoanStatus } from '../loans.service';
-import { ClientsService, Client } from '../../clients/clients.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { ClientsService, Client } from '../../clients/clients.service';
+import { CreateLoanInput, Loan, LoanStatus, LoansService } from '../loans.service';
 
 @Component({
   selector: 'app-create-loan-dialog',
@@ -23,6 +25,8 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './create-loan-dialog.html',
   styleUrl: './create-loan-dialog.scss',
@@ -54,10 +58,13 @@ export class CreateLoanDialog {
 
   readonly clients = toSignal(this.clientsService.getClients(), { initialValue: [] as Client[] });
 
+  private defaultDueDate = this.addDays(new Date(), 30);
+
   form = this.fb.nonNullable.group({
     clientId: ['', Validators.required],
     amount: [10000, [Validators.required, Validators.min(100)]],
     installments: [12, [Validators.required, Validators.min(1)]],
+    firstDueDate: [this.defaultDueDate, Validators.required],
   });
 
   private amountSignal = signal<number>(10000);
@@ -83,6 +90,7 @@ export class CreateLoanDialog {
           clientId: this.editingClientId,
           amount: editAmount,
           installments: editInstallments,
+          firstDueDate: this.parseDate(this.editingLoan.date),
         },
         { emitEvent: false }
       );
@@ -95,6 +103,7 @@ export class CreateLoanDialog {
       const initialInstallments = Number(this.form.controls.installments.value) || 1;
       this.amountSignal.set(initialAmount);
       this.installmentsSignal.set(initialInstallments);
+      this.form.controls.firstDueDate.setValue(this.defaultDueDate, { emitEvent: false });
     }
 
     this.form.controls.amount.valueChanges
@@ -117,7 +126,7 @@ export class CreateLoanDialog {
       return;
     }
 
-    const { clientId, amount, installments } = this.form.getRawValue();
+    const { clientId, amount, installments, firstDueDate } = this.form.getRawValue();
     const clients = this.clients();
 
     const resolvedClientId = this.isEditMode ? this.editingClientId : clientId;
@@ -130,7 +139,7 @@ export class CreateLoanDialog {
     } else {
       const selected = clients.find((c) => c.id === resolvedClientId);
       if (!selected) {
-        this.errorMessage.set('Selecione um cliente válido.');
+        this.errorMessage.set('Selecione um cliente valido.');
         return;
       }
       clientName = selected.name;
@@ -141,7 +150,13 @@ export class CreateLoanDialog {
     const normalizedInstallments = Number(installments);
 
     if (normalizedAmount <= 0 || normalizedInstallments <= 0) {
-      this.errorMessage.set('Informe valores válidos para o empréstimo.');
+      this.errorMessage.set('Informe valores validos para o emprestimo.');
+      return;
+    }
+
+    const normalizedDueDate = this.normalizeDate(firstDueDate);
+    if (!normalizedDueDate) {
+      this.errorMessage.set('Informe uma data de vencimento valida.');
       return;
     }
 
@@ -158,7 +173,7 @@ export class CreateLoanDialog {
         .subscribe({
           next: (loan) => this.dialogRef.close(loan),
           error: (err) => {
-            const message = err?.message ?? 'Não foi possível atualizar o empréstimo.';
+            const message = err?.message ?? 'Nao foi possivel atualizar o emprestimo.';
             this.errorMessage.set(message);
             this.submitting.set(false);
           },
@@ -172,12 +187,13 @@ export class CreateLoanDialog {
       clientEmail,
       amount: normalizedAmount,
       installments: normalizedInstallments,
+      firstDueDate: normalizedDueDate,
     };
 
     this.loansService.createLoan(payload).subscribe({
       next: (loan) => this.dialogRef.close(loan),
       error: (err) => {
-        const message = err?.message ?? 'Não foi possível criar o empréstimo.';
+        const message = err?.message ?? 'Nao foi possivel criar o emprestimo.';
         this.errorMessage.set(message);
         this.submitting.set(false);
       },
@@ -188,5 +204,30 @@ export class CreateLoanDialog {
     if (!this.submitting()) {
       this.dialogRef.close();
     }
+  }
+
+  private addDays(date: Date, days: number): Date {
+    const clone = new Date(date);
+    clone.setDate(clone.getDate() + days);
+    return clone;
+  }
+
+  private parseDate(value: string | null | undefined): Date {
+    if (!value) {
+      return this.defaultDueDate;
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? this.defaultDueDate : parsed;
+  }
+
+  private normalizeDate(value: Date | string | null | undefined): string | null {
+    if (!value) {
+      return null;
+    }
+    if (value instanceof Date) {
+      return value.toISOString().slice(0, 10);
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
   }
 }

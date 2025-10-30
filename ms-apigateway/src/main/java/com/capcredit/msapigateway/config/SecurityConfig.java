@@ -41,7 +41,9 @@ public class SecurityConfig {
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/auth/**").permitAll()
+                        .pathMatchers("/api/auth/**").permitAll()
+                        .pathMatchers("/api/loans/**").permitAll()
+                        .pathMatchers("/api/installments/**").permitAll()
                         .pathMatchers(SWAGGER_RESOURCES).permitAll()
                         .anyExchange().authenticated()
                 )

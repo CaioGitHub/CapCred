@@ -51,23 +51,24 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        String path = request.getURI().getPath();
 
-        // 1. Tenta extrair o token do header de Autorização
+        if (path.startsWith("/api/auth")) {
+            return chain.filter(exchange);
+        }
+
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-            // Se não houver token (e a rota não foi permitida pelo SecurityConfig), nega o acesso.
             return this.onError(exchange, "Token JWT ausente ou mal formatado", HttpStatus.UNAUTHORIZED);
         }
 
         String token = authHeader.substring(BEARER_PREFIX.length());
 
         try {
-            // 2. Valida e parseia o token usando a chave pública (RS256)
             Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
             Claims claims = claimsJws.getBody();
 
-            // 3. Extrai as Claims necessárias
             String userId = claims.get(USER_ID_CLAIM, String.class);
             String role = claims.get(ROLE_CLAIM, String.class);
 
@@ -75,23 +76,18 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
                 return this.onError(exchange, "Claims essenciais (userId, role) não encontradas no token", HttpStatus.FORBIDDEN);
             }
 
-            // 4. Cria uma nova requisição com os headers de propagação
             ServerHttpRequest modifiedRequest = request.mutate()
                     .header(X_USER_ID, userId)
                     .header(X_USER_ROLE, role)
                     .build();
 
-            // 5. Continua a cadeia de filtros com a requisição modificada
             return chain.filter(exchange.mutate().request(modifiedRequest).build());
 
         } catch (SignatureException e) {
-            // Falha na assinatura (chave incorreta ou token modificado)
             return this.onError(exchange, "Assinatura JWT inválida.", HttpStatus.FORBIDDEN);
         } catch (ExpiredJwtException e) {
-            // Token expirado
             return this.onError(exchange, "Token JWT expirado.", HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            // Outras falhas de parse
             return this.onError(exchange, "Falha ao processar o token JWT.", HttpStatus.UNAUTHORIZED);
         }
     }
@@ -112,7 +108,6 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
      */
     @Override
     public int getOrder() {
-        // Alta precedência para garantir que a segurança seja a primeira a ser verificada.
         return Ordered.HIGHEST_PRECEDENCE;
     }
 }

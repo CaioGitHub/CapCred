@@ -15,6 +15,23 @@ services:
         condition: service_healthy
     restart: on-failure
 
+  ms-authuser:
+    build:
+      context: ./ms-authuser
+      dockerfile: Dockerfile
+    container_name: ms-authuser
+    ports:
+      - "8081:8080"
+      - "5006:5005"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/authuser_capcred_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   ms-loan:
     build:
       context: ./ms-loan

@@ -23,12 +23,12 @@
 .status.rejeitado {
   background: #f44336;
 }
-.actions button[disabled] mat-icon {
-  color: color-mix(in srgb, var(--mat-sys-on-surface) 40%, transparent) !important;
+td.mat-column-actions button[disabled] {
+  opacity: 0.50;
 }
 
-html.dark-theme .actions button[disabled] mat-icon {
-  color: color-mix(in srgb, #ffffff 30%, transparent) !important;
+td.mat-column-actions button[disabled] mat-icon {
+  opacity: 0.50;
 }
 .table-filter {
   margin-bottom: 1rem;

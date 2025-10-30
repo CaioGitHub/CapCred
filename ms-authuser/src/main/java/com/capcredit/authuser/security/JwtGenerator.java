@@ -10,10 +10,10 @@ public class JwtGenerator {
 
     public static String generateToken(PrivateKey privateKey) {
         return Jwts.builder()
-                .setSubject("leticia")
+                .setSubject("capcred-app")
                 .setIssuer("ms-authuser")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
     }

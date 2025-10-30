@@ -1,26 +1,34 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { PaymentsService } from './payments.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { PaymentsService, PaymentRow } from './payments.service';
 import { LoadingService } from '../../core/shared/services/loading.service';
 
 @Component({
   selector: 'app-payments',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatPaginator, MatSort, MatFormFieldModule, MatInputModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatPaginator,
+    MatSort,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   templateUrl: './payments.html',
-  styleUrl: './payments.scss'
+  styleUrl: './payments.scss',
 })
 export class Payments {
   cols = ['id', 'client', 'value', 'dueDate', 'status', 'actions'];
-  dataSource = new MatTableDataSource<any>([]);
+  dataSource = new MatTableDataSource<PaymentRow>([]);
   filterValue = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -28,26 +36,31 @@ export class Payments {
 
   constructor(private paymentsService: PaymentsService, private loading: LoadingService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loading.show();
-    this.paymentsService.getPayments().subscribe((data) => {
-      this.dataSource.data = data;
-      setTimeout(() => this.loading.hide(), 500);
+    this.paymentsService.getPayments().subscribe({
+      next: (data) => {
+        this.dataSource.data = data;
+        this.loading.hide();
+      },
+      error: () => {
+        this.loading.hide();
+      },
     });
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  applyFilter(event: Event) {
+  applyFilter(event: Event): void {
     const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.filterValue = value;
     this.dataSource.filter = value;
   }
 
-  clearFilter() {
+  clearFilter(): void {
     this.filterValue = '';
     this.dataSource.filter = '';
   }

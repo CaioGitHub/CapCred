@@ -1,4 +1,15 @@
 services:
+  capcred-ui:
+    build:
+      context: ./capcred-ui
+      dockerfile: Dockerfile
+    container_name: capcred-ui
+    ports:
+      - "4200:80"
+    depends_on:
+      - ms-apigateway
+    restart: unless-stopped
+
   ms-apigateway:
     build:
       context: ./ms-apigateway

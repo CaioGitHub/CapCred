@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, tap, throwError } from 'rxjs';
-import { delay, map } from 'rxjs/operators';
+import { catchError, delay, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { MockDataService } from '../../core/services/mock-data.service';
 import { environment } from '../../../environments/environment';
@@ -59,7 +59,13 @@ export class ClientsService {
 
     return this.http
       .post<Client>(`${environment.apiBaseUrl}/clients`, input)
-      .pipe(tap((client) => this.clientsSubject.next([...this.clientsSubject.value, client])));
+      .pipe(
+        tap((client) => this.clientsSubject.next([...this.clientsSubject.value, client])),
+        catchError((error) => {
+          console.warn('Falha ao criar cliente via API, usando fallback local.', error);
+          return this.createClientWithFallback(input);
+        })
+      );
   }
 
   private loadClients(): Observable<Client[]> {
@@ -78,8 +84,34 @@ export class ClientsService {
     }
 
     return this.http.get<Client[]>(`${environment.apiBaseUrl}/clients`).pipe(
-      tap((clients) => this.clientsSubject.next(clients))
+      tap((clients) => this.clientsSubject.next(clients)),
+      catchError((error) => {
+        console.warn('Falha ao carregar clientes via API, usando dados mock.', error);
+        return this.mocks.getClients().pipe(
+          map((clients: any[]) =>
+            clients.map((client: any, index) => ({
+              id: client?.id ?? String(index + 1),
+              name: client?.name ?? '',
+              email: client?.email ?? '',
+              phone: client?.phone ?? '',
+            }))
+          ),
+          tap((clients) => this.clientsSubject.next(clients))
+        );
+      })
     );
+  }
+
+  private createClientWithFallback(input: CreateClientInput): Observable<Client> {
+    const newClient: Client = {
+      id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+      name: input.name.trim(),
+      email: input.email.trim(),
+      phone: input.phone.trim(),
+    };
+
+    this.clientsSubject.next([...this.clientsSubject.value, newClient]);
+    return of(newClient).pipe(delay(300));
   }
 }
 

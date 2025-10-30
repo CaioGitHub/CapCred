@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 
 import java.util.Collections;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -23,10 +24,11 @@ public class JwtService {
     }
 
     // Gera token JWT assinado com chave privada RSA
-    public String generateToken(String email, String role) {
+    public String generateToken(UUID userId, String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("role", role)
+                .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora
                 .signWith(rsaKeyProvider.getPrivateKey(), SignatureAlgorithm.RS256)

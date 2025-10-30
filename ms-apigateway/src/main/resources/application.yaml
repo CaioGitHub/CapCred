@@ -11,22 +11,22 @@ spring:
         webflux:
           httpclient:
             connect-timeout: 5000
-            response-timeout: 10s
+            response-timeout: 60s
           routes:
-#                    - id: ms-authuser
-#                      uri: http://ms-authuser:8081
-#                      predicates:
-#                        - Path=/auth/**
+                    - id: ms-authuser
+                      uri: http://ms-authuser:8081
+                      predicates:
+                        - Path=/api/auth/**
 
                     - id: ms-loan
                       uri: http://ms-loan:8082
                       predicates:
-                        - Path=/loans/**
+                        - Path=/api/loans/**
 
                     - id: ms-payments
                       uri: http://ms-payments:8083
                       predicates:
-                        - Path=/installments/**
+                        - Path=/api/installments/**
 
           default-filters:
                     - AddRequestHeader=X-Request-Source, ${spring.application.name}

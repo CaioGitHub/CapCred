@@ -1,6 +1,6 @@
 <div class="page-header">
   <h2>Empréstimos</h2>
-  <button mat-flat-button color="primary">
+  <button mat-flat-button color="primary" (click)="openCreateLoanDialog()">
     <mat-icon>add</mat-icon>
     Novo Empréstimo
   </button>
@@ -35,6 +35,11 @@
   <ng-container matColumnDef="amount">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Valor</th>
     <td mat-cell *matCellDef="let l">R$ {{ l.amount | number }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="installments">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Parcelas</th>
+    <td mat-cell *matCellDef="let l">{{ l.installments }}x</td>
   </ng-container>
 
   <ng-container matColumnDef="status">

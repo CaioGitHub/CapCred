@@ -5,33 +5,52 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { LoansService } from './loans.service';
+import { Loan, LoansService } from './loans.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { LoadingService } from '../../core/shared/services/loading.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { CreateLoanDialog } from './create-loan-dialog/create-loan-dialog';
 
 @Component({
   selector: 'app-loans',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatPaginator, MatSort, MatFormFieldModule, MatInputModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatPaginator,
+    MatSort,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDialogModule,
+    MatSnackBarModule,
+  ],
   templateUrl: './loans.html',
   styleUrls: ['./loans.scss']
 })
 export class Loans {
-  cols = ['client', 'amount', 'status', 'actions'];
-  dataSource = new MatTableDataSource<any>([]);
+  cols = ['client', 'amount', 'installments', 'status', 'actions'];
+  dataSource = new MatTableDataSource<Loan>([]);
   filterValue = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private loansService: LoansService, private loading: LoadingService) {}
+  constructor(
+    private loansService: LoansService,
+    private loading: LoadingService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit() {
     this.loading.show();
     this.loansService.getLoans().subscribe((data) => {
       this.dataSource.data = data;
-      setTimeout(() => this.loading.hide(), 500);
+      this.loading.hide();
     });
   }
 
@@ -49,5 +68,21 @@ export class Loans {
   clearFilter() {
     this.filterValue = '';
     this.dataSource.filter = '';
+  }
+
+  openCreateLoanDialog() {
+    const dialogRef = this.dialog.open(CreateLoanDialog, {
+      width: '440px',
+      disableClose: true,
+      panelClass: 'create-client-dialog-panel',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.snackBar.open('Empréstimo criado com sucesso.', 'Fechar', {
+          duration: 3000,
+        });
+      }
+    });
   }
 }

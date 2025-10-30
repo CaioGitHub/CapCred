@@ -1,10 +1,8 @@
 package com.capcredit.authuser.controller;
 
-
 import com.capcredit.authuser.model.AuthResponseDto;
 import com.capcredit.authuser.model.LoginRequestDto;
 import com.capcredit.authuser.model.RegisterRequestDto;
-
 import com.capcredit.authuser.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +19,6 @@ public class AuthController {
         return authService.register(request);
     }
 
-
-
     @PostMapping("/login")
     public AuthResponseDto login(@RequestBody LoginRequestDto request) {
         return authService.login(request);
@@ -32,6 +28,5 @@ public class AuthController {
     public AuthResponseDto refresh(@RequestParam String refreshToken) {
         return authService.refreshToken(refreshToken);
     }
-
 
 }

@@ -58,11 +58,9 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.2.224</version> <!-- versão atual até outubro de 2025 -->
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 

@@ -39,20 +39,22 @@ services:
     container_name: ms-loan
     ports:
       - "8082:8080"
+      - "5007:5005"
     environment:
       - APP_NAME=ms-loan
-      - SERVER_PORT=8080
+#      - SERVER_PORT=8082
       - DB_HOST=postgres
       - DB_NAME=loan_capcred_db
       - RABBITMQ_HOST=rabbitmq
-      - MS_AUTH_USER_URL=http://ms-auth-user:8080/api/users
+      - MS_AUTH_USER_URL=http://ms-authuser:8081/api/users
       - LOKI_URL=http://loki:3100/loki/api/v1/push
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 10s
     depends_on:
       - postgres
       - rabbitmq
@@ -67,18 +69,18 @@ services:
       - "8083:8080"
     environment:
       - APP_NAME=ms-payment
-      - SERVER_PORT=8080
+#      - SERVER_PORT=8083
       - DB_HOST=postgres
       - DB_NAME=payment_capcred_db
       - RABBITMQ_HOST=rabbitmq
-      - MS_AUTH_USER_URL=http://ms-auth-user:8080/api/users
+      - MS_AUTH_USER_URL=http://ms-authuser:8081/api/users
       - LOKI_URL=http://loki:3100/loki/api/v1/push
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 10s
     depends_on:
       - postgres
       - rabbitmq
@@ -95,7 +97,7 @@ services:
       - ./.env
     environment:
       - APP_NAME=ms-notification
-      - SERVER_PORT=8080
+      - SERVER_PORT=8084
       - DB_HOST=postgres
       - DB_NAME=notification_capcred_db
       - RABBITMQ_HOST=rabbitmq
@@ -130,7 +132,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./data/postgres_data:/var/lib/postgresql/data
+      - ./data/postgres-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "eventos"]
       interval: 30s
@@ -147,6 +150,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    volumes:
+      - .data/rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 30s

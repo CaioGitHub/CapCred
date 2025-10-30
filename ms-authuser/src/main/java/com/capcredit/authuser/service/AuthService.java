@@ -38,7 +38,7 @@ public class AuthService {
         usuario.setRole(Usuario.Role.CLIENT);
         usuarioRepository.save(usuario);
 
-        String accessToken = jwtService.generateToken(usuario.getEmail(), usuario.getRole().name());
+        String accessToken = jwtService.generateToken(usuario.getId(), usuario.getEmail(), usuario.getRole().name());
         String refreshToken = refreshTokenService.createRefreshToken(usuario.getId()).getToken();
 
         return new AuthResponseDto(accessToken, refreshToken, usuario.getRole().name());    }
@@ -53,7 +53,7 @@ public class AuthService {
             throw new BadCredentialsException("Senha inválida");
         }
 
-        String accessToken = jwtService.generateToken(usuario.getEmail(), usuario.getRole().name());
+        String accessToken = jwtService.generateToken(usuario.getId(),  usuario.getEmail(), usuario.getRole().name());
         String refreshToken = refreshTokenService.createRefreshToken(usuario.getId()).getToken();
 
         return new AuthResponseDto(accessToken, refreshToken, usuario.getRole().name());
@@ -62,7 +62,7 @@ public class AuthService {
     @Transactional
     public AuthResponseDto refreshToken(String refreshToken) {
         var token = refreshTokenService.validateRefreshToken(refreshToken);
-        String accessToken = jwtService.generateToken(token.getUserId().toString(), "CLIENT");
+        String accessToken = jwtService.generateToken(token.getUserId(), token.getUserId().toString(), "CLIENT");
         return new AuthResponseDto(accessToken, token.getToken(), "CLIENT");
     }
 }

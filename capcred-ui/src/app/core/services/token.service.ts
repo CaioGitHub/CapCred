@@ -23,12 +23,38 @@ export class TokenService {
     return localStorage.getItem(this.refreshKey);
   }
 
+  hasValidAccessToken(): boolean {
+    const token = this.getAccessToken();
+    if (!token) {
+      return false;
+    }
+
+    const payload = this.decodePayload(token);
+    const exp = (payload as Record<string, any>)?.['exp'];
+    if (exp === undefined || exp === null) {
+      return true;
+    }
+
+    const expirationMs = Number(exp) * 1000;
+    return Date.now() < expirationMs;
+  }
+
   clearTokens() {
     localStorage.removeItem(this.accessKey);
     localStorage.removeItem(this.refreshKey);
   }
 
-  // Optional: decode/validate exp when integrating backend
-  // hasValidAccessToken(): boolean { return !!this.getAccessToken(); }
+  decodePayload<T = Record<string, unknown>>(token: string): T | null {
+    try {
+      const [_, payload] = token.split('.');
+      if (!payload) {
+        return null;
+      }
+      const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decoded) as T;
+    } catch {
+      return null;
+    }
+  }
 }
 

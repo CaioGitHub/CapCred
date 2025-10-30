@@ -31,8 +31,22 @@ export class Login {
   password = '';
   loading = false;
   error = '';
+  info = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) {
+    const navigation = this.router.getCurrentNavigation();
+    const justRegistered = navigation?.extras?.state?.['registered'];
+    if (justRegistered) {
+      this.info = 'Cadastro realizado com sucesso! Entre com suas credenciais.';
+    }
+  }
+
+  goToRegister(): void {
+    if (this.loading) {
+      return;
+    }
+    this.router.navigate(['/register']);
+  }
 
   onSubmit(): void {
     if (this.loading) {

@@ -3,11 +3,16 @@ import { ShellLayout } from './ui/layouts/shell-layout/shell-layout';
 import { Dashboard } from './features/dashboard/dashboard';
 import { Login } from './features/login/login';
 import { AuthGuard } from './core/guards/auth.guard';
+import { Register } from './features/register/register';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: Login,
+  },
+  {
+    path: 'register',
+    component: Register,
   },
   {
     path: '',

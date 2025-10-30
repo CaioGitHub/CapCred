@@ -1,10 +1,20 @@
-<h2 mat-dialog-title>Novo Empréstimo</h2>
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar Empréstimo' : 'Novo Empréstimo' }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="form" (ngSubmit)="submit()">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Cliente</mat-label>
-      <mat-select formControlName="clientId" placeholder="Selecione o cliente">
+      <mat-select
+        formControlName="clientId"
+        placeholder="Selecione o cliente"
+        [disabled]="isEditMode"
+      >
+        <mat-option *ngIf="needsFallbackClientOption()" [value]="editingClientId">
+          <div class="client-option">
+            <span>{{ editingClientName }}</span>
+            <small *ngIf="editingClientEmail">{{ editingClientEmail }}</small>
+          </div>
+        </mat-option>
         <mat-option *ngFor="let client of clients()" [value]="client.id">
           <div class="client-option">
             <span>{{ client.name }}</span>
@@ -12,6 +22,7 @@
           </div>
         </mat-option>
       </mat-select>
+      <mat-hint *ngIf="isEditMode && editingClientEmail">{{ editingClientEmail }}</mat-hint>
       <mat-error *ngIf="form.controls.clientId.hasError('required')">
         Selecione um cliente
       </mat-error>
@@ -72,4 +83,3 @@
     <span *ngIf="submitting()">Salvando...</span>
   </button>
 </mat-dialog-actions>
-

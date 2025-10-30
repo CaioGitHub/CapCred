@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { LoansService, CreateLoanInput, Loan } from '../loans.service';
+import { LoansService, CreateLoanInput, Loan, LoanStatus } from '../loans.service';
 import { ClientsService, Client } from '../../clients/clients.service';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
@@ -32,7 +32,22 @@ export class CreateLoanDialog {
   private dialogRef = inject(MatDialogRef<CreateLoanDialog>);
   private loansService = inject(LoansService);
   private clientsService = inject(ClientsService);
-  private initialData = inject(MAT_DIALOG_DATA, { optional: true }) as Partial<Loan> | null;
+  private injectedData = inject(MAT_DIALOG_DATA, { optional: true }) as Partial<Loan> | null;
+
+  readonly editingLoan = this.injectedData ?? null;
+  readonly isEditMode = !!this.editingLoan;
+  readonly editingClientId = this.editingLoan
+    ? this.editingLoan.clientId ?? this.editingLoan.email ?? this.editingLoan.client ?? `loan-${this.editingLoan.id}`
+    : '';
+  readonly editingClientName = this.editingLoan?.client ?? '';
+  readonly editingClientEmail = this.editingLoan?.email ?? '';
+
+  readonly needsFallbackClientOption = computed(() => {
+    if (!this.isEditMode || !this.editingClientId) {
+      return false;
+    }
+    return !this.clients().some((client) => client.id === this.editingClientId);
+  });
 
   submitting = signal(false);
   errorMessage = signal<string | null>(null);
@@ -59,9 +74,27 @@ export class CreateLoanDialog {
   totalValue = computed(() => this.amountSignal());
 
   constructor() {
-    const data = this.initialData;
-    if (data?.clientId) {
-      this.form.patchValue({ clientId: data.clientId });
+    if (this.isEditMode && this.editingLoan) {
+      const editAmount = this.editingLoan.amount ?? 0;
+      const editInstallments = this.editingLoan.installments ?? 1;
+
+      this.form.patchValue(
+        {
+          clientId: this.editingClientId,
+          amount: editAmount,
+          installments: editInstallments,
+        },
+        { emitEvent: false }
+      );
+      this.form.controls.clientId.disable({ emitEvent: false });
+      this.amountSignal.set(editAmount);
+      this.installmentsSignal.set(editInstallments);
+    } else {
+      this.form.controls.clientId.enable({ emitEvent: false });
+      const initialAmount = Number(this.form.controls.amount.value) || 0;
+      const initialInstallments = Number(this.form.controls.installments.value) || 1;
+      this.amountSignal.set(initialAmount);
+      this.installmentsSignal.set(initialInstallments);
     }
 
     this.form.controls.amount.valueChanges
@@ -73,7 +106,8 @@ export class CreateLoanDialog {
     this.form.controls.installments.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((value) => {
-        this.installmentsSignal.set(Math.max(Number(value) || 0, 0));
+        const normalized = Number(value) || 0;
+        this.installmentsSignal.set(normalized > 0 ? normalized : 0);
       });
   }
 
@@ -85,23 +119,60 @@ export class CreateLoanDialog {
 
     const { clientId, amount, installments } = this.form.getRawValue();
     const clients = this.clients();
-    const selected = clients.find((c) => c.id === clientId);
 
-    if (!selected) {
-      this.errorMessage.set('Selecione um cliente válido.');
+    const resolvedClientId = this.isEditMode ? this.editingClientId : clientId;
+    let clientName = '';
+    let clientEmail: string | undefined;
+
+    if (this.isEditMode && this.editingLoan) {
+      clientName = this.editingClientName;
+      clientEmail = this.editingClientEmail || undefined;
+    } else {
+      const selected = clients.find((c) => c.id === resolvedClientId);
+      if (!selected) {
+        this.errorMessage.set('Selecione um cliente válido.');
+        return;
+      }
+      clientName = selected.name;
+      clientEmail = selected.email || undefined;
+    }
+
+    const normalizedAmount = Number(amount);
+    const normalizedInstallments = Number(installments);
+
+    if (normalizedAmount <= 0 || normalizedInstallments <= 0) {
+      this.errorMessage.set('Informe valores válidos para o empréstimo.');
+      return;
+    }
+
+    this.submitting.set(true);
+    this.errorMessage.set(null);
+
+    if (this.isEditMode && this.editingLoan?.id) {
+      this.loansService
+        .updateLoan(this.editingLoan.id, {
+          amount: normalizedAmount,
+          installments: normalizedInstallments,
+          status: this.editingLoan.status ?? LoanStatus.Pendente,
+        })
+        .subscribe({
+          next: (loan) => this.dialogRef.close(loan),
+          error: (err) => {
+            const message = err?.message ?? 'Não foi possível atualizar o empréstimo.';
+            this.errorMessage.set(message);
+            this.submitting.set(false);
+          },
+        });
       return;
     }
 
     const payload: CreateLoanInput = {
-      clientId: selected.id,
-      clientName: selected.name,
-      clientEmail: selected.email,
-      amount: Number(amount),
-      installments: Number(installments),
+      clientId: resolvedClientId,
+      clientName,
+      clientEmail,
+      amount: normalizedAmount,
+      installments: normalizedInstallments,
     };
-
-    this.submitting.set(true);
-    this.errorMessage.set(null);
 
     this.loansService.createLoan(payload).subscribe({
       next: (loan) => this.dialogRef.close(loan),

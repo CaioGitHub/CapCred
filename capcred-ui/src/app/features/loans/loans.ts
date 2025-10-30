@@ -5,12 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { Loan, LoansService } from './loans.service';
+import { Loan, LoanStatus, LoansService } from './loans.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { LoadingService } from '../../core/shared/services/loading.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CreateLoanDialog } from './create-loan-dialog/create-loan-dialog';
 
 @Component({
@@ -27,6 +28,7 @@ import { CreateLoanDialog } from './create-loan-dialog/create-loan-dialog';
     MatInputModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatTooltipModule,
   ],
   templateUrl: './loans.html',
   styleUrls: ['./loans.scss']
@@ -35,6 +37,7 @@ export class Loans {
   cols = ['client', 'amount', 'installments', 'status', 'actions'];
   dataSource = new MatTableDataSource<Loan>([]);
   filterValue = '';
+  loanStatus = LoanStatus;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -80,6 +83,27 @@ export class Loans {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.snackBar.open('Empréstimo criado com sucesso.', 'Fechar', {
+          duration: 3000,
+        });
+      }
+    });
+  }
+
+  openEditLoanDialog(loan: Loan) {
+    if (loan.status !== this.loanStatus.Pendente && loan.status !== this.loanStatus.Rejeitado) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(CreateLoanDialog, {
+      width: '440px',
+      disableClose: true,
+      panelClass: 'create-client-dialog-panel',
+      data: loan,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.snackBar.open('Empréstimo atualizado com sucesso.', 'Fechar', {
           duration: 3000,
         });
       }

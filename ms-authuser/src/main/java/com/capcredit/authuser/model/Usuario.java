@@ -2,38 +2,38 @@ package com.capcredit.authuser.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
 @Table(name = "usuarios")
 @Data
-
 public class Usuario {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(nullable = false, unique = true, length = 14)
     private String cpf;
 
-
-    @Column(unique = true)
+    @Column(unique = true, nullable = false, length = 150)
     private String email;
 
-
-    @Column(name = "password_hash")
+    @Column(name = "password_hash", nullable = false, length = 255)
+    @ToString.Exclude
     private String passwordHash;
 
-    @Column(name = "monthly_income", precision = 38, scale = 2)
+    @Column(name = "monthly_income", nullable = false, precision = 10, scale = 2)
     private BigDecimal monthlyIncome;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
-
-    public enum Role {
-        ADMIN,
-        CLIENT
-    }
+    @Column(nullable = false, length = 20)
+    private Role role = Role.CLIENT;
 }
+

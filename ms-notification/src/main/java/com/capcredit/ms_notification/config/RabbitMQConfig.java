@@ -27,15 +27,13 @@ public class RabbitMQConfig {
     @Value("${broker.queue.approved.loan.notification}")
     private String approvedLoanNotificationQueue;
 
+    @Value("${broker.queue.completed.loan.notification}")
+    private String completedLoanNotificationQueue;
+
     @Bean
     public Queue queueCreatedUser() {
         return new Queue(createdUser, true);
     }
-
-//    @Bean
-//    public Queue queueApprovedLoan() {
-//        return new Queue(approvedLoan, true);
-//    }
 
     @Value("${broker.queue.denied.loan}")
     private String deniedLoan;
@@ -53,12 +51,17 @@ public class RabbitMQConfig {
         return new Queue(receivedPayment, true);
     }
 
-    @Value("${broker.queue.completed.payment}")
-    private String completedPayment;
+    @Bean
+    public Queue queueCompletedLoanNotification() {
+        return new Queue(completedLoanNotificationQueue, true);
+    }
+
 
     @Bean
-    public Queue queueCompletedPayment() {
-        return new Queue(completedPayment, true);
+    public Binding completedLoanNotificationBinding(Queue queueCompletedLoanNotification, TopicExchange loanTopicExchange) {
+        return BindingBuilder.bind(queueCompletedLoanNotification)
+                .to(loanTopicExchange)
+                .with("loan.completed");
     }
 
     @Bean

@@ -1,5 +1,9 @@
 package com.capcredit.ms_loan.config;
 
+import java.util.List;
+
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -8,6 +12,9 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +67,7 @@ public class RabbitConfig {
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(jackson2JsonMessageConverter());
+        template.setBeforePublishPostProcessors(propagateUserContextToMessage());
         return template;
     }
 
@@ -68,6 +76,40 @@ public class RabbitConfig {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(converter);
+        factory.setAfterReceivePostProcessors(setupSecurityContextFromMessage()); 
         return factory;
+    }
+
+    public MessagePostProcessor propagateUserContextToMessage() {
+        return (Message message) -> {
+            var authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null) return message;
+            
+            var properties = message.getMessageProperties();
+
+            var userId = authentication.getName();
+            properties.setHeader("X-User-ID", userId);
+
+            var userRole = authentication.getAuthorities().stream().findFirst().get().toString();
+            properties.setHeader("X-User-Role", userRole);
+
+            return message;
+        };
+    }
+
+    public MessagePostProcessor setupSecurityContextFromMessage() {
+        return (Message message) -> {
+            var properties = message.getMessageProperties();
+            String userId = properties.getHeader("X-User-ID");
+            String userRole = properties.getHeader("X-User-Role");
+
+            if(userId != null && userRole != null) {
+                List<SimpleGrantedAuthority> roles = List.of(new SimpleGrantedAuthority(userRole));
+                var authentication = new UsernamePasswordAuthenticationToken(userId,  null, roles);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+
+            return message;
+        };
     }
 }

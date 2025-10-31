@@ -23,7 +23,7 @@ public class PaymentReceivedNotificationImpl implements PaymentReceivedPortIn {
     @Override
     public void receivePayment(PaymentReceivedDTO dto) {
         notifyUserCreationByEmail(dto);
-        notifyUserCreationBySMS(dto);
+//        notifyUserCreationBySMS(dto);
     }
 
     private void notifyUserCreationByEmail(PaymentReceivedDTO dto) {

@@ -23,6 +23,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
+            helper.setFrom("capcred@capcred.com");
             helper.setTo(email.getTo());
             helper.setSubject(email.getSubject());
             helper.setText(email.getBody());

@@ -24,7 +24,7 @@ public class PaymentCompletedNotificationImpl implements PaymentCompletedPortIn 
     @Override
     public void receiveCompletedPayment(PaymentCompletedDTO dto) {
         notifyUserCreationByEmail(dto);
-        notifyUserCreationBySMS(dto);
+//        notifyUserCreationBySMS(dto);
     }
 
 

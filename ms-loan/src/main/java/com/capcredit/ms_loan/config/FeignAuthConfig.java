@@ -2,8 +2,7 @@ package com.capcredit.ms_loan.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -14,13 +13,14 @@ public class FeignAuthConfig {
     @Bean
     public RequestInterceptor relayAuthorizationHeader() {
         return (RequestTemplate template) -> {
-            var attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attrs == null) return;
-            
-            var request = attrs.getRequest();
+            var authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null) return;
 
-            template.header("X-User-ID", request.getHeader("X-User-ID"));
-            template.header("X-User-Role", request.getHeader("X-User-Role"));
+            var userId = authentication.getName();
+            template.header("X-User-ID", userId);
+
+            var userRole = authentication.getAuthorities().stream().findFirst().get().toString();
+            template.header("X-User-Role", userRole);
         };
     }
 }

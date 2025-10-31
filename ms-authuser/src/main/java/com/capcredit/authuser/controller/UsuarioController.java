@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,6 +21,12 @@ public class UsuarioController {
     public ResponseEntity<Usuario> getUsuario(@PathVariable UUID id){
         Usuario usuario = usuarioService.getUsuarioById(id);
         return ResponseEntity.ok(usuario);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<Usuario>> getAllUsers(@PathVariable UUID id){
+        List<Usuario> usuarios = usuarioService.getAllUsers();
+        return ResponseEntity.ok(usuarios);
     }
 
     @PutMapping("/{id}/income")

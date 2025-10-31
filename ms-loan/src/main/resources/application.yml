@@ -25,6 +25,8 @@ spring:
     password: ${RABBITMQ_PASSWORD:admin}
 
 broker:
+  exchange:
+    loan: ${LOAN_EXCHANGE:loan.events}
   queue:
     loan.created: ${LOAN_CREATED_QUEUE:loan.created}
     loan.approved: ${LOAN_APPROVED_QUEUE:loan.approved}

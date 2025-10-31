@@ -22,7 +22,7 @@ public class CreatedUserNotificationImpl implements CreatedUserConsumerPortIn {
     @Override
     public void receiveCreatedUser(UserDTO dto) {
         notifyUserCreationByEmail(dto);
-        notifyUserCreationBySMS(dto);
+//        notifyUserCreationBySMS(dto);
     }
 
 

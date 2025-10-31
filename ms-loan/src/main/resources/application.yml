@@ -31,7 +31,7 @@ broker:
     loan.created: ${LOAN_CREATED_QUEUE:loan.created}
     loan.approved: ${LOAN_APPROVED_QUEUE:loan.approved}
     loan.rejected: ${LOAN_REJECTED_QUEUE:loan.rejected}
-    loan.completed: ${LOAN_COMPLETED_QUEUE:loan.completed}
+    loan.completed.loan: ${LOAN_COMPLETED_LOAN_QUEUE:loan.completed.loan}
 
 springdoc:
   api-docs.path: /documentacao

@@ -21,7 +21,7 @@ import java.util.Locale;
 public class GatewayHeaderAuthenticationFilter extends OncePerRequestFilter {
 
     public static final String HEADER_USER_ID = "X-User-ID";
-    public static final String HEADER_USER_ROLES = "X-User-Roles";
+    public static final String HEADER_USER_ROLE = "X-User-Role";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -34,7 +34,7 @@ public class GatewayHeaderAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String userId = request.getHeader(HEADER_USER_ID);
-        String rolesHeader = request.getHeader(HEADER_USER_ROLES);
+        String rolesHeader = request.getHeader(HEADER_USER_ROLE);
 
         if (userId != null && !userId.isBlank() && rolesHeader != null && !rolesHeader.isBlank()) {
             Collection<? extends GrantedAuthority> authorities = parseAuthorities(rolesHeader);

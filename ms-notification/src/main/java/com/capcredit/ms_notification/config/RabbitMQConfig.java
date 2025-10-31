@@ -1,6 +1,9 @@
 package com.capcredit.ms_notification.config;
 
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -18,18 +21,21 @@ public class RabbitMQConfig {
     @Value("${broker.queue.created.user}")
     private String createdUser;
 
+    @Value("${broker.exchange.loan}")
+    private String loanExchangeName;
+
+    @Value("${broker.queue.approved.loan.notification}")
+    private String approvedLoanNotificationQueue;
+
     @Bean
     public Queue queueCreatedUser() {
         return new Queue(createdUser, true);
     }
 
-    @Value("${broker.queue.approved.loan}")
-    private String approvedLoan;
-
-    @Bean
-    public Queue queueApprovedLoan() {
-        return new Queue(approvedLoan, true);
-    }
+//    @Bean
+//    public Queue queueApprovedLoan() {
+//        return new Queue(approvedLoan, true);
+//    }
 
     @Value("${broker.queue.denied.loan}")
     private String deniedLoan;
@@ -53,6 +59,23 @@ public class RabbitMQConfig {
     @Bean
     public Queue queueCompletedPayment() {
         return new Queue(completedPayment, true);
+    }
+
+    @Bean
+    public TopicExchange loanTopicExchange() {
+        return new TopicExchange(loanExchangeName, true, false);
+    }
+
+    @Bean
+    public Queue queueApprovedLoanNotification() {
+        return new Queue(approvedLoanNotificationQueue, true);
+    }
+
+    @Bean
+    public Binding approvedLoanNotificationBinding(Queue queueApprovedLoanNotification, TopicExchange loanTopicExchange) {
+        return BindingBuilder.bind(queueApprovedLoanNotification)
+                .to(loanTopicExchange)
+                .with("loan.approved");
     }
 
     @Bean

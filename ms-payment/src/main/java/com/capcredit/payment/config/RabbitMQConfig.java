@@ -1,7 +1,10 @@
 package com.capcredit.payment.config;
 
 
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -16,12 +19,35 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${broker.queue.approved.loan}")
-    private String loanApprovedQueue;
+//    @Value("${broker.queue.approved.loan}")
+//    private String loanApprovedQueue;
+
+    @Value("${broker.exchange.loan}")
+    private String loanExchangeName;
+
+    @Value("${broker.queue.approved.loan.payment}")
+    private String loanApprovedPaymentQueue;
+
+//    @Bean
+//    public Queue loanApprovedQueue() {
+//        return new Queue(loanApprovedQueue, true);
+//    }
 
     @Bean
-    public Queue loanApprovedQueue() {
-        return new Queue(loanApprovedQueue, true);
+    public TopicExchange loanTopicExchange() {
+        return new TopicExchange(loanExchangeName, true, false);
+    }
+
+    @Bean
+    public Queue loanApprovedPaymentQueue() {
+        return new Queue(loanApprovedPaymentQueue, true);
+    }
+
+    @Bean
+    public Binding loanApprovedPaymentBinding(Queue loanApprovedPaymentQueue, TopicExchange loanTopicExchange) {
+        return BindingBuilder.bind(loanApprovedPaymentQueue)
+                .to(loanTopicExchange)
+                .with("loan.approved");
     }
     
     @Bean

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -35,14 +36,12 @@ public class RabbitConfig {
     @Value("${broker.queue.loan.completed}")
     private String loanCompletedQueue;
 
+    @Value("${broker.exchange.loan}")
+    private String loanExchangeName;
+
     @Bean
     public Queue loanCreatedQueue() {
         return new Queue(loanCreatedQueue, true);
-    }
-
-    @Bean
-    public Queue loanApprovedQueue() {
-        return new Queue(loanApprovedQueue, true);
     }
 
     @Bean
@@ -53,6 +52,15 @@ public class RabbitConfig {
     @Bean
     public Queue loanCompletedQueue() {
         return new Queue(loanCompletedQueue, true);
+    }
+
+    public String loanApprovedExchange() {
+        return loanExchangeName;
+    }
+
+    @Bean
+    public TopicExchange loanTopicExchange() {
+        return new TopicExchange(loanExchangeName, true, false);
     }
 
     @Bean

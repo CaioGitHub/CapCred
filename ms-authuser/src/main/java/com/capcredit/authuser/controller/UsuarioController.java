@@ -17,7 +17,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUsuario(@RequestParam UUID id){
+    public ResponseEntity<Usuario> getUsuario(@PathVariable UUID id){
         Usuario usuario = usuarioService.getUsuarioById(id);
         return ResponseEntity.ok(usuario);
     }

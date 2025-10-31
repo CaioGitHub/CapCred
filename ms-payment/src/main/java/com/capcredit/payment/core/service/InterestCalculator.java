@@ -22,7 +22,7 @@ public class InterestCalculator {
             daysOverdue = 0;
         }
 
-        BigDecimal fixedInterest = valueDue.multiply(BigDecimal.valueOf(0.02));
+        BigDecimal fixedInterest = daysOverdue == 0  ? BigDecimal.ZERO : valueDue.multiply(BigDecimal.valueOf(0.02));
         BigDecimal dailyInterest = valueDue.multiply(BigDecimal.valueOf(0.00033))
                 .multiply(BigDecimal.valueOf(daysOverdue));
 

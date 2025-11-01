@@ -28,7 +28,7 @@ export class PaymentsService {
     return this.auth.currentUser$.pipe(
       mergeMap((user) => {
         if (!user) return of([]);
-        const params: any = user.backendRole === 'CLIENT' ? { userId: user.id } : {};
+        const params: any = user.isAdmin ? {} : { userId: user.id };
         return this.http.get<any>(`${environment.apiBaseUrl}/loans`, { params });
       }),
       map((response) => {

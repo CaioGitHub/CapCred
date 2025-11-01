@@ -130,5 +130,6 @@ JWT_PUBLIC_KEY="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwp/apITTXIbjYmSIXHjo
 | **API Gateway** | `http://localhost:8080` | Entrada Principal |
 | **MailHog (E-mails)** | `http://localhost:8025` | **Verificação de Notificações:** Todos os e-mails enviados pelo **MS-NOTIFICATION** são interceptados aqui. |
 | **RabbitMQ Admin** | `http://localhost:15672` | Monitoramento da mensageria (user/pass: admin/admin) |
+| **Grafana** | `http://localhost:3000` | **Observabilidade:** Dashboards com métricas do Prometheus e logs centralizados do Loki (user/pass: admin/gadmin) |
 
 -----

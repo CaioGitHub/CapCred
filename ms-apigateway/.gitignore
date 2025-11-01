@@ -19,6 +19,9 @@ target/
 *.iml
 *.ipr
 
+./data/postgres_data/
+./data/rabbitmq_data/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

@@ -1,0 +1,114 @@
+[
+  {
+    "name": "admin",
+    "cpf": "999.888.777-66",
+    "email": "admin@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 75000.00
+  },
+  {
+    "name": "Peter Parker",
+    "cpf": "111.111.111-11",
+    "email": "peter@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 3500.25
+  },
+  {
+    "name": "Diana Prince",
+    "cpf": "222.222.222-22",
+    "email": "diana@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 95000.00
+  },
+  {
+    "name": "Bruce Wayne",
+    "cpf": "333.333.333-33",
+    "email": "bruce@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 999999.99
+  },
+  {
+    "name": "Clark Kent",
+    "cpf": "444.444.444-44",
+    "email": "clark@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 7200.50
+  },
+  {
+    "name": "Natasha Romanoff",
+    "cpf": "555.555.555-55",
+    "email": "natasha@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 45000.10
+  },
+  {
+    "name": "Tony Stark",
+    "cpf": "666.666.666-66",
+    "email": "tony@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 1500000.00
+  },
+  {
+    "name": "Steve Rogers",
+    "cpf": "777.777.777-77",
+    "email": "steve@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 5500.00
+  },
+  {
+    "name": "Wanda Maximoff",
+    "cpf": "888.888.888-88",
+    "email": "wanda@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 8990.75
+  },
+  {
+    "name": "Stephen Strange",
+    "cpf": "999.999.999-99",
+    "email": "stephen@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 120000.00
+  },
+  {
+    "name": "Barry Allen",
+    "cpf": "010.101.010-00",
+    "email": "barry@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 6100.00
+  },
+  {
+    "name": "Hal Jordan",
+    "cpf": "020.202.020-00",
+    "email": "hal@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 15250.50
+  },
+  {
+    "name": "T'Challa",
+    "cpf": "030.303.030-00",
+    "email": "t'challa@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 50000.00
+  },
+  {
+    "name": "Scott Lang",
+    "cpf": "040.404.040-00",
+    "email": "scott@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 4900.00
+  },
+  {
+    "name": "Arthur Curry",
+    "cpf": "050.505.050-00",
+    "email": "arthur@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 18000.00
+  },
+  {
+    "name": "Carol Danvers",
+    "cpf": "060.606.060-00",
+    "email": "carol@email.com",
+    "password": "SenhaForte@123",
+    "monthlyIncome": 75000.00
+  }
+]

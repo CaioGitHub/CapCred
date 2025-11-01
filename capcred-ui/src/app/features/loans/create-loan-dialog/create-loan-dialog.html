@@ -2,7 +2,7 @@
 
 <mat-dialog-content>
   <form [formGroup]="form" class="form" (ngSubmit)="submit()">
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" *ngIf="(user$ | async)?.isAdmin">
       <mat-label>Cliente</mat-label>
       <mat-select formControlName="clientId" placeholder="Selecione o cliente" [disabled]="isEditMode">
         <mat-option *ngIf="needsFallbackClientOption()" [value]="editingClientId">

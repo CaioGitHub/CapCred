@@ -12,4 +12,5 @@ public interface PaymentService {
    void createInstallments(Loan loan);
    List<InstallmentDTO> getInstallmentsByLoanId(UUID loanId);
    Installment findById(UUID installmentId);
+    List<InstallmentDTO> getInstallmentsByUserId(UUID userId);
 }

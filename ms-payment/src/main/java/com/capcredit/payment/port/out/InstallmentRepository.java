@@ -10,5 +10,6 @@ import java.util.UUID;
 
 public interface InstallmentRepository extends JpaRepository<Installment, UUID> {
     List<Installment> findByLoanId(UUID loanId);
+    List<Installment> findByUserId(UUID loanId);
     boolean existsByLoanIdAndPaymentStatus(UUID loanId, PaymentStatus pending);
 }

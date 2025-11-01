@@ -116,6 +116,16 @@
           </mat-select>
         </mat-form-field>
 
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Primeiro vencimento</mat-label>
+          <input matInput [matDatepicker]="duePicker" formControlName="firstDueDate" />
+          <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+          <mat-datepicker #duePicker></mat-datepicker>
+          <mat-error *ngIf="quickCalcForm.controls.firstDueDate.hasError('required')">
+            Informe a data do primeiro vencimento
+          </mat-error>
+        </mat-form-field>
+
         <button mat-flat-button color="primary" type="submit" class="w-100">Calcular</button>
       </form>
     </mat-card>

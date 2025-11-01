@@ -14,6 +14,8 @@ import com.capcredit.payment.port.out.dto.LoanCompletedDTO;
 import com.capcredit.payment.port.out.dto.PaymentReceivedDTO;
 import com.capcredit.payment.port.out.dto.UserDTO;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import static com.capcredit.payment.core.domain.model.PaymentStatus.PENDING;
@@ -111,9 +113,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<InstallmentDTO> getInstallmentsByUserId(UUID userId) {
-        List<Installment> installments = installmentRepository.findByUserId(userId);
-        return installments.stream().map(InstallmentMapper::toDTO).toList();
+    public Page<InstallmentDTO> getInstallmentsByUserId(UUID userId, Pageable pageable) {
+        Page<Installment> installmentsPage = installmentRepository.findByUserId(userId, pageable);
+        return installmentsPage.map(InstallmentMapper::toDTO);
     }
 
+    @Override
+    public Page<InstallmentDTO> getInstallments(Pageable pageable) {
+        return installmentRepository.findAll(pageable)
+                .map(InstallmentMapper::toDTO);
+    }
 }

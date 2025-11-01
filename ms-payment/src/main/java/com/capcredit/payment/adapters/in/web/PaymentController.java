@@ -53,5 +53,10 @@ public class PaymentController implements PaymentPortIn {
         return paymentService.getInstallmentsByLoanId(loanId);
     }
 
+    @GetMapping("/user/{userId}")
+    public List<InstallmentDTO> getInstallmentsByUserId(@PathVariable UUID userId) {
+        return paymentService.getInstallmentsByUserId(userId);
+    }
+
 }
 

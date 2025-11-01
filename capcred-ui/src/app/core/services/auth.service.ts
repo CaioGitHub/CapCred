@@ -46,7 +46,7 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User> {
-    const payload = { email: email.trim(), senha: password };
+    const payload = { email: email.trim(), password };
 
     return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/login`, payload).pipe(
       tap((response) => this.handleAuthSuccess(response)),
@@ -69,22 +69,29 @@ export class AuthService {
   }
 
   register(payload: RegisterPayload): Observable<void> {
+    const cleanedCpf = payload.cpf.replace(/\D/g, '').slice(0, 11);
+    const formattedCpf =
+      cleanedCpf.length === 11
+        ? cleanedCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+        : payload.cpf.trim();
+
     const body = {
       name: payload.name.trim(),
-      cpf: payload.cpf.replace(/\D/g, ''),
+      cpf: formattedCpf,
       email: payload.email.trim(),
-      senha: payload.password,
-      monthlyIncome: payload.monthlyIncome,
+      password: payload.password,
+      monthlyIncome: Number(payload.monthlyIncome),
     };
 
     return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/auth/register`, body).pipe(
       tap(() => this.clearSession()),
       map(() => void 0),
       catchError((error) => {
-        const message =
-          error?.status === 409
-            ? 'Este email ja esta cadastrado.'
-            : 'Nao foi possivel completar o cadastro. Tente novamente.';
+        const serverMessage = this.extractErrorMessage(error);
+        const isEmailInUse = error?.status === 409 || error?.status === 403;
+        const message = isEmailInUse
+          ? serverMessage || 'Este email ja esta cadastrado.'
+          : serverMessage || 'Nao foi possivel completar o cadastro. Tente novamente.';
         return throwError(() => new Error(message));
       })
     );
@@ -211,5 +218,22 @@ export class AuthService {
     localStorage.removeItem(this.storageKey);
     this.tokenService.clearTokens();
     this.currentUserSubject.next(null);
+  }
+
+  private extractErrorMessage(error: any): string | undefined {
+    if (!error) {
+      return undefined;
+    }
+
+    const raw = error.error;
+    if (typeof raw === 'string' && raw.trim()) {
+      return raw.trim();
+    }
+
+    if (raw && typeof raw === 'object') {
+      return raw.message || raw.detail || raw.error;
+    }
+
+    return typeof error.message === 'string' ? error.message : undefined;
   }
 }

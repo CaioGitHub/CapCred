@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: ms-apigateway
+    name: ${APP_NAME:ms-apigateway}
 
   cloud:
     gateway:

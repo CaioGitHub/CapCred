@@ -6,6 +6,16 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
+  - job_name: 'ms-apigateway'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ms-apigateway:8080']
+
+  - job_name: 'ms-authuser'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ms-authuser:8081']
+
   - job_name: 'ms-loan'
     metrics_path: '/actuator/prometheus'
     static_configs:

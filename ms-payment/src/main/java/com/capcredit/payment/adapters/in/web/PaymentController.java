@@ -16,7 +16,9 @@ import com.capcredit.payment.port.in.PaymentPortIn;
 import com.capcredit.payment.port.out.dto.InstallmentDTO;
 
 import java.util.List;
-import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,9 +56,18 @@ public class PaymentController implements PaymentPortIn {
     }
 
     @GetMapping("/user/{userId}")
-    public List<InstallmentDTO> getInstallmentsByUserId(@PathVariable UUID userId) {
-        return paymentService.getInstallmentsByUserId(userId);
+    public ResponseEntity<Page<InstallmentDTO>> getInstallmentsByUserId(
+            @PathVariable UUID userId,
+            Pageable pageable
+    ) {
+        Page<InstallmentDTO> installmentsPage = paymentService.getInstallmentsByUserId(userId, pageable);
+        return ResponseEntity.ok(installmentsPage);
     }
 
+    @GetMapping()
+    public ResponseEntity<Page<InstallmentDTO>> getAllInstallments(Pageable pageable) {
+        Page<InstallmentDTO> installmentsPage = paymentService.getInstallments(pageable);
+        return ResponseEntity.ok(installmentsPage);
+    }
 }
 

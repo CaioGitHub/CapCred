@@ -33,6 +33,21 @@ broker:
     loan.rejected: ${LOAN_REJECTED_QUEUE:loan.rejected}
     loan.completed.loan: ${LOAN_COMPLETED_LOAN_QUEUE:loan.completed.loan}
 
+resilience4j:
+  circuitbreaker:
+    configs:
+      default: # Configuração padrão para todos os CBs
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10 # Considera as últimas 10 chamadas
+        failureRateThreshold: 50 # Se mais de 50% falhar, abra o circuito
+        waitDurationInOpenState: 10s # Tempo que o circuito fica totalmente aberto
+        permittedNumberOfCallsInHalfOpenState: 3 # Número de chamadas para testar no estado HALF_OPEN
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+    instances:
+      # NOME ESPECÍFICO DO SEU DISJUNTOR
+      user-service-call:
+        base-config: default
+
 springdoc:
   api-docs.path: /documentacao
   swagger-ui.path: /documentacao.html

@@ -45,8 +45,22 @@ public class DeniedLoanNotificationImpl implements DeniedLoanPortIn {
     }
 
     private static String getBody(DeniedLoanDTO dto) {
-        return "Olá, " + dto.user().name() + ", infelizmente seu empréstimo foi negado por motivo de " +
-                dto.rejectionReason() + ". Não desanime, faremos uma nova análise de crédito em breve.";
+        return "Olá, " + dto.user().name() + ".\n" +
+                "\n" +
+                "Agradecemos o seu interesse em nossos serviços. Após a análise de crédito, \n" +
+                "informamos que, infelizmente, **não foi possível aprovar seu empréstimo** neste momento.\n" +
+                "\n" +
+                "Motivo Detalhado:\n" +
+                "--------------------------------------------\n" +
+                "Motivo da Recusa: " + dto.rejectionReason() + "\n" +
+                "--------------------------------------------\n" +
+                "\n" +
+                "Não desanime! Nossas políticas são revisadas regularmente. Faremos uma \n" +
+                "nova análise de crédito automaticamente em breve.\n" +
+                "\n" +
+                "Atenciosamente,\n" +
+                "Sua equipe CapCred - Soluções em Crédito\n" +
+                "E-mail: capcred@capcred.com | Telefone: +55 (99) 9 9999-9999";
     }
 
 

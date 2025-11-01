@@ -20,8 +20,8 @@ public class RabbitPublisher implements EventPublisherPort {
     @Value("${broker.queue.loan.created}")
     public String loanCreatedQueue;
 
-    @Value("${broker.queue.loan.approved}")
-    public String loanApprovedQueue;
+    @Value("${broker.exchange.loan}")
+    public String loanExchange;
 
     @Value("${broker.queue.loan.rejected}")
     public String loanRejectedQueue;
@@ -34,10 +34,21 @@ public class RabbitPublisher implements EventPublisherPort {
         template.convertAndSend(loanCreatedQueue, loanCreated);
     }
 
+//    @Override
+//    public void publishLoanApproved(LoanApproved loanApproved) {
+//        log.info("Event({}) - Publishing loan approved event for loan {}", loanApproved.getEventId(), loanApproved.getLoanId());
+//        template.convertAndSend(loanApprovedQueue, loanApproved);
+//    }
+
     @Override
     public void publishLoanApproved(LoanApproved loanApproved) {
         log.info("Event({}) - Publishing loan approved event for loan {}", loanApproved.getEventId(), loanApproved.getLoanId());
-        template.convertAndSend(loanApprovedQueue, loanApproved);
+
+        template.convertAndSend(
+                loanExchange,
+                "loan.approved",
+                loanApproved
+        );
     }
 
     @Override

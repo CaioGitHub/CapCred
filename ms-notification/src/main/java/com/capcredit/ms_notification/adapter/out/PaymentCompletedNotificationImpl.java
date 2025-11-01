@@ -46,10 +46,22 @@ public class PaymentCompletedNotificationImpl implements PaymentCompletedPortIn 
     }
 
     private static String getBody(PaymentCompletedDTO dto) {
-        return "Olá, temos o prazer de informar que o seu empréstimo com ID " + dto.loanId() +
-                " foi totalmente quitado em " + dto.finalizationDate() + ". " +
-                "Agradecemos por confiar em nossos serviços e por manter suas parcelas em dia. " +
-                "Se tiver alguma dúvida ou precisar de suporte, nossa equipe está à disposição.";
+        return "Olá, " + dto.user().name() + ".\n" +
+                "\n" +
+                "**🎉 PARABÉNS! SEU EMPRÉSTIMO ESTÁ QUITADO! 🎉**\n" +
+                "\n" +
+                "Temos o prazer de informar que o seu contrato de empréstimo (ID: " + dto.loanId() + ") \n" +
+                "foi **TOTALMENTE LIQUIDADO** na data de " + dto.finalizationDate() + ".\n" +
+                "\n" +
+                "Sua dedicação em manter as parcelas em dia fortalece seu histórico de crédito.\n" +
+                "\n" +
+                "--------------------------------------------\n" +
+                "Se precisar de um novo crédito no futuro, estaremos à disposição.\n" +
+                "--------------------------------------------\n" +
+                "\n" +
+                "Atenciosamente,\n" +
+                "Sua equipe CapCred - Soluções em Crédito\n" +
+                "E-mail: capcred@capcred.com | Telefone: +55 (99) 9 9999-9999";
     }
 
 }

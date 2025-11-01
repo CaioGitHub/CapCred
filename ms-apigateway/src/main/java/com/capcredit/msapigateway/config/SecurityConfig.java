@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/users**").permitAll()
                         .pathMatchers("/api/loans/**").permitAll()
                         .pathMatchers("/api/installments/**").permitAll()
+                        .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers(SWAGGER_RESOURCES).permitAll()
                         .anyExchange().authenticated()
                 )

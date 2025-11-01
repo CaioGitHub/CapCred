@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Simulação de Empréstimo</h2>
+
+<mat-dialog-content class="loan-simulation-content">
+  <div class="simulation-item">
+    <span class="label">Valor solicitado:</span>
+    <span class="value">{{ data.amount | currency: 'BRL':'symbol':'1.2-2' }}</span>
+  </div>
+  <div class="simulation-item">
+    <span class="label">Número de parcelas:</span>
+    <span class="value">{{ data.installments }}</span>
+  </div>
+  <div class="simulation-item">
+    <span class="label">Data da primeira parcela:</span>
+    <span class="value">{{ data.firstDueDate | date: 'dd/MM/yyyy' }}</span>
+  </div>
+  <div class="simulation-item">
+    <span class="label">Taxa de juros:</span>
+    <span class="value">{{ data.rate | percent }}</span>
+  </div>
+  <mat-divider></mat-divider>
+  <div class="simulation-item monthly-payment">
+    <span class="label">Valor da parcela:</span>
+    <span class="value">{{ data.monthlyInstallmentValue | currency: 'BRL':'symbol':'1.2-2' }}</span>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Fechar</button>
+</mat-dialog-actions>

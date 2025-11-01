@@ -44,9 +44,23 @@ public class ApprovedLoanNotificationImpl implements ApprovedLoanPortIn {
     }
 
     private static String getBody(ApprovedLoanDTO dto) {
-        return "Olá, " + dto.user().name() + ", seu empréstimo no valor de " + dto.totalAmount() + " foi aprovado. Você deverá realizar " +
-                dto.termInMonths() + " parcelas mensais de R$ " + dto.monthlyInstallmentValue() +
-                ", com a primeira parcela vencendo em " + dto.firstDueDate() + ".";
+        return "Olá, " + dto.user().name() + "!\n" +
+                "\n" +
+                "Temos o prazer de informar que sua solicitação de empréstimo foi **APROVADA** pela CapCred! 🎉\n" +
+                "\n" +
+                "Detalhes do Seu Contrato:\n" +
+                "--------------------------------------------\n" +
+                "🏦 Valor Total do Empréstimo: R$ " + dto.totalAmount() + "\n" +
+                "🗓️ Prazo Total: " + dto.termInMonths() + " parcelas mensais\n" +
+                "💰 Valor da Parcela: R$ " + dto.monthlyInstallmentValue() + "\n" +
+                "📅 Vencimento da Primeira Parcela: " + dto.firstDueDate() + "\n" +
+                "--------------------------------------------\n" +
+                "\n" +
+                "Acesse o aplicativo da CapCred para visualizar o contrato completo.\n" +
+                "\n" +
+                "Atenciosamente,\n" +
+                "Sua equipe CapCred - Soluções em Crédito\n" +
+                "E-mail: capcred@capcred.com | Telefone: +55 (99) 9 9999-9999";
     }
 
 

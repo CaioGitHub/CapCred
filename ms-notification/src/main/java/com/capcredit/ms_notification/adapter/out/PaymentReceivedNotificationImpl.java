@@ -46,9 +46,23 @@ public class PaymentReceivedNotificationImpl implements PaymentReceivedPortIn {
     }
 
     private String getBody(PaymentReceivedDTO dto) {
-        return "Olá, " + dto.user().name() +
-                ", recebemos o pagamento no valor de R$ " + dto.valuePaid() +
-                " referente à parcela nº " + dto.installmentNumber() +
-                " do empréstimo " + dto.loanId() + ". Obrigado por pagar em dia!";
+        return "Olá, " + dto.user().name() + ".\n" +
+                "\n" +
+                "**CONFIRMAÇÃO DE PAGAMENTO RECEBIDO**\n" +
+                "\n" +
+                "Recebemos com sucesso o seu pagamento! Obrigado por manter suas obrigações em dia.\n" +
+                "\n" +
+                "Detalhes da Transação:\n" +
+                "--------------------------------------------\n" +
+                "💵 Valor Recebido: R$ " + dto.valuePaid() + "\n" +
+                "🔢 Parcela Referente: Nº " + dto.installmentNumber() + "\n" +
+                "🔗 ID do Empréstimo: " + dto.loanId() + "\n" +
+                "--------------------------------------------\n" +
+                "\n" +
+                "Sua próxima parcela será atualizada em breve em nosso sistema.\n" +
+                "\n" +
+                "Atenciosamente,\n" +
+                "Sua equipe CapCred - Soluções em Crédito\n" +
+                "E-mail: capcred@capcred.com | Telefone: +55 (99) 9 9999-9999";
     }
 }

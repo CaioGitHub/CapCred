@@ -27,10 +27,24 @@ export interface Loan {
   loanStatus?: string;
 }
 
+export interface SimulatedLoan {
+  amount: number;
+  installments: number;
+  firstDueDate: string;
+  rate: number;
+  monthlyInstallmentValue: number;
+}
+
 export interface CreateLoanInput {
   clientId: string;
   clientName: string;
   clientEmail?: string;
+  amount: number;
+  installments: number;
+  firstDueDate: string;
+}
+
+export interface SimulateLoanInput {
   amount: number;
   installments: number;
   firstDueDate: string;
@@ -64,6 +78,21 @@ export class LoansService {
       return this.createLoanWithMocks(input);
     }
     return this.createLoanFromApi(input);
+  }
+
+  simulateLoan(input: SimulateLoanInput): Observable<SimulatedLoan> {
+    const payload = {
+      requestedAmount: input.amount,
+      termInMonths: input.installments,
+      firstDueDate: input.firstDueDate,
+    };
+    return this.http.post(`${environment.apiBaseUrl}/loans/simulate`, payload).pipe(
+      map((loan) => this.normalizeSimulatedLoan(loan)),
+      catchError((error) => {
+        console.error('Erro ao criar emprestimo.', error);
+        return throwError(() => new Error('Nao foi possivel criar o emprestimo.'));
+      })
+    );
   }
 
   updateLoan(id: string, input: UpdateLoanInput): Observable<Loan> {
@@ -243,6 +272,16 @@ export class LoansService {
       ),
       requestStatus: raw?.requestStatus ?? fallback?.requestStatus,
       loanStatus: raw?.loanStatus ?? fallback?.loanStatus,
+    };
+  }
+
+  private normalizeSimulatedLoan(raw: any): SimulatedLoan {
+    return {
+      amount: Number(raw?.requestedAmount ?? 0),
+      installments: Number(raw?.termInMonths ?? 1),
+      firstDueDate: raw?.firstDueDate ?? new Date().toISOString().split('T')[0],
+      rate: Number(raw?.appliedRate ?? 0),
+      monthlyInstallmentValue: Number(raw?.monthlyInstallmentValue ?? 0),
     };
   }
 

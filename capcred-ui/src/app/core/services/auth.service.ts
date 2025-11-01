@@ -21,6 +21,7 @@ export interface User {
   role: DisplayRole;
   backendRole: string;
   avatar?: string;
+  isAdmin: boolean;
 }
 
 export interface RegisterPayload {
@@ -186,6 +187,7 @@ export class AuthService {
       role: this.mapDisplayRole(backendRole),
       backendRole,
       avatar: this.buildAvatarUrl(name),
+      isAdmin: backendRole === 'ADMIN'
     };
   }
 

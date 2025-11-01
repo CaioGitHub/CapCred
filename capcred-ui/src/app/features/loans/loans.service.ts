@@ -3,7 +3,8 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { MockDataService } from '../../core/services/mock-data.service';
 import { environment } from '../../../environments/environment';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { AuthService } from '../../core/services/auth.service';
 
 export enum LoanStatus {
   Pendente = 'Pendente',
@@ -46,7 +47,7 @@ export class LoansService {
   private loansSubject = new BehaviorSubject<Loan[]>([]);
   private initialized = false;
 
-  constructor(private http: HttpClient, private mocks: MockDataService) {}
+  constructor(private http: HttpClient, private mocks: MockDataService, private auth: AuthService) {}
 
   getLoans(): Observable<Loan[]> {
     if (!this.initialized) {
@@ -166,7 +167,12 @@ export class LoansService {
   }
 
   private fetchLoansFromApi(): Observable<Loan[]> {
-    return this.http.get<any>(`${environment.apiBaseUrl}/loans`).pipe(
+    return this.auth.currentUser$.pipe(
+      mergeMap((user) => {
+        if (!user) return of([]);
+        const params: any = user.backendRole === 'CLIENT' ? { userId: user.id } : {};
+        return this.http.get<any>(`${environment.apiBaseUrl}/loans`, { params });
+      }),
       map((response) => {
         const items = Array.isArray(response)
           ? response

@@ -1,6 +1,6 @@
 import { CommonModule, NgFor } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { LoansService } from '../loans/loans.service';
+import { LoansService, SimulatedLoan } from '../loans/loans.service';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { PaymentsService } from '../payments/payments.service';
@@ -17,6 +17,10 @@ import { CreateClientDialog } from '../clients/create-client-dialog/create-clien
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService, User } from '../../core/services/auth.service';
 import { Observable } from 'rxjs';
+import { SimulateLoanDialog } from '../loans/simulate-loan-dialog/simulate-loan-dialog';
+import moment from 'moment';
+import { MatDatepicker, MatDatepickerInput, MatDatepickerModule, MatDatepickerToggle } from "@angular/material/datepicker";
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,7 +38,12 @@ import { Observable } from 'rxjs';
     MatTooltip,
     MatDialogModule,
     MatSnackBarModule,
-  ],
+    MatDatepicker,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatDatepickerModule,
+    MatNativeDateModule,
+],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -70,6 +79,7 @@ export class Dashboard implements OnInit {
     this.quickCalcForm = this.fb.group({
       value: [10000],
       installments: ['6x'],
+      firstDueDate: [moment().add(1, 'months').toDate(), Validators.required],
     });
   }
 
@@ -163,17 +173,14 @@ export class Dashboard implements OnInit {
   }
 
   calculate() {
-    const { value, installments } = this.quickCalcForm.value;
-    const totalAmount = Number(value) || 0;
-    const installmentsCount = Number(String(installments).replace(/\D/g, '')) || 1;
-    const installmentValue = totalAmount / installmentsCount;
-
-    alert(
-      `Simulação: ${installmentsCount}x de R$ ${installmentValue.toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`
-    );
+    const { value, installments, firstDueDate } = this.quickCalcForm.value;
+    this.loansService.simulateLoan({
+      amount: Number(value) || 0,
+      installments: Number(String(installments).replace(/\D/g, '')) || 1,
+      firstDueDate: firstDueDate.toISOString().slice(0, 10),
+    }).subscribe((simulation) => {
+      this.openSimulateLoanDialog(simulation);
+    });
   }
 
   openCreateClientDialog(): void {
@@ -189,6 +196,15 @@ export class Dashboard implements OnInit {
           duration: 3000,
         });
       }
+    });
+  }
+
+  openSimulateLoanDialog(loan: SimulatedLoan): void {
+    this.dialog.open(SimulateLoanDialog, {
+      width: '440px',
+      disableClose: true,
+      panelClass: 'create-client-dialog-panel',
+      data: loan,
     });
   }
 }

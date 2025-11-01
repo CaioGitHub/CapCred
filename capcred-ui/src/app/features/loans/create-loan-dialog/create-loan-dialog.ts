@@ -12,6 +12,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ClientsService, Client } from '../../clients/clients.service';
 import { CreateLoanInput, Loan, LoanStatus, LoansService } from '../loans.service';
+import { AuthService, User } from '../../../core/services/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-loan-dialog',
@@ -80,7 +82,15 @@ export class CreateLoanDialog {
 
   totalValue = computed(() => this.amountSignal());
 
-  constructor() {
+  user$: Observable<User | null>;
+
+  constructor(private auth: AuthService) {
+    this.user$ = this.auth.currentUser$;
+    this.user$.subscribe((user) => {
+      if (!user?.isAdmin) {
+        this.form.controls.clientId.setValue(user?.id!);
+      }
+    });
     if (this.isEditMode && this.editingLoan) {
       const editAmount = this.editingLoan.amount ?? 0;
       const editInstallments = this.editingLoan.installments ?? 1;

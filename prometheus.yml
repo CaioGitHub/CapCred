@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'ms-loan'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ms-loan:8082']
+
+  - job_name: 'ms-payment'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ms-payment:8083']
+
+  - job_name: 'ms-notification'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ms-notification:8084']

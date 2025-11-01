@@ -1,0 +1,21 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.full-table {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+th.mat-header-cell {
+  font-weight: 600;
+}
+
+.table-filter {
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 300px;
+}

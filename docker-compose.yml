@@ -1,0 +1,210 @@
+services:
+  ms-apigateway:
+    build:
+      context: ./ms-apigateway
+      dockerfile: Dockerfile
+    container_name: ms-apigateway
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    environment:
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+
+  ms-authuser:
+    build:
+      context: ./ms-authuser
+      dockerfile: Dockerfile
+    container_name: ms-authuser
+    ports:
+      - "8081:8081"
+      - "5006:5005"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/authuser_capcred_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ms-loan:
+    build:
+      context: ./ms-loan
+      dockerfile: Dockerfile
+    container_name: ms-loan
+    ports:
+      - "8082:8082"
+      - "5007:5005"
+    environment:
+      - APP_NAME=ms-loan
+      - SERVER_PORT=8082
+      - DB_HOST=postgres
+      - DB_NAME=loan_capcred_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - RABBITMQ_HOST=rabbitmq
+      - MS_AUTH_USER_URL=http://ms-authuser:8081/api/users
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      loki:
+        condition: service_started
+
+  ms-payment:
+    build:
+      context: ./ms-payment
+      dockerfile: Dockerfile
+    container_name: ms-payment
+    ports:
+      - "8083:8083"
+      - "5008:5005"
+    environment:
+      - APP_NAME=ms-payment
+      - SERVER_PORT=8083
+      - DB_HOST=postgres
+      - DB_NAME=payment_capcred_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - RABBITMQ_HOST=rabbitmq
+      - MS_AUTH_USER_URL=http://ms-authuser:8081/api/users
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      loki:
+        condition: service_started
+
+  ms-notification:
+    build:
+      context: ./ms-notification
+      dockerfile: Dockerfile
+    container_name: ms-notification
+    ports:
+      - "8084:8084"
+      - "5009:5005"
+    env_file:
+      - ./.env
+    environment:
+      - APP_NAME=ms-notification
+      - SERVER_PORT=8084
+      - DB_HOST=postgres
+      - DB_NAME=notification_capcred_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - RABBITMQ_HOST=rabbitmq
+      - MAIL_HOST=mailhog
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      loki:
+        condition: service_started
+      mailhog:
+        condition: service_started
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    platform: linux/amd64
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  postgres:
+    image: postgres:17-alpine3.22
+    container_name: postgres
+    user: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data
+      - ./data/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./data/rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=gadmin
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+      - loki

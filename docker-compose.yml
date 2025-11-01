@@ -7,8 +7,6 @@ services:
     ports:
       - "8080:8080"
       - "5005:5005"
-    env_file:
-      - ./.env
     environment:
       APP_NAME: ms-apigateway
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}

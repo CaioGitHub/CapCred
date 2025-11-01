@@ -33,12 +33,12 @@ public class AuthService {
         usuario.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         usuario.setMonthlyIncome(request.getMonthlyIncome());
         usuario.setRole(Role.CLIENT);
-        usuarioRepository.save(usuario);
+        Usuario user = usuarioRepository.save(usuario);
 
         String accessToken = jwtService.generateToken(usuario.getId(), usuario.getEmail(), usuario.getRole().name());
         String refreshToken = refreshTokenService.createRefreshToken(usuario.getId()).getToken();
 
-        return new AuthResponseDto(accessToken, refreshToken, usuario.getRole().name());
+        return new AuthResponseDto(accessToken, refreshToken, user.getId(), usuario.getRole().name());
     }
 
 
@@ -54,14 +54,14 @@ public class AuthService {
         String accessToken = jwtService.generateToken(usuario.getId(),  usuario.getEmail(), usuario.getRole().name());
         String refreshToken = refreshTokenService.createRefreshToken(usuario.getId()).getToken();
 
-        return new AuthResponseDto(accessToken, refreshToken, usuario.getRole().name());
+        return new AuthResponseDto(accessToken, refreshToken, usuario.getId(), usuario.getRole().name());
     }
 
     @Transactional
     public AuthResponseDto refreshToken(String refreshToken) {
         var token = refreshTokenService.validateRefreshToken(refreshToken);
         String accessToken = jwtService.generateToken(token.getUserId(), token.getUserId().toString(), "CLIENT");
-        return new AuthResponseDto(accessToken, token.getToken(), "CLIENT");
+        return new AuthResponseDto(accessToken, token.getToken(), token.getUserId(), "CLIENT");
     }
 }
 

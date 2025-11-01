@@ -1,0 +1,32 @@
+.loan-simulation-content {
+  padding: 16px 0;
+  min-width: 400px;
+
+  .simulation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .label {
+      text-align: left;
+      flex: 1;
+      font-weight: 400;
+    }
+
+    .value {
+      text-align: right;
+      flex-shrink: 0;
+      margin-left: 16px;
+      font-weight: 500;
+    }
+
+    &.monthly-payment {
+      margin-top: 16px;
+
+      .value {
+        font-weight: bold;
+        font-size: 1.15em;
+      }
+    }
+  }
+}

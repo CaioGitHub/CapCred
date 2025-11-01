@@ -27,8 +27,12 @@
           matInput
           name="cpf"
           [(ngModel)]="form.cpf"
+          (input)="onCpfInput($event)"
           required
-          minlength="11"
+          minlength="14"
+          maxlength="14"
+          inputmode="numeric"
+          autocomplete="off"
         />
       </mat-form-field>
 

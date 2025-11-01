@@ -15,6 +15,8 @@ import { PaymentsService } from '../payments/payments.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateClientDialog } from '../clients/create-client-dialog/create-client-dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { AuthService, User } from '../../core/services/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -53,14 +55,18 @@ export class Dashboard implements OnInit {
   vencendoCount = 0;
   emAtrasoCount = 0;
 
+  user$: Observable<User | null>;
+
   constructor(
     private fb: FormBuilder,
     private loansService: LoansService,
     private router: Router,
     private paymentsService: PaymentsService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private auth: AuthService
   ) {
+    this.user$ = this.auth.currentUser$;
     this.quickCalcForm = this.fb.group({
       value: [10000],
       installments: ['6x'],

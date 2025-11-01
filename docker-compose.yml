@@ -7,7 +7,10 @@ services:
     ports:
       - "8080:8080"
       - "5005:5005"
+    env_file:
+      - ./.env
     environment:
+      APP_NAME: ms-apigateway
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       LOKI_URL: http://loki:3100/loki/api/v1/push
@@ -31,6 +34,7 @@ services:
       - "8081:8081"
       - "5006:5005"
     environment:
+      APP_NAME: ms-authuser
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/authuser_capcred_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres

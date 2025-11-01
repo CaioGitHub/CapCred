@@ -110,4 +110,10 @@ public class PaymentServiceImpl implements PaymentService {
             .orElseThrow(() -> new InstallmentNotFoundException(installmentId));
     }
 
+    @Override
+    public List<InstallmentDTO> getInstallmentsByUserId(UUID userId) {
+        List<Installment> installments = installmentRepository.findByUserId(userId);
+        return installments.stream().map(InstallmentMapper::toDTO).toList();
+    }
+
 }

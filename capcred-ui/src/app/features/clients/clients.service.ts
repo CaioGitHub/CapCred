@@ -58,7 +58,7 @@ export class ClientsService {
     }
 
     return this.http
-      .post<Client>(`${environment.apiBaseUrl}/clients`, input)
+      .post<Client>(`${environment.apiBaseUrl}/users`, input)
       .pipe(
         tap((client) => this.clientsSubject.next([...this.clientsSubject.value, client])),
         catchError((error) => {
@@ -83,7 +83,7 @@ export class ClientsService {
       );
     }
 
-    return this.http.get<Client[]>(`${environment.apiBaseUrl}/clients`).pipe(
+    return this.http.get<Client[]>(`${environment.apiBaseUrl}/users`).pipe(
       tap((clients) => this.clientsSubject.next(clients)),
       catchError((error) => {
         console.warn('Falha ao carregar clientes via API, usando dados mock.', error);

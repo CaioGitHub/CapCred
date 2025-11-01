@@ -9,11 +9,13 @@ import com.capcredit.authuser.model.Usuario;
 import com.capcredit.authuser.repository.UsuarioRepository;
 import com.capcredit.authuser.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,10 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public AuthResponseDto register(RegisterRequestDto request) {
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Este email ja esta cadastrado.");
+        }
+
         Usuario usuario = new Usuario();
         usuario.setName(request.getName());
         usuario.setCpf(request.getCpf());

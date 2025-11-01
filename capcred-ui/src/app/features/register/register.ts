@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { fadeAnimation } from '../../core/animations/route-animations';
 import { AuthService, RegisterPayload } from '../../core/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -38,6 +39,26 @@ export class Register {
   error = '';
 
   constructor(private auth: AuthService, private router: Router) {}
+
+  onCpfInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 11);
+
+    const part1 = digits.slice(0, 3);
+    const part2 = digits.slice(3, 6);
+    const part3 = digits.slice(6, 9);
+    const part4 = digits.slice(9, 11);
+
+    const formatted = [
+      part1,
+      part2 ? `.${part2}` : '',
+      part3 ? `.${part3}` : '',
+      part4 ? `-${part4}` : '',
+    ].join('');
+
+    this.form.cpf = formatted;
+    input.value = formatted;
+  }
 
   onSubmit(form: NgForm): void {
     if (this.loading || form.invalid) {
@@ -76,9 +97,9 @@ export class Register {
           state: { registered: true },
         });
       },
-      error: (err: Error) => {
+      error: (err: unknown) => {
         this.loading = false;
-        this.error = err.message || 'Nao foi possivel completar o cadastro.';
+        this.error = this.resolveErrorMessage(err);
       },
     });
   }
@@ -88,5 +109,34 @@ export class Register {
       return;
     }
     this.router.navigate(['/login']);
+  }
+
+  private resolveErrorMessage(err: unknown): string {
+    if (!err) {
+      return 'Nao foi possivel completar o cadastro.';
+    }
+
+    if (err instanceof Error && err.message) {
+      if (!err.message.startsWith('Http failure response')) {
+        return err.message;
+      }
+    }
+
+    if (err instanceof HttpErrorResponse) {
+      const serverMessage =
+        typeof err.error === 'string'
+          ? err.error.trim()
+          : err.error?.message || err.error?.detail || err.message;
+      console.log('Server message:', serverMessage);
+      console.log('Status code:', err.status);
+      console.log('Error body:', err.error);
+      if (err.status === 409 || err.status === 403) {
+        return serverMessage || 'Este email ja esta cadastrado.';
+      }
+
+      return serverMessage || 'Nao foi possivel completar o cadastro.';
+    }
+
+    return 'Nao foi possivel completar o cadastro.';
   }
 }

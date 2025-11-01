@@ -19,17 +19,18 @@ public class RabbitMQSenderImpl implements RabbitMqSender {
 
     private final RabbitTemplate rabbitTemplate;
     private final String paymentQueue;
-    private final String loanCompletedQueue;
+    private final String loanExchangeName;
+    private static final String LOAN_COMPLETED_ROUTING_KEY = "loan.completed";
 
     public RabbitMQSenderImpl(
             @Value("${broker.queue.received.payment}") String paymentQueue,
-            @Value("${broker.queue.completed.payment}") String loanCompletedQueue,
+            @Value("${broker.exchange.loan}") String loanExchangeName,
             RabbitTemplate rabbitTemplate,
             MessageConverter jsonMessageConverter
     ) {
         this.paymentQueue = paymentQueue;
-        this.loanCompletedQueue = loanCompletedQueue;
         this.rabbitTemplate = rabbitTemplate;
+        this.loanExchangeName = loanExchangeName;
         this.rabbitTemplate.setMessageConverter(jsonMessageConverter);
         log.info("RabbitMQSenderImpl inicializado. Fila configurada: {}", paymentQueue);
     }
@@ -50,14 +51,19 @@ public class RabbitMQSenderImpl implements RabbitMqSender {
 
     @Override
     public void sendLoanCompletedEvent(LoanCompletedDTO loanCompleted) {
-        log.info("Sending loan completed event for loan {}...", loanCompleted.getLoanId());
+        log.info("Sending loan completed event for loan {} to Exchange {}...",
+                loanCompleted.getLoanId(), loanExchangeName);
         log.debug("Loan Completed Details -> {}", loanCompleted);
 
         try {
-            rabbitTemplate.convertAndSend(loanCompletedQueue, loanCompleted);
-            log.info("Completed loan event published successfully");
+            rabbitTemplate.convertAndSend(
+                    loanExchangeName,
+                    LOAN_COMPLETED_ROUTING_KEY,
+                    loanCompleted
+            );
+            log.info("Completed loan event published successfully to Exchange {}", loanExchangeName);
         } catch (Exception e) {
-            log.error("Error on publish loan completed event {}.", e);
+            log.error("Error on publish loan completed event to Exchange {}.", loanExchangeName, e);
             throw new RuntimeException("Failed to send loan completed event to RabbitMQ", e);
         }
     }

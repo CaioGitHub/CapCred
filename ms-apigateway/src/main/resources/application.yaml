@@ -13,10 +13,15 @@ spring:
             connect-timeout: 5000
             response-timeout: 60s
           routes:
-                    - id: ms-authuser
+                    - id: ms-authuser-auth
                       uri: http://ms-authuser:8081
                       predicates:
                         - Path=/api/auth/**
+
+                    - id: ms-authuser-users
+                      uri: http://ms-authuser:8081
+                      predicates:
+                        - Path=/api/users**
 
                     - id: ms-loan
                       uri: http://ms-loan:8082
@@ -39,20 +44,6 @@ management:
   endpoint:
     health:
       show-details: always
-
-#springdoc:
-#  swagger-ui:
-#    urls:
-#      - name: ms-authuser
-#        url: /v3/api-docs/ms-authuser
-#      - name: ms-loan
-#        url: /v3/api-docs/ms-loan
-#      - name: ms-payments
-#        url: /v3/api-docs/ms-payments
-#  api-docs:
-#    path: /v3/api-docs
-#    groups:
-#      enabled: true
 
 logging:
   level:

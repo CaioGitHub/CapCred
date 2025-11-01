@@ -45,20 +45,25 @@ services:
       - SERVER_PORT=8082
       - DB_HOST=postgres
       - DB_NAME=loan_capcred_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
       - RABBITMQ_HOST=rabbitmq
       - MS_AUTH_USER_URL=http://ms-authuser:8081/api/users
       - LOKI_URL=http://loki:3100/loki/api/v1/push
       - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#      start_period: 10s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     depends_on:
-      - postgres
-      - rabbitmq
-      - loki
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      loki:
+        condition: service_started
 
   ms-payment:
     build:
@@ -73,20 +78,25 @@ services:
       - SERVER_PORT=8083
       - DB_HOST=postgres
       - DB_NAME=payment_capcred_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
       - RABBITMQ_HOST=rabbitmq
       - MS_AUTH_USER_URL=http://ms-authuser:8081/api/users
       - LOKI_URL=http://loki:3100/loki/api/v1/push
       - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#      start_period: 10s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     depends_on:
-      - postgres
-      - rabbitmq
-      - loki
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      loki:
+        condition: service_started
 
   ms-notification:
     build:
@@ -103,21 +113,27 @@ services:
       - SERVER_PORT=8084
       - DB_HOST=postgres
       - DB_NAME=notification_capcred_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
       - RABBITMQ_HOST=rabbitmq
       - MAIL_HOST=mailhog
       - LOKI_URL=http://loki:3100/loki/api/v1/push
       - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
     depends_on:
-      - postgres
-      - rabbitmq
-      - mailhog
-      - loki
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      loki:
+        condition: service_started
+      mailhog:
+        condition: service_started
 
   mailhog:
     image: mailhog/mailhog
@@ -130,6 +146,7 @@ services:
   postgres:
     image: postgres:17-alpine3.22
     container_name: postgres
+    user: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -139,10 +156,10 @@ services:
       - ./data/postgres_data:/var/lib/postgresql/data
       - ./data/postgres-init:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "eventos"]
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "postgres"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 10
       start_period: 10s
 
   rabbitmq:

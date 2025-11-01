@@ -1,8 +1,8 @@
 package com.capcredit.authuser.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -26,7 +26,7 @@ public class Usuario {
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
-    @ToString.Exclude
+    @JsonIgnore
     private String passwordHash;
 
     @Column(name = "monthly_income", nullable = false, precision = 10, scale = 2)

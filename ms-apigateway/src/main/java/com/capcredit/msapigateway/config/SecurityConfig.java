@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/auth/**").permitAll()
+                        .pathMatchers("/api/users**").permitAll()
                         .pathMatchers("/api/loans/**").permitAll()
                         .pathMatchers("/api/installments/**").permitAll()
                         .pathMatchers(SWAGGER_RESOURCES).permitAll()

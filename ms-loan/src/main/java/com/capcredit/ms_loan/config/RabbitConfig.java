@@ -2,9 +2,7 @@ package com.capcredit.ms_loan.config;
 
 import java.util.List;
 
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessagePostProcessor;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -32,8 +30,11 @@ public class RabbitConfig {
     @Value("${broker.queue.loan.rejected}")
     private String loanRejectedQueue;
 
-    @Value("${broker.queue.loan.completed}")
-    private String loanCompletedQueue;
+    @Value("${broker.exchange.loan}")
+    private String loanExchangeName;
+
+    @Value("${broker.queue.loan.completed.loan}")
+    private String loanCompletedLoanQueue;
 
     @Bean
     public Queue loanCreatedQueue() {
@@ -41,18 +42,29 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue loanApprovedQueue() {
-        return new Queue(loanApprovedQueue, true);
-    }
-
-    @Bean
     public Queue loanRejectedQueue() {
         return new Queue(loanRejectedQueue, true);
     }
 
+    public String loanApprovedExchange() {
+        return loanExchangeName;
+    }
+
     @Bean
-    public Queue loanCompletedQueue() {
-        return new Queue(loanCompletedQueue, true);
+    public Queue loanCompletedLoanQueue() {
+        return new Queue(loanCompletedLoanQueue, true);
+    }
+
+    @Bean
+    public Binding loanCompletedBinding(Queue loanCompletedLoanQueue, TopicExchange loanTopicExchange) {
+        return BindingBuilder.bind(loanCompletedLoanQueue)
+                .to(loanTopicExchange)
+                .with("loan.completed");
+    }
+
+    @Bean
+    public TopicExchange loanTopicExchange() {
+        return new TopicExchange(loanExchangeName, true, false);
     }
 
     @Bean

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { MockDataService } from '../../core/services/mock-data.service';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/services/auth.service';
 
 export interface PaymentRow {
   id: string;
@@ -17,14 +18,19 @@ export interface PaymentRow {
 
 @Injectable({ providedIn: 'root' })
 export class PaymentsService {
-  constructor(private http: HttpClient, private mocks: MockDataService) {}
+  constructor(private http: HttpClient, private mocks: MockDataService, private auth: AuthService) {}
 
   getPayments(): Observable<PaymentRow[]> {
     if (environment.useMocks) {
       return this.mocks.getPayments() as unknown as Observable<PaymentRow[]>;
     }
 
-    return this.http.get<any>(`${environment.apiBaseUrl}/loans`).pipe(
+    return this.auth.currentUser$.pipe(
+      mergeMap((user) => {
+        if (!user) return of([]);
+        const params: any = user.backendRole === 'CLIENT' ? { userId: user.id } : {};
+        return this.http.get<any>(`${environment.apiBaseUrl}/loans`, { params });
+      }),
       map((response) => {
         const items = Array.isArray(response)
           ? response

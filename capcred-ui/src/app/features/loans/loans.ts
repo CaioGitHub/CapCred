@@ -73,22 +73,6 @@ export class Loans {
     this.dataSource.filter = '';
   }
 
-  openCreateLoanDialog() {
-    const dialogRef = this.dialog.open(CreateLoanDialog, {
-      width: '440px',
-      disableClose: true,
-      panelClass: 'create-client-dialog-panel',
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.snackBar.open('Empréstimo criado com sucesso.', 'Fechar', {
-          duration: 3000,
-        });
-      }
-    });
-  }
-
   openEditLoanDialog(loan: Loan) {
     if (loan.status !== this.loanStatus.Pendente && loan.status !== this.loanStatus.Rejeitado) {
       return;

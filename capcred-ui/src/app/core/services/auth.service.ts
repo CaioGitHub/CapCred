@@ -38,6 +38,10 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   readonly currentUser$ = this.currentUserSubject.asObservable();
 
+  get currentUserValue(): User | null {
+    return this.currentUserSubject.value;
+  }
+
   constructor(
     private http: HttpClient,
     private router: Router,

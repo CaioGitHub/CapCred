@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
+import { Observable, forkJoin, of, timeout } from 'rxjs';
+import { catchError, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { MockDataService } from '../../core/services/mock-data.service';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
+import { ClientsService } from '../clients/clients.service';
 
 export interface PaymentRow {
   id: string;
@@ -18,7 +19,12 @@ export interface PaymentRow {
 
 @Injectable({ providedIn: 'root' })
 export class PaymentsService {
-  constructor(private http: HttpClient, private mocks: MockDataService, private auth: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private mocks: MockDataService,
+    private auth: AuthService,
+    private clientsService: ClientsService
+  ) {}
 
   getPayments(): Observable<PaymentRow[]> {
     if (environment.useMocks) {
@@ -27,29 +33,57 @@ export class PaymentsService {
 
     return this.auth.currentUser$.pipe(
       mergeMap((user) => {
-        if (!user) return of([]);
+        if (!user) return of({ loans: [], clients: [] });
         const params: any = user.isAdmin ? {} : { userId: user.id };
-        return this.http.get<any>(`${environment.apiBaseUrl}/loans`, { params });
+
+        // Buscar loans e clients em paralelo com timeout reduzido
+        return forkJoin({
+          loans: this.http.get<any>(`${environment.apiBaseUrl}/loans`, { params }).pipe(
+            timeout(10000),
+            catchError((error) => {
+              console.error('Erro ao buscar loans:', error);
+              return of([]);
+            })
+          ),
+          clients: this.clientsService.getClients().pipe(
+            take(1), // Pega apenas o primeiro valor e completa
+            timeout(10000),
+            catchError((error) => {
+              console.error('Erro ao buscar clients:', error);
+              return of([]);
+            })
+          )
+        });
       }),
-      map((response) => {
-        const items = Array.isArray(response)
-          ? response
-          : Array.isArray(response?.content)
-            ? response.content
+      map(({ loans, clients }: { loans: any; clients: any[] }) => {
+        const items = Array.isArray(loans)
+          ? loans
+          : Array.isArray(loans?.content)
+            ? loans.content
             : [];
-        return items;
+
+        // Criar um mapa de userId -> client name
+        const clientsMap: Map<string, string> = new Map(
+          clients.map((c: any) => [c.id as string, c.name as string])
+        );
+
+        return { loans: items, clientsMap };
       }),
-      switchMap((loans: any[]) => {
+      switchMap(({ loans, clientsMap }) => {
         if (!loans.length) {
           return of([] as PaymentRow[]);
         }
 
-        const requests = loans.map((loan) =>
+        const requests = loans.map((loan: any) =>
           this.http
-            .get<any[]>(`${environment.apiBaseUrl}/installments/loan/${loan.id ?? loan.loanId ?? loan.loanID}`)
+            .get<any[]>(
+              `${environment.apiBaseUrl}/installments/loan/${loan.id ?? loan.loanId ?? loan.loanID}`
+            )
             .pipe(
               map((installments) =>
-                (installments ?? []).map((installment) => this.normalizeInstallment(installment, loan))
+                (installments ?? []).map((installment) =>
+                  this.normalizeInstallment(installment, loan, clientsMap)
+                )
               ),
               catchError((error) => {
                 console.warn('Falha ao carregar parcelas para o emprestimo.', loan, error);
@@ -58,7 +92,14 @@ export class PaymentsService {
             )
         );
 
-        return forkJoin(requests).pipe(map((groups) => groups.flat()));
+        // Se não há requests, retornar array vazio (forkJoin([]) nunca emite!)
+        if (requests.length === 0) {
+          return of([] as PaymentRow[]);
+        }
+
+        return (forkJoin(requests) as Observable<PaymentRow[][]>).pipe(
+          map((groups) => groups.flat())
+        );
       }),
       catchError((error) => {
         console.error('Erro ao carregar pagamentos.', error);
@@ -67,11 +108,13 @@ export class PaymentsService {
     );
   }
 
-  private normalizeInstallment(installment: any, loan: any): PaymentRow {
+  private normalizeInstallment(installment: any, loan: any, clientsMap: Map<string, string>): PaymentRow {
     const value = Number(installment?.valueDue ?? installment?.valuePaid ?? 0);
     const dueDate = installment?.dueDate
       ? new Date(installment.dueDate).toISOString().slice(0, 10)
       : '';
+
+    const clientName = clientsMap.get(loan?.userId) || `Cliente ${String(loan?.userId).slice(0, 8)}`;
 
     return {
       id:
@@ -81,19 +124,12 @@ export class PaymentsService {
           ? crypto.randomUUID()
           : Date.now().toString()),
       loanId: loan?.id ?? loan?.loanId,
-      client: this.buildClientLabel(loan?.userId),
+      client: clientName,
       value,
       dueDate,
       status: this.mapStatus(installment?.paymentStatus),
       raw: { installment, loan },
     };
-  }
-
-  private buildClientLabel(value: any): string {
-    if (!value) {
-      return 'Cliente CapCred';
-    }
-    return `Cliente ${String(value).slice(0, 8)}`;
   }
 
   private mapStatus(status: string | undefined): string {

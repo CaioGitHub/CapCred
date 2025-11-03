@@ -14,13 +14,17 @@
     <span class="value">{{ data.firstDueDate | date: 'dd/MM/yyyy' }}</span>
   </div>
   <div class="simulation-item">
-    <span class="label">Taxa de juros:</span>
-    <span class="value">{{ data.rate | percent }}</span>
+    <span class="label">Taxa de juros mensal:</span>
+    <span class="value">{{ (data.rate * 100) | number: '1.2-2' }}%</span>
   </div>
   <mat-divider></mat-divider>
   <div class="simulation-item monthly-payment">
     <span class="label">Valor da parcela:</span>
     <span class="value">{{ data.monthlyInstallmentValue | currency: 'BRL':'symbol':'1.2-2' }}</span>
+  </div>
+  <div class="simulation-item total-amount">
+    <span class="label">Valor total a pagar:</span>
+    <span class="value highlight">{{ data.totalAmount | currency: 'BRL':'symbol':'1.2-2' }}</span>
   </div>
 </mat-dialog-content>
 

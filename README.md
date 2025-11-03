@@ -97,7 +97,356 @@ Todas as rotas externas passam pelo **API Gateway** (`http://localhost:8080`).
 
 -----
 
-## 4\. Infraestrutura e Setup Local
+## 4\. Frontend Angular - Interface de Usuário Moderna
+
+### 4.1 Stack Tecnológico
+
+| Tecnologia | Versão | Uso |
+| :--- | :--- | :--- |
+| **Angular** | 18.x | Framework principal (Standalone Components) |
+| **Angular Material** | 18.x | Design System (Material Design 3) |
+| **TypeScript** | 5.x | Tipagem forte e segurança em tempo de desenvolvimento |
+| **RxJS** | 7.x | Programação reativa (Observables, BehaviorSubjects) |
+| **Nginx** | Alpine | Servidor web para produção (Docker) |
+
+### 4.2 Arquitetura do Frontend
+
+```
+capcred-ui/
+├── src/
+│   ├── app/
+│   │   ├── core/                    # Serviços centrais e infraestrutura
+│   │   │   ├── animations/          # Animações de rotas
+│   │   │   │   └── route-animations.ts
+│   │   │   ├── guards/              # Proteção de rotas
+│   │   │   │   ├── auth.guard.ts    # Valida autenticação JWT
+│   │   │   │   └── role.guard.ts    # Valida permissões por role
+│   │   │   ├── interceptors/        # Interceptadores HTTP
+│   │   │   │   └── auth.interceptor.ts  # Injeta JWT em todas as requisições
+│   │   │   ├── mocks/               # Dados mock para desenvolvimento
+│   │   │   │   └── mock-data.service.ts
+│   │   │   ├── services/            # Serviços globais
+│   │   │   │   ├── auth.service.ts  # Autenticação e gestão de usuário
+│   │   │   │   ├── theme.service.ts # Gerenciamento de tema claro/escuro
+│   │   │   │   └── token.service.ts # Gerenciamento de tokens JWT
+│   │   │   └── shared/              # Componentes e serviços compartilhados
+│   │   │       ├── components/      # Loading spinner, etc.
+│   │   │       └── services/        # LoadingService
+│   │   ├── features/                # Módulos de funcionalidades
+│   │   │   ├── clients/             # Gestão de clientes (Admin)
+│   │   │   ├── dashboard/           # Visão geral + Simulador
+│   │   │   ├── loans/               # Gestão de empréstimos
+│   │   │   ├── login/               # Autenticação
+│   │   │   ├── payments/            # Gestão de parcelas
+│   │   │   ├── register/            # Cadastro de usuários
+│   │   │   ├── reports/             # Relatórios (futuro)
+│   │   │   └── settings/            # Configurações (futuro)
+│   │   ├── ui/                      # Componentes de UI
+│   │   │   ├── layouts/             # Layouts (Shell com sidebar)
+│   │   │   └── components/          # Header, Footer, etc.
+│   │   ├── app.config.ts            # Configuração da aplicação
+│   │   ├── app.html                 # Template principal
+│   │   ├── app.routes.ts            # Configuração de rotas
+│   │   ├── app.scss                 # Estilos do componente principal
+│   │   └── app.ts                   # Componente principal
+│   ├── assets/                      # Recursos estáticos
+│   ├── environments/                # Configurações de ambiente
+│   │   ├── environment.development.ts
+│   │   └── environment.ts
+│   ├── index.html                   # HTML principal
+│   ├── main.ts                      # Bootstrap da aplicação
+│   └── styles.scss                  # Estilos globais (Material Theme)
+```
+
+### 4.3 Funcionalidades Implementadas
+
+#### Login
+![Login](docs/screenshots/login.png)
+
+#### Dashboard
+![Dashboard](docs/screenshots/dashboard.png)
+
+#### Simulador de Empréstimo
+![Simulador](docs/screenshots/simulator.png)
+
+#### Gestão de Empréstimos
+![Empréstimos](docs/screenshots/loans.png)
+
+#### Criar Novo Empréstimo
+![Novo Empréstimo](docs/screenshots/create-loan.png)
+
+#### Gestão de Clientes (Admin)
+![Clientes](docs/screenshots/clients.png)
+
+#### Gestão de Pagamentos
+![Pagamentos](docs/screenshots/payments.png)
+
+### 4.4 Design System e Layout
+
+#### 4.4.1 Material Design 3
+
+**Paleta de Cores:**
+```scss
+$primary: #2196f3;   // Azul (botões principais)
+$accent: #4caf50;    // Verde (sucesso, aprovado)
+$warn: #f44336;      // Vermelho (erro, rejeitado)
+$background: #f5f5f5; // Cinza claro (fundo)
+```
+
+**Componentes Utilizados:**
+- `MatTable` - Tabelas com paginação e ordenação
+- `MatDialog` - Modais para criação/edição
+- `MatSnackBar` - Notificações (sucesso/erro/info)
+- `MatButton` - Botões com variações (flat, stroked, icon)
+- `MatIcon` - Ícones Material Icons
+- `MatFormField` - Campos de formulário com outline
+- `MatDatepicker` - Seletor de datas
+- `MatTooltip` - Dicas contextuais
+- `MatProgressSpinner` - Loading indicator
+
+#### 4.4.2 Layout Responsivo
+
+**Shell Layout (Container Principal)**
+```
+┌─────────────────────────────────────────────┐
+│  Header: Logo | Menu | Notificações | User │
+├──────────┬──────────────────────────────────┤
+│          │                                  │
+│ Sidebar  │     Content Area                 │
+│          │     <router-outlet>              │
+│ - Dash   │                                  │
+│ - Loans  │     [Página Atual]               │
+│ - Clients│                                  │
+│ - Pay    │                                  │
+│          │                                  │
+└──────────┴──────────────────────────────────┘
+```
+
+**Características:**
+- 📱 **Responsivo:** Sidebar colapsável em telas pequenas
+- 🎨 **Tema Escuro:** Toggle no header (localStorage)
+- 🔔 **Notificações:** Ícone com badge (futuro)
+- 👤 **Avatar:** Iniciais do usuário + dropdown menu
+
+#### 4.4.3 Feedback Visual Consistente
+
+**Loading States:**
+```typescript
+// Global Loading Overlay
+<app-loading [show]="loading.isLoading()"></app-loading>
+
+// Spinner centralizado com backdrop semi-transparente
+// Z-index alto (9999) para cobrir tudo
+```
+
+**Animações:**
+- ✨ Transições de rota com fade
+- 📊 Contagem animada nos cards (easing cubic)
+- 🔄 Ripple effect nos botões
+- 🎭 Modal com slide-in
+
+### 4.5 Fluxo de Usuário Completo
+
+#### 4.5.1 Fluxo Cliente (CLIENT)
+
+```
+1. Login (/login)
+   └─> Autentica via JWT
+       └─> Redireciona para /dashboard
+
+2. Dashboard
+   ├─> Visualiza resumo de empréstimos
+   ├─> Simula empréstimo (Quick Calculator)
+   │   └─> Modal exibe cálculo com juros
+   │       └─> [Opcional] Cria empréstimo
+   └─> Navega para outras seções
+
+3. Novo Empréstimo (Header)
+   ├─> Preenche formulário
+   ├─> Vê simulação em tempo real
+   └─> Solicita empréstimo
+       └─> Aguarda aprovação (análise automática)
+
+4. Meus Empréstimos (/loans)
+   ├─> Visualiza status de cada empréstimo
+   └─> Edita empréstimos pendentes
+
+5. Meus Pagamentos (/payments)
+   ├─> Lista parcelas pendentes/pagas
+   └─> Realiza pagamento de parcela
+       └─> Confirmação instantânea
+           └─> Auto-refresh da lista
+
+6. Logout
+   └─> Tokens removidos
+       └─> Redireciona para /login
+```
+
+#### 4.5.2 Fluxo Administrador (ADMIN)
+
+```
+1. Login (/login)
+   └─> Autentica via JWT
+       └─> Redireciona para /dashboard
+
+2. Dashboard
+   ├─> Visualiza métricas gerais (todos os clientes)
+   └─> Acessa funcionalidades administrativas
+
+3. Gestão de Clientes (/clients) 🔒 ADMIN ONLY
+   ├─> Visualiza todos os clientes
+   ├─> Cria novo cliente
+   └─> Busca/filtra clientes
+
+4. Empréstimos (/loans)
+   ├─> Visualiza TODOS os empréstimos
+   └─> Sem permissão para criar (lógica de negócio)
+
+5. Pagamentos (/payments)
+   ├─> Visualiza TODAS as parcelas
+   └─> SEM botão de pagamento (apenas monitora)
+       └─> Exibe "-" na coluna de ações
+
+6. Logout
+   └─> Mesma lógica do cliente
+```
+
+### 4.6 Segurança Frontend
+
+**Proteções Implementadas:**
+
+1. **Validação de Autenticação (AuthGuard)**
+   ```typescript
+   // Bloqueia acesso sem JWT válido
+   if (!authService.isAuthenticated()) {
+     router.navigate(['/login']);
+     return false;
+   }
+   ```
+
+2. **Controle de Acesso por Role (RoleGuard)**
+   ```typescript
+   // Valida permissão antes de renderizar rota
+   const requiredRoles = route.data['roles'];
+   if (!currentUser || !requiredRoles.includes(currentUser.role)) {
+     snackBar.open('Sem permissão', 'Fechar', { panelClass: 'snackbar-error' });
+     router.navigate(['/dashboard']);
+     return false;
+   }
+   ```
+
+3. **Injeção Automática de JWT (AuthInterceptor)**
+   ```typescript
+   // Adiciona Bearer Token em TODAS as requisições
+   if (token) {
+     req = req.clone({
+       setHeaders: { Authorization: `Bearer ${token}` }
+     });
+   }
+   ```
+
+4. **Validação de Token Expirado**
+   ```typescript
+   // Token decodificado e validado
+   isAuthenticated(): boolean {
+     if (!this.tokenService.hasValidAccessToken()) {
+       this.clearSession();
+       return false;
+     }
+     return true;
+   }
+   ```
+
+5. **Sanitização de Dados**
+   - Inputs validados com Reactive Forms
+   - Máscaras para telefone, CPF, moeda
+   - Escape automático do Angular (XSS protection)
+
+### 4.7 Performance e Otimizações
+
+**Estratégias Implementadas:**
+
+1. **Lazy Loading de Rotas**
+   ```typescript
+   {
+     path: 'loans',
+     loadComponent: () => import('./features/loans/loans').then(m => m.Loans)
+   }
+   // Carrega código apenas quando necessário
+   ```
+
+2. **Standalone Components**
+   - Sem NgModules (reduz bundle size)
+   - Tree-shaking mais eficiente
+
+3. **OnPush Change Detection**
+   ```typescript
+   @Component({
+     changeDetection: ChangeDetectionStrategy.OnPush
+   })
+   // Reduz ciclos de detecção de mudanças
+   ```
+
+4. **Debounce em Formulários**
+   ```typescript
+   this.form.valueChanges
+     .pipe(debounceTime(500))  // Aguarda 500ms
+     .subscribe(() => this.simulateIfValid());
+   // Evita chamadas excessivas à API
+   ```
+
+5. **Cache de Observables**
+   ```typescript
+   private clientsSubject = new BehaviorSubject<Client[]>([]);
+   getClients(): Observable<Client[]> {
+     if (!this.initialized) {
+       this.loadClients().subscribe();  // Carrega apenas 1x
+       this.initialized = true;
+     }
+     return this.clientsSubject.asObservable();
+   }
+   ```
+
+6. **Build Otimizado (Produção)**
+   ```bash
+   npm run build -- --configuration production
+   # - Minificação de JS/CSS
+   # - Tree-shaking
+   # - AOT Compilation
+   # - Source maps removidos
+   ```
+
+### 4.8 Acesso e URLs
+
+| Rota | Acesso | Descrição |
+| :--- | :--- | :--- |
+| `/login` | Público | Autenticação de usuários |
+| `/register` | Público | Cadastro de novos usuários |
+| `/dashboard` | Autenticado | Visão geral + Simulador |
+| `/loans` | Autenticado | Gestão de empréstimos |
+| `/clients` | Admin Only 🔒 | Gestão de clientes |
+| `/payments` | Autenticado | Gestão de parcelas |
+| `/reports` | Autenticado | Relatórios (futuro) |
+| `/settings` | Autenticado | Configurações (futuro) |
+
+**URL Base (Desenvolvimento):**
+```
+http://localhost:4200
+```
+
+**URL Base (Produção - Docker):**
+```
+http://localhost (porta 80)
+```
+
+**API Consumida:**
+```
+http://localhost:8080/api/*  (API Gateway)
+```
+
+-----
+
+## 5\. Infraestrutura e Setup Local
 
 ### 4.1 Requisitos de Segurança e Ambiente
 

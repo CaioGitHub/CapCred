@@ -151,7 +151,7 @@ export class PaymentsService {
    * @returns Observable com a resposta da API
    */
   payInstallment(installmentId: string): Observable<any> {
-    return this.http.post(`${environment.apiBaseUrl}/installments/${installmentId}/pay`, {}).pipe(
+    return this.http.put(`${environment.apiBaseUrl}/installments/${installmentId}/pay`, {}).pipe(
       timeout(15000),
       catchError((error) => {
         console.error('Erro ao processar pagamento:', error);

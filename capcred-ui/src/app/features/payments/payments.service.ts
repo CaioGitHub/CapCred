@@ -144,4 +144,19 @@ export class PaymentsService {
         return 'Pendente';
     }
   }
+
+  /**
+   * Realiza o pagamento de uma parcela
+   * @param installmentId ID da parcela a ser paga
+   * @returns Observable com a resposta da API
+   */
+  payInstallment(installmentId: string): Observable<any> {
+    return this.http.post(`${environment.apiBaseUrl}/installments/${installmentId}/pay`, {}).pipe(
+      timeout(15000),
+      catchError((error) => {
+        console.error('Erro ao processar pagamento:', error);
+        throw error;
+      })
+    );
+  }
 }

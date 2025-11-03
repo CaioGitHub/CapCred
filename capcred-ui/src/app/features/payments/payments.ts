@@ -11,6 +11,7 @@ import { PaymentsService, PaymentRow } from './payments.service';
 import { LoadingService } from '../../core/shared/services/loading.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-payments',
@@ -34,6 +35,7 @@ export class Payments {
   cols = ['id', 'client', 'value', 'dueDate', 'status', 'actions'];
   dataSource = new MatTableDataSource<PaymentRow>([]);
   filterValue = '';
+  isAdmin = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -41,10 +43,16 @@ export class Payments {
   constructor(
     private paymentsService: PaymentsService,
     private loading: LoadingService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
+    // Verifica se o usuário é admin
+    this.auth.currentUser$.subscribe(user => {
+      this.isAdmin = user?.isAdmin ?? false;
+    });
+
     this.loading.show();
     this.paymentsService.getPayments().subscribe({
       next: (data) => {

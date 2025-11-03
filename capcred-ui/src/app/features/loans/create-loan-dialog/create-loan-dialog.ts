@@ -13,7 +13,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ClientsService, Client } from '../../clients/clients.service';
 import { CreateLoanInput, Loan, LoanStatus, LoansService } from '../loans.service';
 import { AuthService, User } from '../../../core/services/auth.service';
-import { Observable } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, switchMap, catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-create-loan-dialog',
@@ -71,8 +71,14 @@ export class CreateLoanDialog {
 
   private amountSignal = signal<number>(10000);
   private installmentsSignal = signal<number>(12);
+  private simulationData = signal<{ monthlyInstallment: number; totalAmount: number } | null>(null);
 
   installmentValue = computed(() => {
+    const simulation = this.simulationData();
+    if (simulation) {
+      return simulation.monthlyInstallment;
+    }
+    // Fallback: cálculo simples sem juros
     const installments = this.installmentsSignal();
     if (!installments) {
       return 0;
@@ -80,7 +86,14 @@ export class CreateLoanDialog {
     return this.amountSignal() / installments;
   });
 
-  totalValue = computed(() => this.amountSignal());
+  totalValue = computed(() => {
+    const simulation = this.simulationData();
+    if (simulation) {
+      return simulation.totalAmount;
+    }
+    // Fallback: sem juros
+    return this.amountSignal();
+  });
 
   user$: Observable<User | null>;
 
@@ -117,17 +130,73 @@ export class CreateLoanDialog {
     }
 
     this.form.controls.amount.valueChanges
-      .pipe(takeUntilDestroyed())
+      .pipe(
+        takeUntilDestroyed(),
+        debounceTime(500),
+        distinctUntilChanged()
+      )
       .subscribe((value) => {
         this.amountSignal.set(Number(value) || 0);
+        this.simulateIfValid();
       });
 
     this.form.controls.installments.valueChanges
-      .pipe(takeUntilDestroyed())
+      .pipe(
+        takeUntilDestroyed(),
+        debounceTime(500),
+        distinctUntilChanged()
+      )
       .subscribe((value) => {
         const normalized = Number(value) || 0;
         this.installmentsSignal.set(normalized > 0 ? normalized : 0);
+        this.simulateIfValid();
       });
+
+    this.form.controls.firstDueDate.valueChanges
+      .pipe(
+        takeUntilDestroyed(),
+        debounceTime(500)
+      )
+      .subscribe(() => {
+        this.simulateIfValid();
+      });
+
+    // Simula na inicialização
+    this.simulateIfValid();
+  }
+
+  private simulateIfValid(): void {
+    const amount = this.amountSignal();
+    const installments = this.installmentsSignal();
+    const firstDueDate = this.form.controls.firstDueDate.value;
+
+    if (amount < 100 || installments < 1 || !firstDueDate) {
+      return;
+    }
+
+    const normalizedDueDate = this.normalizeDate(firstDueDate);
+    if (!normalizedDueDate) {
+      return;
+    }
+
+    this.loansService.simulateLoan({
+      amount,
+      installments,
+      firstDueDate: normalizedDueDate
+    }).pipe(
+      catchError(() => {
+        // Em caso de erro, usa cálculo simples sem juros
+        this.simulationData.set(null);
+        return of(null);
+      })
+    ).subscribe((result) => {
+      if (result) {
+        this.simulationData.set({
+          monthlyInstallment: result.monthlyInstallmentValue,
+          totalAmount: result.totalAmount
+        });
+      }
+    });
   }
 
   submit(): void {

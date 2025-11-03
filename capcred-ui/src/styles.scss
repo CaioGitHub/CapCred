@@ -1,8 +1,5 @@
 @use '@angular/material' as mat;
 
-// ===============================
-// Tema Claro
-// ===============================
 $light-theme: mat.define-theme((
   color: (
     theme-type: light,
@@ -11,9 +8,6 @@ $light-theme: mat.define-theme((
   ),
 ));
 
-// ===============================
-// Tema Escuro
-// ===============================
 $dark-theme: mat.define-theme((
   color: (
     theme-type: dark,
@@ -22,9 +16,17 @@ $dark-theme: mat.define-theme((
   ),
 ));
 
-// ===============================
-// Aplicação dinâmica
-// ===============================
+
+html:not(.dark-theme) {
+  --mat-table-row-item-outline-color: rgba(0, 0, 0, 0.08);
+  --mat-table-row-item-outline-width: 1px;
+}
+
+html.dark-theme {
+  --mat-table-row-item-outline-color: rgba(255, 255, 255, 0.068) !important;
+  --mat-table-row-item-outline-width: 1px;
+}
+
 html {
   color-scheme: light;
   @include mat.all-component-themes($light-theme);
@@ -35,15 +37,12 @@ html.dark-theme {
   @include mat.all-component-themes($dark-theme);
 }
 
-// ===============================
-// Estilos globais
-// ===============================
 html,
 body {
   height: 100%;
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  background-color: var(--mat-sys-surface); // ✅ usa a cor dinâmica do tema
+  background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -51,14 +50,155 @@ body {
 mat-sidenav-container,
 mat-sidenav-content,
 mat-sidenav {
-  background-color: var(--mat-sys-surface); // ✅ aplica no layout
+  background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 }
 
 .dashboard-card,
 .card,
 .mat-mdc-card {
-  background-color: var(--mat-sys-surface-container-high); // ✅ tons intermediários
+  background-color: var(--mat-sys-surface-container-high);
   color: var(--mat-sys-on-surface);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark-theme {
+  background-color: #121212;
+  color: #e0e0e0;
+
+  .mat-mdc-card,
+  .dashboard-card,
+  .card {
+    background-color: #1e1e1e !important;
+    border: 1px solid #2b2b2b;
+    color: #e0e0e0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  }
+
+  .mat-mdc-form-field-flex {
+    background-color: #2a2a2a !important;
+  }
+
+  .mat-mdc-input-element,
+  .mat-mdc-select-value {
+    color: #f5f5f5 !important;
+  }
+
+  .mat-mdc-form-field-label {
+    color: #bdbdbd !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #fafafa;
+  }
+
+  mat-icon {
+    color: #e0e0e0 !important;
+  }
+
+  a,
+  .view-all {
+    color: #90caf9 !important;
+    transition: color 0.3s ease;
+  }
+
+  .view-all:hover {
+    color: #64b5f6 !important;
+  }
+
+  .status-badge.aprovado   { background-color: #2e7d32 !important; }
+  .status-badge.pendente   { background-color: #ef6c00 !important; }
+  .status-badge.rejeitado  { background-color: #c62828 !important; }
+
+  .dot.green  { background: #43a047 !important; }
+  .dot.orange { background: #fb8c00 !important; }
+  .dot.red    { background: #e53935 !important; }
+
+  .mat-mdc-raised-button.mat-primary,
+  .mat-mdc-flat-button.mat-primary {
+    background-color: #1e88e5 !important;
+    color: #fff !important;
+  }
+
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .mat-mdc-progress-spinner circle {
+    stroke: #90caf9 !important;
+    opacity: 0.8;
+  }
+
+  .loading-overlay {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .loading-spinner {
+    filter: brightness(0.9);
+  }
+}
+
+html:not(.dark-theme) {
+  .mat-mdc-progress-spinner circle {
+    stroke: var(--mat-sys-primary) !important;
+  }
+
+  .loading-overlay {
+    background-color: rgba(255, 255, 255, 0.6) !important;
+  }
+}
+
+/* Dashboard: stats area shares card surface look */
+html:not(.dark-theme) .page-container .stats-grid {
+  border: 1px solid var(--mat-sys-outline-variant) !important;
+  border-radius: 12px;
+  // box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+html.dark-theme .page-container .stats-grid {
+  // border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 12px;
+  // box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8);
+}
+
+/* Create Client dialog styling */
+.create-client-dialog-panel .mat-mdc-dialog-surface {
+  background: var(--mat-sidenav-content-background-color);
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 25%, transparent);
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.28);
+  padding: 0;
+}
+
+.create-client-dialog-panel .mat-mdc-dialog-content {
+  padding: 0 24px 16px;
+}
+
+.create-client-dialog-panel .mat-mdc-dialog-actions {
+  padding: 8px 24px 20px;
+}
+
+html.dark-theme .create-client-dialog-panel .mat-mdc-dialog-surface {
+  background: #262626;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* Snackbar custom styles */
+.snackbar-success {
+  --mdc-snackbar-container-color: #4caf50 !important;
+  --mat-snack-bar-button-color: #fff !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
+}
+
+.snackbar-error {
+  --mdc-snackbar-container-color: #f44336 !important;
+  --mat-snack-bar-button-color: #fff !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
+}
+
+.snackbar-info {
+  --mdc-snackbar-container-color: #2196f3 !important;
+  --mat-snack-bar-button-color: #fff !important;
+  --mdc-snackbar-supporting-text-color: #fff !important;
 }

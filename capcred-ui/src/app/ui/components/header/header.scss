@@ -2,9 +2,12 @@
   display: flex;
   align-items: center;
   height: 64px;
-  background: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
   padding: 0 1rem;
+  color: var(--mat-sys-on-surface);
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .left {
@@ -17,12 +20,14 @@
   font-size: 1.2rem;
   margin: 0;
   font-weight: 600;
-  color: #222;
+  color: var(--mat-sys-on-surface);
+  transition: color 0.3s ease;
 }
 
 .subtitle {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--mat-sys-on-surface-variant);
+  transition: color 0.3s ease;
 }
 
 .spacer {
@@ -35,6 +40,15 @@
   gap: 0.5rem;
 }
 
+.actions button[mat-icon-button] {
+  color: var(--mat-sys-on-surface-variant);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.actions button[mat-icon-button]:hover {
+  color: var(--mat-sys-on-surface);
+}
+
 .new-loan-btn {
   display: flex;
   align-items: center;
@@ -45,6 +59,11 @@
   color: #fff !important;
   border-radius: 6px;
   text-transform: none;
+}
+
+.theme-btn.mat-mdc-icon-button {
+  width: 40px;
+  height: 40px;
 }
 
 /* Mobile tweaks */

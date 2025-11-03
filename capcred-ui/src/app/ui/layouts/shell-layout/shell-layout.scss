@@ -1,7 +1,7 @@
 /* ======= CONTAINER PRINCIPAL ======= */
 .layout-container {
   height: 100vh;
-  background-color: var(--mat-sys-surface-container-lowest);
+  background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -9,12 +9,38 @@
 /* ======= SIDENAV ======= */
 .sidenav {
   width: 250px;
-  background-color: var(--mat-sys-surface);
+  background-color: #ffffff !important; /* 🔹 força fundo sólido no modo claro */
   border-right: 1px solid var(--mat-sys-outline-variant);
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
   z-index: 1000;
+  color: var(--mat-sys-on-surface);
   transition: background-color 0.3s ease, color 0.3s ease;
+
+  ::ng-deep .mat-drawer-inner-container,
+  ::ng-deep .mat-mdc-drawer-inner-container {
+    background-color: #ffffff !important; /* 🔹 garante cor sólida também dentro do wrapper */
+    color: var(--mat-sys-on-surface) !important;
+    opacity: 1 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    mix-blend-mode: normal !important;
+  }
 }
+
+/* 🌙 Modo escuro */
+html.dark-theme .sidenav {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.6);
+}
+
+html.dark-theme ::ng-deep .mat-drawer-inner-container,
+html.dark-theme ::ng-deep .mat-mdc-drawer-inner-container {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0 !important;
+}
+
 
 /* ======= CONTEÚDO PRINCIPAL ======= */
 .main {

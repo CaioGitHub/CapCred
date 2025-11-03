@@ -1,0 +1,60 @@
+.loan-simulation-title {
+  padding-inline: 16px;
+}
+
+.loan-simulation-content {
+  padding: 16px;
+  min-width: 400px;
+
+  .simulation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .label {
+      text-align: left;
+      flex: 1;
+      font-weight: 400;
+    }
+
+    .value {
+      text-align: right;
+      flex-shrink: 0;
+      margin-left: 16px;
+      font-weight: 500;
+
+      &.highlight {
+        color: var(--mat-primary);
+        font-size: 1.25em;
+      }
+    }
+
+    &.monthly-payment {
+      margin-top: 16px;
+
+      .value {
+        font-weight: bold;
+        font-size: 1.15em;
+      }
+    }
+
+    &.total-amount {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+      .label {
+        font-weight: 600;
+      }
+
+      .value {
+        font-weight: 700;
+      }
+    }
+  }
+
+  mat-divider {
+    margin: 16px 0;
+  }
+}

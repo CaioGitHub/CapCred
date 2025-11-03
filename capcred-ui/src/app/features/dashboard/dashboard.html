@@ -9,7 +9,6 @@
           <h3>{{ s.title }}</h3>
         </div>
         <h2 class="value">{{ s.displayValue }}</h2>
-        <p class="trend">{{ s.trend }}</p>
       </mat-card>
     </div>
 
@@ -79,7 +78,7 @@
     <mat-card appearance="outlined" class="side-card">
       <h3>Ações Rápidas</h3>
       <div class="actions">
-        <button mat-stroked-button color="primary" class="w-100">
+        <button mat-stroked-button color="primary" class="w-100" (click)="openCreateClientDialog()" *ngIf="(user$ | async)?.isAdmin">
           <mat-icon>person_add</mat-icon> Novo Cliente
         </button>
         <button mat-stroked-button color="primary" class="w-100">
@@ -94,9 +93,9 @@
     <mat-card appearance="outlined" class="side-card">
       <h3>Status de Pagamentos</h3>
       <ul class="status-list">
-        <li><span class="dot green"></span> Em dia <strong>186</strong></li>
-        <li><span class="dot orange"></span> Vencendo <strong>34</strong></li>
-        <li><span class="dot red"></span> Em atraso <strong>27</strong></li>
+        <li><span class="dot green"></span> Em dia <strong>{{ emDiaCount }}</strong></li>
+        <li><span class="dot orange"></span> Vencendo <strong>{{ vencendoCount }}</strong></li>
+        <li><span class="dot red"></span> Em atraso <strong>{{ emAtrasoCount }}</strong></li>
       </ul>
     </mat-card>
 
@@ -115,6 +114,16 @@
             <mat-option value="12x">12x</mat-option>
             <mat-option value="24x">24x</mat-option>
           </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Primeiro vencimento</mat-label>
+          <input matInput [matDatepicker]="duePicker" formControlName="firstDueDate" />
+          <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+          <mat-datepicker #duePicker></mat-datepicker>
+          <mat-error *ngIf="quickCalcForm.controls.firstDueDate.hasError('required')">
+            Informe a data do primeiro vencimento
+          </mat-error>
         </mat-form-field>
 
         <button mat-flat-button color="primary" type="submit" class="w-100">Calcular</button>

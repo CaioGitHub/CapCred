@@ -3,27 +3,50 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  background-color: #ffffff;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: var(--mat-sys-surface-container-high) !important; /* 🔹 Mais opaco e consistente */
+  border-right: 1px solid var(--mat-sys-outline-variant);
   font-family: Roboto, sans-serif;
   color: var(--mat-sys-on-surface);
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
+
+/* 🌙 Dark theme */
+html.dark-theme :host {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.6);
+}
+
 
 /* ---------- LOGO ---------- */
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
   padding: 1.25rem 1.25rem 0.75rem;
   font-weight: 700;
   font-size: 1.25rem;
-  color: #1e4fb8;
-}
+  color: var(--mat-sys-primary);
 
-.logo-icon {
-  font-size: 1.8rem;
-  color: #1e4fb8;
+  img.logo-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 6px;
+    filter: brightness(1);
+    transition: filter 0.3s ease;
+  }
+
+  /* 🌙 Ajuste sutil no dark mode */
+  html.dark-theme & img.logo-img {
+    filter: brightness(1.1);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
 }
 
 /* ---------- MENU ---------- */
@@ -41,7 +64,7 @@ a[mat-list-item] {
   margin: 2px 0;
   font-weight: 500;
   transition: all 0.2s ease;
-  color: #333;
+  color: var(--mat-sys-on-surface);
   height: 42px;
   padding: 0px 15px;
   text-decoration: none;
@@ -49,53 +72,28 @@ a[mat-list-item] {
 
 a[mat-list-item] mat-icon {
   margin-right: 12px;
-  color: #555;
+  color: var(--mat-sys-on-surface-variant);
   font-size: 20px;
+  transition: color 0.2s ease;
 }
 
 a[mat-list-item]:hover {
-  background-color: rgba(30, 79, 184, 0.08);
-  color: #1e4fb8;
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  color: var(--mat-sys-primary);
 }
 
 a[mat-list-item]:hover mat-icon {
-  color: #1e4fb8;
+  color: var(--mat-sys-primary);
 }
 
 a.active {
-  background-color: rgba(30, 79, 184, 0.15);
-  color: #1e4fb8;
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+  color: var(--mat-sys-primary);
   font-weight: 600;
 }
 
 a.active mat-icon {
-  color: #1e4fb8;
-}
-
-/* ---------- USER SECTION ---------- */
-.user {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.75rem 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #f9f9f9;
-}
-
-.user mat-icon {
-  color: #555;
-  font-size: 20px;
-}
-
-.user .info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-  font-size: 0.85rem;
-}
-
-.user strong {
-  font-weight: 600;
+  color: var(--mat-sys-primary);
 }
 
 /* ---------- USER SECTION ---------- */
@@ -104,8 +102,8 @@ a.active mat-icon {
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #f9f9f9;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
   flex-shrink: 0;
   overflow: hidden; /* 👈 evita o scroll horizontal */
   white-space: nowrap; /* 👈 impede quebra de linha */
@@ -128,7 +126,7 @@ a.active mat-icon {
 .name {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #222;
+  color: var(--mat-sys-on-surface);
   max-width: 110px; /* 👈 limite de largura */
   overflow: hidden;
   text-overflow: ellipsis; /* 👈 adiciona os “...” */
@@ -138,11 +136,11 @@ a.active mat-icon {
 
 .role {
   font-size: 0.75rem;
-  color: #666;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .logout-btn {
-  color: #444;
+  color: var(--mat-sys-on-surface-variant);
   flex-shrink: 0;
   margin-left: auto;
   transition: color 0.2s ease;

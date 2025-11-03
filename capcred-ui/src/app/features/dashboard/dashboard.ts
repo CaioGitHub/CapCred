@@ -1,6 +1,6 @@
 import { CommonModule, NgFor } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,9 +8,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { MockDataService } from '../../core/services/mock-data.service';
+import { LoansService, SimulatedLoan } from '../loans/loans.service';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
+import { PaymentsService } from '../payments/payments.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CreateClientDialog } from '../clients/create-client-dialog/create-client-dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { AuthService, User } from '../../core/services/auth.service';
+import { Observable } from 'rxjs';
+import { SimulateLoanDialog } from '../loans/simulate-loan-dialog/simulate-loan-dialog';
+import moment from 'moment';
+import { MatDatepicker, MatDatepickerInput, MatDatepickerModule, MatDatepickerToggle } from "@angular/material/datepicker";
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,33 +35,56 @@ import { Router } from '@angular/router';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatTooltip
-  ],
+    MatTooltip,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatDatepicker,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatDatepickerModule,
+    MatNativeDateModule,
+],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class Dashboard implements OnInit {
   stats = [
-    { title: 'Total de Empréstimos', value: 0, displayValue: '0', icon: 'credit_card', trend: '+12% este mês', color: 'primary' },
-    { title: 'Valor Total', value: 0, displayValue: 'R$ 0', icon: 'attach_money', trend: '+8% este mês', color: 'success' },
-    { title: 'Pendentes', value: 0, displayValue: '0', icon: 'pending', trend: 'Aguardando aprovação', color: 'warn' },
-    { title: 'Em Atraso', value: 7, displayValue: '7', icon: 'error', trend: 'Requer atenção', color: 'danger' },
+    { title: 'Total de Empréstimos', value: 0, displayValue: '0', icon: 'credit_card', color: 'primary' },
+    { title: 'Valor Total', value: 0, displayValue: 'R$ 0', icon: 'attach_money', color: 'success' },
+    { title: 'Pendentes', value: 0, displayValue: '0', icon: 'pending', color: 'warn' },
+    { title: 'Em Atraso', value: 0, displayValue: '0', icon: 'error', color: 'danger' },
   ];
 
   loans: any[] = [];
   recentLoans: any[] = [];
   displayedColumns = ['client', 'amount', 'installments', 'status', 'date', 'actions'];
   quickCalcForm: any;
+  // Pagamentos (Status de Pagamentos)
+  emDiaCount = 0;
+  vencendoCount = 0;
+  emAtrasoCount = 0;
 
-  constructor(private fb: FormBuilder, private mockData: MockDataService, private router: Router) {
+  user$: Observable<User | null>;
+
+  constructor(
+    private fb: FormBuilder,
+    private loansService: LoansService,
+    private router: Router,
+    private paymentsService: PaymentsService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private auth: AuthService
+  ) {
+    this.user$ = this.auth.currentUser$;
     this.quickCalcForm = this.fb.group({
       value: [10000],
       installments: ['6x'],
+      firstDueDate: [moment().add(1, 'months').toDate(), Validators.required],
     });
   }
 
   ngOnInit() {
-    this.mockData.getLoans().subscribe((loans) => {
+    this.loansService.getLoans().subscribe((loans) => {
       // Ordena por data (mais recente primeiro)
       this.loans = loans.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -78,6 +111,24 @@ export class Dashboard implements OnInit {
 
       this.animateCount(0, pendingCount, 800, (val) => {
         this.stats[2].displayValue = Math.floor(val).toString();
+      });
+    });
+
+    // Status de Pagamentos (dados reais do service de payments)
+    this.paymentsService.getPayments().subscribe((payments) => {
+      const toLower = (s: string) => (s || '').toLowerCase();
+      const emDia = payments.filter((p) => toLower(p.status) === 'pago').length;
+      const vencendo = payments.filter((p) => toLower(p.status) === 'pendente').length;
+      const emAtraso = payments.filter((p) => toLower(p.status) === 'em atraso').length;
+
+      // Atualiza contadores
+      this.emDiaCount = emDia;
+      this.vencendoCount = vencendo;
+      this.emAtrasoCount = emAtraso;
+
+      this.stats[3].value = emAtraso;
+      this.animateCount(0, emAtraso, 800, (val) => {
+        this.stats[3].displayValue = Math.floor(val).toString();
       });
     });
   }
@@ -122,7 +173,38 @@ export class Dashboard implements OnInit {
   }
 
   calculate() {
-    const { value, installments } = this.quickCalcForm.value;
-    alert(`Simulação de ${installments} para R$ ${value?.toLocaleString('pt-BR')}`);
+    const { value, installments, firstDueDate } = this.quickCalcForm.value;
+    this.loansService.simulateLoan({
+      amount: Number(value) || 0,
+      installments: Number(String(installments).replace(/\D/g, '')) || 1,
+      firstDueDate: firstDueDate.toISOString().slice(0, 10),
+    }).subscribe((simulation) => {
+      this.openSimulateLoanDialog(simulation);
+    });
+  }
+
+  openCreateClientDialog(): void {
+    const dialogRef = this.dialog.open(CreateClientDialog, {
+      width: '440px',
+      disableClose: true,
+      panelClass: 'create-client-dialog-panel',
+    });
+
+    dialogRef.afterClosed().subscribe((client) => {
+      if (client) {
+        this.snackBar.open('Cliente criado com sucesso.', 'Fechar', {
+          duration: 3000,
+        });
+      }
+    });
+  }
+
+  openSimulateLoanDialog(loan: SimulatedLoan): void {
+    this.dialog.open(SimulateLoanDialog, {
+      width: '440px',
+      disableClose: true,
+      panelClass: 'create-client-dialog-panel',
+      data: loan,
+    });
   }
 }

@@ -1,55 +1,139 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { PAYMENTS_MOCK } from '../../core/mocks/payments.mock';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MockDataService } from '../../core/services/mock-data.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { PaymentsService, PaymentRow } from './payments.service';
 import { LoadingService } from '../../core/shared/services/loading.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-payments',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatPaginator, MatSort, MatFormFieldModule, MatInputModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatPaginator,
+    MatSort,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSnackBarModule,
+    MatTooltipModule,
+  ],
   templateUrl: './payments.html',
-  styleUrl: './payments.scss'
+  styleUrl: './payments.scss',
 })
 export class Payments {
   cols = ['id', 'client', 'value', 'dueDate', 'status', 'actions'];
-  dataSource = new MatTableDataSource<any>([]);
+  dataSource = new MatTableDataSource<PaymentRow>([]);
   filterValue = '';
+  isAdmin = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private mockData: MockDataService, private loading: LoadingService) {}
+  constructor(
+    private paymentsService: PaymentsService,
+    private loading: LoadingService,
+    private snackBar: MatSnackBar,
+    private auth: AuthService
+  ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    // Verifica se o usuário é admin
+    this.auth.currentUser$.subscribe(user => {
+      this.isAdmin = user?.isAdmin ?? false;
+    });
+
     this.loading.show();
-    this.mockData.getPayments().subscribe((data) => {
-      this.dataSource.data = data;
-      setTimeout(() => this.loading.hide(), 500);
+    this.paymentsService.getPayments().subscribe({
+      next: (data) => {
+        this.dataSource.data = data;
+        this.loading.hide();
+      },
+      error: () => {
+        this.loading.hide();
+      },
     });
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  applyFilter(event: Event) {
+  applyFilter(event: Event): void {
     const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.filterValue = value;
     this.dataSource.filter = value;
   }
 
-  clearFilter() {
+  clearFilter(): void {
     this.filterValue = '';
     this.dataSource.filter = '';
+  }
+
+  /**
+   * Processa o pagamento de uma parcela
+   * @param payment Linha de pagamento com os dados da parcela
+   */
+  processPayment(payment: PaymentRow): void {
+    // Verifica se já está pago
+    if (payment.status.toLowerCase() === 'pago') {
+      this.snackBar.open('Esta parcela já foi paga.', 'Fechar', {
+        duration: 3000,
+        panelClass: ['snackbar-info']
+      });
+      return;
+    }
+
+    this.loading.show();
+    this.paymentsService.payInstallment(payment.id).subscribe({
+      next: () => {
+        this.snackBar.open('Pagamento realizado com sucesso!', 'Fechar', {
+          duration: 4000,
+          panelClass: ['snackbar-success']
+        });
+        this.loading.hide();
+        // Recarrega a lista de pagamentos
+        this.refreshPayments();
+      },
+      error: (error) => {
+        console.error('Erro ao processar pagamento:', error);
+        this.snackBar.open(
+          'Erro ao processar o pagamento, entre em contato com a instituição financeira.',
+          'Fechar',
+          {
+            duration: 5000,
+            panelClass: ['snackbar-error']
+          }
+        );
+        this.loading.hide();
+      }
+    });
+  }
+
+  /**
+   * Recarrega a lista de pagamentos
+   */
+  private refreshPayments(): void {
+    this.loading.show();
+    this.paymentsService.getPayments().subscribe({
+      next: (data) => {
+        this.dataSource.data = data;
+        this.loading.hide();
+      },
+      error: () => {
+        this.loading.hide();
+      },
+    });
   }
 }

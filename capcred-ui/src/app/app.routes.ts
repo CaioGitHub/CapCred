@@ -3,11 +3,17 @@ import { ShellLayout } from './ui/layouts/shell-layout/shell-layout';
 import { Dashboard } from './features/dashboard/dashboard';
 import { Login } from './features/login/login';
 import { AuthGuard } from './core/guards/auth.guard';
+import { Register } from './features/register/register';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: Login,
+  },
+  {
+    path: 'register',
+    component: Register,
   },
   {
     path: '',
@@ -24,6 +30,8 @@ export const routes: Routes = [
         path: 'clients',
         loadComponent: () =>
           import('./features/clients/clients').then((m) => m.Clients),
+        canActivate: [roleGuard],
+        data: { roles: ['Administrador'] }
       },
       {
         path: 'payments',
@@ -44,5 +52,5 @@ export const routes: Routes = [
     ],
   },
 
-  { path: '**', redirectTo: 'login' },
+  { path: '**', redirectTo: 'dashboard' },
 ];

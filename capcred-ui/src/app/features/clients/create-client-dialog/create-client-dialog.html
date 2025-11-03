@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>Novo Cliente</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="name" placeholder="Ex: Ana Silva" />
+      <mat-error *ngIf="form.controls.name.hasError('required')">Informe o nome</mat-error>
+      <mat-error *ngIf="form.controls.name.hasError('minlength')">
+        Mínimo de 3 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>E-mail</mat-label>
+      <input matInput formControlName="email" placeholder="cliente@email.com" type="email" />
+      <mat-error *ngIf="form.controls.email.hasError('required')">Informe o e-mail</mat-error>
+      <mat-error *ngIf="form.controls.email.hasError('email')">E-mail inválido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Telefone</mat-label>
+      <input
+        matInput
+        formControlName="phone"
+        placeholder="(11)99999-9999"
+        maxlength="14"
+        type="tel"
+        inputmode="numeric"
+      />
+      <mat-error *ngIf="form.controls.phone.hasError('required')">Informe o telefone</mat-error>
+      <mat-error *ngIf="form.controls.phone.hasError('pattern')">
+        Formato inválido. Use (11)99999-9999
+      </mat-error>
+    </mat-form-field>
+
+    <div class="error" *ngIf="errorMessage() as error">{{ error }}</div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()" [disabled]="submitting()">Cancelar</button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    (click)="submit()"
+    [disabled]="submitting()"
+  >
+    <mat-icon *ngIf="submitting()" class="spin">autorenew</mat-icon>
+    <span *ngIf="!submitting()">Salvar</span>
+    <span *ngIf="submitting()">Salvando...</span>
+  </button>
+</mat-dialog-actions>

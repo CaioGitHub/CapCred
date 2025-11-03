@@ -14,7 +14,23 @@
 .stat-card {
   padding: 1rem;
   transition: transform 0.2s ease;
-  transform: scale(1.05);
+  background-color: var(--mat-card-outlined-container-color) !important;
+  box-shadow: none;
+  border: none !important;
+}
+
+.stat-card:hover {
+  transform: scale(1.02);
+}
+
+.stat-card .header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-card .icon {
+  color: var(--mat-sys-primary);
 }
 
 .stat-card .value {
@@ -24,18 +40,15 @@
   transition: color 0.3s ease, transform 0.2s ease;
 }
 
-.stat-card .value::before {
-  content: "";
-  margin-right: 4px;
-}
-
 .stat-card .value:hover {
   transform: scale(1.05);
-  color: var(--mat-primary);
+  color: var(--mat-sys-primary);
 }
 
 .loans-card {
   padding: 1rem;
+  border-radius: 12px;
+  transition: border-color 0.3s ease;
 }
 
 .card-header {
@@ -51,31 +64,47 @@
   gap: 4px;
   color: var(--mat-sys-primary);
   font-weight: 500;
-  text-decoration: none;
   cursor: pointer;
   transition: color 0.2s ease;
 }
+
 .view-all:hover {
-  color: #1e50b8;
+  color: color-mix(in srgb, var(--mat-sys-primary) 80%, var(--mat-sys-on-surface));
 }
 
-
-.loans-table {
-  width: 100%;
-  border-collapse: collapse;
-  transition: background-color 0.15s ease;
+html:not(.dark-theme) .loans-card {
+  background-color: #fafafd;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
 }
 
-.loans-table tr:hover {
-  background-color: rgba(30, 79, 184, 0.05);
+html:not(.dark-theme) .loans-card .mat-mdc-header-row {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.loans-table tr:not(.mat-header-row):hover {
-  background-color: rgba(30, 79, 184, 0.04);
+html:not(.dark-theme) .loans-card .mat-mdc-row:hover .mat-mdc-cell {
+  background-color: rgba(0, 0, 0, 0.015);
 }
 
-.loans-table th {
-  font-weight: 600;
+html.dark-theme .loans-card {
+  background-color: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8);
+  color: #e0e0e0;
+}
+
+html.dark-theme .loans-card .mat-mdc-header-row {
+  background-color: #2a2a2a;
+  color: #f5f5f5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+html.dark-theme .loans-card .mat-mdc-row:hover .mat-mdc-cell {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+html.dark-theme .loans-card mat-icon {
+  color: #e0e0e0;
 }
 
 .client-cell {
@@ -93,17 +122,21 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
-.status {
-  padding: 0.2rem 0.6rem;
+.status-badge {
+  padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 500;
   color: #fff;
+  text-transform: capitalize;
+  display: inline-block;
+  animation: fadeIn 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.status.aprovado { background: #4caf50; }
-.status.pendente { background: #ff9800; }
-.status.rejeitado { background: #f44336; }
+.status-badge.aprovado  { background-color: #4caf50; }
+.status-badge.pendente  { background-color: #ff9800; }
+.status-badge.rejeitado { background-color: #f44336; }
 
 .side-column {
   display: flex;
@@ -113,6 +146,8 @@
 
 .side-card {
   padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+  border-radius: 12px;
 }
 
 .actions button {
@@ -120,9 +155,7 @@
   text-align: left;
 }
 
-.w-100 {
-  width: 100%;
-}
+.w-100 { width: 100%; }
 
 .status-list {
   list-style: none;
@@ -155,30 +188,12 @@
   }
 }
 
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #fff;
-  text-transform: capitalize;
-  display: inline-block;
-  animation: fadeIn 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-
-.status-badge.aprovado {
-  background-color: #4caf50;
-}
-.status-badge.pendente {
-  background-color: #ff9800;
-}
-.status-badge.rejeitado {
-  background-color: #f44336;
-}
-
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
+
+.mat-mdc-card-outlined {
+  border: none;
+}
+

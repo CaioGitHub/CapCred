@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar Emprestimo' : 'Novo Emprestimo' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline" class="full-width" *ngIf="(user$ | async)?.isAdmin">
+      <mat-label>Cliente</mat-label>
+      <mat-select formControlName="clientId" placeholder="Selecione o cliente" [disabled]="isEditMode">
+        <mat-option *ngIf="needsFallbackClientOption()" [value]="editingClientId">
+          <div class="client-option">
+            <span>{{ editingClientName }}</span>
+            <small *ngIf="editingClientEmail">{{ editingClientEmail }}</small>
+          </div>
+        </mat-option>
+        <mat-option *ngFor="let client of clients()" [value]="client.id">
+          <div class="client-option">
+            <span>{{ client.name }}</span>
+            <small>{{ client.email }}</small>
+          </div>
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="isEditMode && editingClientEmail">{{ editingClientEmail }}</mat-hint>
+      <mat-error *ngIf="form.controls.clientId.hasError('required')"> Selecione um cliente </mat-error>
+    </mat-form-field>
+
+    <div class="inline-fields">
+      <mat-form-field appearance="outline">
+        <mat-label>Valor</mat-label>
+        <input matInput type="number" formControlName="amount" min="100" />
+        <mat-error *ngIf="form.controls.amount.hasError('required')">
+          Informe o valor desejado
+        </mat-error>
+        <mat-error *ngIf="form.controls.amount.hasError('min')">
+          Valor minimo de R$ 100
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Parcelas</mat-label>
+        <input matInput type="number" formControlName="installments" min="1" />
+        <mat-error *ngIf="form.controls.installments.hasError('required')">
+          Informe a quantidade de parcelas
+        </mat-error>
+        <mat-error *ngIf="form.controls.installments.hasError('min')">
+          Minimo de 1 parcela
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Primeiro vencimento</mat-label>
+      <input matInput [matDatepicker]="duePicker" formControlName="firstDueDate" />
+      <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+      <mat-datepicker #duePicker></mat-datepicker>
+      <mat-error *ngIf="form.controls.firstDueDate.hasError('required')">
+        Informe a data do primeiro vencimento
+      </mat-error>
+    </mat-form-field>
+
+    <div class="summary">
+      <div>
+        Parcela estimada:
+        <strong>
+          {{ installmentValue() | currency: 'BRL':'symbol':'1.2-2' }}
+        </strong>
+      </div>
+      <div>
+        Valor total:
+        <strong>{{ totalValue() | currency: 'BRL':'symbol':'1.2-2' }}</strong>
+      </div>
+    </div>
+
+    <div class="error" *ngIf="errorMessage() as error">{{ error }}</div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()" [disabled]="submitting()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="submit()" [disabled]="submitting()">
+    <mat-icon *ngIf="submitting()" class="spin">autorenew</mat-icon>
+    <span *ngIf="!submitting()">Salvar</span>
+    <span *ngIf="submitting()">Salvando...</span>
+  </button>
+</mat-dialog-actions>

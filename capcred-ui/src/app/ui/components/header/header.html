@@ -18,11 +18,22 @@
   <span class="spacer"></span>
 
   <div class="actions">
+    <button
+      mat-icon-button
+      type="button"
+      class="theme-btn"
+      [attr.aria-label]="themeLabel()"
+      [matTooltip]="themeLabel()"
+      (click)="toggleTheme()"
+    >
+      <mat-icon>{{ themeIcon() }}</mat-icon>
+    </button>
+
     <button mat-icon-button aria-label="notificações" class="notif-btn">
       <mat-icon>notifications</mat-icon>
     </button>
 
-    <button mat-flat-button color="primary" class="new-loan-btn">
+    <button mat-flat-button color="primary" class="new-loan-btn" (click)="openCreateLoanDialog()">
       <mat-icon>add</mat-icon>
       Novo Empréstimo
     </button>

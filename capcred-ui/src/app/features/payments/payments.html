@@ -53,7 +53,17 @@
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>Ações</th>
     <td mat-cell *matCellDef="let p">
-      <button mat-icon-button color="primary"><mat-icon>visibility</mat-icon></button>
+      <button
+        *ngIf="!isAdmin"
+        mat-icon-button
+        [color]="p.status.toLowerCase() === 'pago' ? 'accent' : 'primary'"
+        (click)="processPayment(p)"
+        [disabled]="p.status.toLowerCase() === 'pago'"
+        [matTooltip]="p.status.toLowerCase() === 'pago' ? 'Pagamento já realizado' : 'Realizar pagamento'"
+      >
+        <mat-icon>{{ p.status.toLowerCase() === 'pago' ? 'check_circle' : 'payment' }}</mat-icon>
+      </button>
+      <span *ngIf="isAdmin" class="admin-text">-</span>
     </td>
   </ng-container>
 

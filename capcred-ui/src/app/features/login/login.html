@@ -1,11 +1,13 @@
 <div class="login-container" [@routeFadeAnimation]>
   <mat-card class="login-card">
-    <div class="logo">
-      <img src="assets/logo.svg" alt="CapCred" class="logo-icon" />
-      <h2>CapCred</h2>
+    <div class="login-logo">
+      <img src="assets/logo.png" alt="CapCred Logo" class="logo-img" />
+      <h1>CapCred</h1>
     </div>
 
     <h3>Entrar no sistema</h3>
+
+    <p class="info" *ngIf="info">{{ info }}</p>
 
     <form (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline" class="full-width">
@@ -22,6 +24,17 @@
         <mat-icon *ngIf="!loading">login</mat-icon>
         <mat-icon *ngIf="loading" class="spin">autorenew</mat-icon>
         {{ loading ? 'Entrando...' : 'Entrar' }}
+      </button>
+
+      <button
+        mat-button
+        type="button"
+        class="full-width secondary"
+        (click)="goToRegister()"
+        [disabled]="loading"
+      >
+        <mat-icon>person_add</mat-icon>
+        Criar uma conta
       </button>
 
       <p class="error" *ngIf="error">{{ error }}</p>

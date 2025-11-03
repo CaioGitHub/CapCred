@@ -10,6 +10,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 12px;
 
     .label {
       text-align: left;
@@ -22,6 +23,11 @@
       flex-shrink: 0;
       margin-left: 16px;
       font-weight: 500;
+
+      &.highlight {
+        color: var(--mat-primary);
+        font-size: 1.25em;
+      }
     }
 
     &.monthly-payment {
@@ -32,5 +38,23 @@
         font-size: 1.15em;
       }
     }
+
+    &.total-amount {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+      .label {
+        font-weight: 600;
+      }
+
+      .value {
+        font-weight: 700;
+      }
+    }
+  }
+
+  mat-divider {
+    margin: 16px 0;
   }
 }

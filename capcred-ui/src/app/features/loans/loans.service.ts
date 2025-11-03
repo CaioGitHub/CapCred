@@ -3,8 +3,9 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { MockDataService } from '../../core/services/mock-data.service';
 import { environment } from '../../../environments/environment';
-import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
+import { ClientsService } from '../clients/clients.service';
 
 export enum LoanStatus {
   Pendente = 'Pendente',
@@ -33,6 +34,7 @@ export interface SimulatedLoan {
   firstDueDate: string;
   rate: number;
   monthlyInstallmentValue: number;
+  totalAmount: number;
 }
 
 export interface CreateLoanInput {
@@ -61,7 +63,12 @@ export class LoansService {
   private loansSubject = new BehaviorSubject<Loan[]>([]);
   private initialized = false;
 
-  constructor(private http: HttpClient, private mocks: MockDataService, private auth: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private mocks: MockDataService,
+    private auth: AuthService,
+    private clientsService: ClientsService
+  ) {}
 
   getLoans(): Observable<Loan[]> {
     if (!this.initialized) {
@@ -200,15 +207,31 @@ export class LoansService {
       mergeMap((user) => {
         if (!user) return of([]);
         const params: any = user.isAdmin ? {} : { userId: user.id };
-        return this.http.get<any>(`${environment.apiBaseUrl}/loans`, { params });
-      }),
-      map((response) => {
-        const items = Array.isArray(response)
-          ? response
-          : Array.isArray(response?.content)
-            ? response.content
-            : [];
-        return items.map((item: any) => this.normalizeLoan(item));
+
+        // Buscar loans e clients em paralelo
+        return this.http.get<any>(`${environment.apiBaseUrl}/loans`, { params }).pipe(
+          mergeMap((loansResponse) => {
+            return this.clientsService.getClients().pipe(
+              take(1), // Pega apenas o primeiro valor e completa
+              map((clients) => {
+                const items = Array.isArray(loansResponse)
+                  ? loansResponse
+                  : Array.isArray(loansResponse?.content)
+                    ? loansResponse.content
+                    : [];
+
+                // Criar um mapa de userId -> client name
+                const clientsMap = new Map(clients.map((c) => [c.id, c.name]));
+
+                return items.map((item: any) => {
+                  const clientName =
+                    clientsMap.get(item.userId) || `Cliente ${String(item.userId).slice(0, 8)}`;
+                  return this.normalizeLoan(item, { client: clientName });
+                });
+              })
+            );
+          })
+        );
       })
     );
   }
@@ -276,12 +299,17 @@ export class LoansService {
   }
 
   private normalizeSimulatedLoan(raw: any): SimulatedLoan {
+    const installments = Number(raw?.termInMonths ?? 1);
+    const monthlyInstallmentValue = Number(raw?.monthlyInstallmentValue ?? 0);
+    const totalAmount = monthlyInstallmentValue * installments;
+
     return {
       amount: Number(raw?.requestedAmount ?? 0),
-      installments: Number(raw?.termInMonths ?? 1),
+      installments: installments,
       firstDueDate: raw?.firstDueDate ?? new Date().toISOString().split('T')[0],
       rate: Number(raw?.appliedRate ?? 0),
-      monthlyInstallmentValue: Number(raw?.monthlyInstallmentValue ?? 0),
+      monthlyInstallmentValue: monthlyInstallmentValue,
+      totalAmount: totalAmount,
     };
   }
 

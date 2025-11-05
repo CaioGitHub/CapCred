@@ -1,5 +1,13 @@
 .env
 
+### Security - Keys and Certificates ###
+**/keys/private.pem
+**/keys/public.pem
+**/keys/*.key
+**/keys/*.p12
+**/keys/*.pfx
+**/keys/*.jks
+
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar

@@ -1,45 +1,19 @@
 package com.capcredit.authuser.security;
 
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-
-import org.springframework.beans.factory.annotation.Value;
-
-import java.security.PublicKey;
-
-import java.security.spec.X509EncodedKeySpec;
-
-
-
-
-
-
-
-
-import org.springframework.stereotype.Component;
-
-
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-
-
-import org.springframework.beans.factory.annotation.Value;
-
-import java.security.PublicKey;
-
-import java.security.spec.X509EncodedKeySpec;
-
-
-
+/**
+ * Provedor de chaves RSA para JWT.
+ * Carrega chaves privadas e públicas das variáveis de ambiente.
+ */
 @Component
 public class RsaKeyProvider {
 
@@ -47,35 +21,33 @@ public class RsaKeyProvider {
     private final PublicKey publicKey;
 
     public RsaKeyProvider(
-            @Value("${rsa.private-key}") String privateKeyPath,
-            @Value("${rsa.public-key}") String publicKeyPath,
-            org.springframework.core.io.ResourceLoader resourceLoader) {
+            @Value("${JWT_PRIVATE_KEY}") String privateKeyBase64,
+            @Value("${JWT_PUBLIC_KEY}") String publicKeyBase64) {
         try {
-            this.privateKey = loadPrivateKey(resourceLoader.getResource("classpath:" + privateKeyPath));
-            this.publicKey = loadPublicKey(resourceLoader.getResource("classpath:" + publicKeyPath));
+            this.privateKey = loadPrivateKeyFromBase64(privateKeyBase64);
+            this.publicKey = loadPublicKeyFromBase64(publicKeyBase64);
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao carregar chaves RSA", e);
+            throw new RuntimeException("Erro ao carregar chaves RSA das variáveis de ambiente", e);
         }
     }
 
-    private PrivateKey loadPrivateKey(org.springframework.core.io.Resource resource) throws Exception {
-        String key = new String(resource.getInputStream().readAllBytes())
-                .replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s", "");
-        byte[] decoded = Base64.getDecoder().decode(key);
-        return KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(decoded));
+    private PrivateKey loadPrivateKeyFromBase64(String keyBase64) throws Exception {
+        byte[] decoded = Base64.getDecoder().decode(keyBase64);
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
+        return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 
-    private PublicKey loadPublicKey(org.springframework.core.io.Resource resource) throws Exception {
-        String key = new String(resource.getInputStream().readAllBytes())
-                .replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
-                .replaceAll("\\s", "");
-        byte[] decoded = Base64.getDecoder().decode(key);
-        return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(decoded));
+    private PublicKey loadPublicKeyFromBase64(String keyBase64) throws Exception {
+        byte[] decoded = Base64.getDecoder().decode(keyBase64);
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
+        return KeyFactory.getInstance("RSA").generatePublic(spec);
     }
 
-    public PrivateKey getPrivateKey() { return privateKey; }
-    public PublicKey getPublicKey() { return publicKey; }
+    public PrivateKey getPrivateKey() {
+        return privateKey;
+    }
+
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
 }
